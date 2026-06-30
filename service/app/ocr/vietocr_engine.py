@@ -35,9 +35,11 @@ class VietOcrEngine:
         self._det = RapidOCR()  # chỉ dùng để lấy box (bỏ phần text của nó)
 
         cfg = Cfg.load_config_from_name(model_name)  # vgg_seq2seq nhẹ/nhanh
-        # Thiết bị recognition theo cấu hình; chọn cuda mà không có GPU → lùi về cpu.
+        # Thiết bị recognition theo cấu hình.
         device = _st.ocr_device
-        if device.startswith("cuda") and not torch.cuda.is_available():
+        if device == "auto":
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+        elif device.startswith("cuda") and not torch.cuda.is_available():
             log.warning("DIP_OCR_DEVICE=%s nhưng không thấy GPU CUDA → dùng CPU", device)
             device = "cpu"
         cfg["device"] = device

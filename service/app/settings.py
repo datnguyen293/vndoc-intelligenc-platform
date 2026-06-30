@@ -31,9 +31,10 @@ class Settings(BaseSettings):
     # vẫn crop từ ảnh GỐC để giữ độ nét. ocr_threads: số luồng torch cho recognize (CPU).
     ocr_det_max_side: int = 1280
     ocr_threads: int = 8
-    # Thiết bị chạy recognition VietOCR: "cpu" | "cuda" (GPU NVIDIA). Người dùng tự cấu
-    # hình theo máy (DIP_OCR_DEVICE=cuda). Nếu chọn cuda mà không có GPU → tự lùi về cpu.
-    ocr_device: str = "cpu"
+    # Thiết bị chạy recognition VietOCR: "auto" | "cpu" | "cuda".
+    # auto: tự dùng CUDA nếu có GPU NVIDIA, ngược lại CPU → cùng 1 build chạy được cả máy
+    # CÓ và KHÔNG GPU (máy đích Intel i7-14700: GPU tuỳ chọn). Ép tay qua DIP_OCR_DEVICE.
+    ocr_device: str = "auto"
     # Document rectification: nắn méo phối cảnh + cắt nền (FR-003/004). Mặc định BẬT vì
     # "nắn-khi-cần": ảnh đã phẳng + lấp khung thì passthrough (không xê dịch OCR), chỉ
     # warp ảnh chụp nghiêng/nhiều nền. Tắt nếu muốn.
