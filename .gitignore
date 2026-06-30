@@ -7,9 +7,11 @@ __pycache__/
 venv/
 .env
 
-# --- Model / log / OS ---
-models/
-logs/
+# --- Model weights / log / OS ---
+# Anchor đúng thư mục weights ML (KHÔNG nuốt package code app/models/)
+/service/models/
+/models/
+service/logs/
 *.log
 .DS_Store
 
