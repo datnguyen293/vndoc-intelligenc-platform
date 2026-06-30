@@ -1,0 +1,65 @@
+# Plugin: Thẻ Đảng viên (DOC-TYPE-007)
+# Bám theo DOC-08 §DOC-TYPE-007 và samples/the-dang-vien-mau-01.md
+# Bóc tách label-anchored, không structured-data, không train (ADR-012).
+docType: the_dang_vien
+displayName: "Thẻ Đảng viên"
+version: "1.0"
+ready: true
+
+classify:
+  anchors: ["THẺ ĐẢNG VIÊN", "ĐẢNG CỘNG SẢN VIỆT NAM"]
+
+extraction:
+  strategy: label_anchored
+  fields:
+    - name: cardNumber
+      labels: ["Số"]
+      take: right_of_label
+      type: code
+      normalize: [trim, fixDigits, dotSeparator, stripEdgeNonDigits]
+      validate: { regex: '^\d{2}\.\d{6}$' }
+    - name: fullName
+      labels: ["Họ và tên", "Họ tên"]
+      take: right_of_label
+      type: text_vi
+      required: true
+    - name: dateOfBirth
+      labels: ["Sinh ngày"]
+      take: date_after_label
+      type: date
+      required: true
+    - name: placeOfOrigin
+      labels: ["Quê quán"]
+      take: right_of_label_or_below
+      type: text_vi
+      normalize: [collapseSpaces, dictFix]
+    - name: partyJoinDate
+      labels: ["Vào Đảng ngày"]
+      take: date_after_label
+      type: date
+    - name: officialDate
+      labels: ["Chính thức ngày"]
+      take: date_after_label
+      type: date
+    - name: partyOrganization
+      labels: ["Nơi cấp thẻ"]
+      take: right_of_label_or_below
+      type: text_vi
+      normalize: [collapseSpaces]
+    - name: dateOfIssue
+      labels: ["Ngày"]
+      take: vn_date_phrase
+      type: date
+
+confidence:
+  fieldWeights:
+    cardNumber: 0.25
+    fullName: 0.3
+    dateOfBirth: 0.2
+    default: 0.1
+
+# Kiểm tra logic thứ tự ngày (sai → cảnh báo, không chặn — DEC-032)
+crossChecks:
+  - [dateOfBirth, "<", partyJoinDate]    # sinh trước khi vào Đảng
+  - [partyJoinDate, "<=", officialDate]  # vào Đảng trước/bằng chính thức
+  - [officialDate, "<=", dateOfIssue]    # chính thức trước/bằng ngày cấp thẻ

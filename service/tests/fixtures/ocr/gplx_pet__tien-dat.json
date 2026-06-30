@@ -1,0 +1,189 @@
+{
+ "image": "tien-dat.jpeg",
+ "lines": [
+  {
+   "text": "BỘ GTVT",
+   "x": 134.0,
+   "y": 46.0,
+   "w": 216.0,
+   "h": 51.0,
+   "confidence": 0.8986
+  },
+  {
+   "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "x": 529.0,
+   "y": 41.0,
+   "w": 962.0,
+   "h": 56.0,
+   "confidence": 0.9032
+  },
+  {
+   "text": "MOT",
+   "x": 186.0,
+   "y": 102.0,
+   "w": 114.0,
+   "h": 50.0,
+   "confidence": 0.9001
+  },
+  {
+   "text": "Độc lập - Tự do - Hạnh phúc",
+   "x": 679.0,
+   "y": 105.0,
+   "w": 660.0,
+   "h": 55.0,
+   "confidence": 0.8849
+  },
+  {
+   "text": "GIẤY PHÉP LÁI XE/DRIVER'S LICENSE",
+   "x": 479.0,
+   "y": 174.0,
+   "w": 1065.0,
+   "h": 66.0,
+   "confidence": 0.8606
+  },
+  {
+   "text": "Số/No: 010231030002",
+   "x": 820.0,
+   "y": 271.0,
+   "w": 546.0,
+   "h": 60.0,
+   "confidence": 0.8763
+  },
+  {
+   "text": "NGUYỄN TIẾN ĐẠT",
+   "x": 980.0,
+   "y": 351.0,
+   "w": 428.0,
+   "h": 50.0,
+   "confidence": 0.899
+  },
+  {
+   "text": "Họ tên/Full name:",
+   "x": 499.0,
+   "y": 362.0,
+   "w": 307.0,
+   "h": 41.0,
+   "confidence": 0.8776
+  },
+  {
+   "text": "Ngày sinh Date of Birth:",
+   "x": 499.0,
+   "y": 431.0,
+   "w": 411.0,
+   "h": 49.0,
+   "confidence": 0.8756
+  },
+  {
+   "text": "29/03/1988",
+   "x": 1123.0,
+   "y": 426.0,
+   "w": 215.0,
+   "h": 41.0,
+   "confidence": 0.8368
+  },
+  {
+   "text": "Quốc tịch/Nationality:",
+   "x": 500.0,
+   "y": 497.0,
+   "w": 378.0,
+   "h": 52.0,
+   "confidence": 0.8901
+  },
+  {
+   "text": "VIỆT NAM",
+   "x": 1107.0,
+   "y": 496.0,
+   "w": 232.0,
+   "h": 47.0,
+   "confidence": 0.8185
+  },
+  {
+   "text": "Tân Lập",
+   "x": 1124.0,
+   "y": 561.0,
+   "w": 167.0,
+   "h": 58.0,
+   "confidence": 0.9005
+  },
+  {
+   "text": "Nơi cư trú/Address:",
+   "x": 503.0,
+   "y": 577.0,
+   "w": 336.0,
+   "h": 40.0,
+   "confidence": 0.8392
+  },
+  {
+   "text": "X. Lam Cốt, H. Tân Yên, T. Bắc Giang",
+   "x": 674.0,
+   "y": 614.0,
+   "w": 723.0,
+   "h": 53.0,
+   "confidence": 0.8278
+  },
+  {
+   "text": "Hà Nội, ngày/date 21 thang month 04 năm year 2023",
+   "x": 695.0,
+   "y": 695.0,
+   "w": 870.0,
+   "h": 66.0,
+   "confidence": 0.862
+  },
+  {
+   "text": "TUQ.GIÁM ĐỐC",
+   "x": 1051.0,
+   "y": 742.0,
+   "w": 310.0,
+   "h": 50.0,
+   "confidence": 0.7663
+  },
+  {
+   "text": "TRƯỜNG PHONG QUPTANL",
+   "x": 957.0,
+   "y": 782.0,
+   "w": 514.0,
+   "h": 53.0,
+   "confidence": 0.7525
+  },
+  {
+   "text": "Hạng/Class: B2",
+   "x": 58.0,
+   "y": 843.0,
+   "w": 287.0,
+   "h": 55.0,
+   "confidence": 0.8957
+  },
+  {
+   "text": "Giao thong",
+   "x": 963.0,
+   "y": 840.0,
+   "w": 236.0,
+   "h": 50.0,
+   "confidence": 0.7247
+  },
+  {
+   "text": "AN",
+   "x": 1060.0,
+   "y": 903.0,
+   "w": 48.0,
+   "h": 30.0,
+   "confidence": 0.7456
+  },
+  {
+   "text": "Có giá trị đến Expires: 21/04/2033",
+   "x": 62.0,
+   "y": 925.0,
+   "w": 644.0,
+   "h": 65.0,
+   "confidence": 0.895
+  },
+  {
+   "text": "LÊ NGỌC DIỄN",
+   "x": 1011.0,
+   "y": 938.0,
+   "w": 387.0,
+   "h": 67.0,
+   "confidence": 0.8227
+  }
+ ]
+}

@@ -1,0 +1,26 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+.env
+
+# --- Model / log / OS ---
+models/
+logs/
+*.log
+.DS_Store
+
+# --- Tooling cục bộ ---
+.claude/settings.local.json
+
+# --- DỮ LIỆU CÁ NHÂN THẬT: KHÔNG commit (ảnh giấy tờ tuỳ thân, NFR-007) ---
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.gif
+*.bmp
+docs/logs/

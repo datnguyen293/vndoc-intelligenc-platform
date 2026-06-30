@@ -1,0 +1,36 @@
+# Core service (skeleton) — chạy được ngay
+fastapi==0.115.*
+uvicorn[standard]==0.32.*
+pydantic==2.*
+pydantic-settings==2.*
+python-multipart==0.0.*
+PyYAML==6.*
+pillow>=10,<12
+
+# --- Document rectification (nắn méo + cắt nền trước OCR) ---
+# Package sibling, thuần OpenCV offline. Cài: pip install -e ../rectifier
+-e ../rectifier
+
+# --- OCR backend thật (ADR-003: ONNX) — cài để hết "rỗng" ---
+rapidocr-onnxruntime         # PP-OCR trên ONNX Runtime, model đóng gói sẵn, đa nền tảng
+
+# --- Test ---
+# pytest, httpx              # cho fastapi TestClient
+# eval_type_backport         # CHỈ khi chạy trên Python 3.9 (target là 3.11)
+
+# --- Độ chính xác tiếng Việt CÓ DẤU (ADR-004) — backend "vietocr" ---
+# Cài thêm để bật: pip install vietocr torch torchvision
+#   rồi đặt DIP_OCR_BACKEND=vietocr (mặc định factory ưu tiên vietocr nếu có)
+# vietocr
+# torch
+# torchvision
+
+# --- Phương án khác / bước sau ---
+# paddleocr, paddlepaddle    # backend nguyên bản ADR-004 (nặng khi cài)
+# opencv-python-headless     # detect khung + nắn hướng (DEC-009)
+# opencv-python-headless     # detect khung, tiền xử lý, warp
+# onnxruntime                # runtime CPU (hoặc openvino)
+# openvino                   # runtime tối ưu CPU Intel (ADR-003)
+# vietocr                    # recognition tiếng Việt (ADR-004)
+# paddleocr / paddlepaddle   # text detection (ADR-004)
+# pyzbar / zxing-cpp         # đọc QR/barcode (ADR-006)

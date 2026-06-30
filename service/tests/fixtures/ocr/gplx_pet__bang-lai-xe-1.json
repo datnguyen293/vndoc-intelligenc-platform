@@ -1,0 +1,173 @@
+{
+ "image": "bang-lai-xe-1.webp",
+ "lines": [
+  {
+   "text": "BỘ GTVT",
+   "x": 97.0,
+   "y": 73.0,
+   "w": 77.0,
+   "h": 23.0,
+   "confidence": 0.8999
+  },
+  {
+   "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "x": 229.0,
+   "y": 77.0,
+   "w": 323.0,
+   "h": 21.0,
+   "confidence": 0.9034
+  },
+  {
+   "text": "MOT",
+   "x": 116.0,
+   "y": 94.0,
+   "w": 40.0,
+   "h": 20.0,
+   "confidence": 0.8761
+  },
+  {
+   "text": "Độc lập - Tự do - Hạnh phác",
+   "x": 279.0,
+   "y": 98.0,
+   "w": 221.0,
+   "h": 23.0,
+   "confidence": 0.8799
+  },
+  {
+   "text": "GIẤY PHÉP LÁI XE/DRIVER'S LICENSE",
+   "x": 212.0,
+   "y": 120.0,
+   "w": 355.0,
+   "h": 26.0,
+   "confidence": 0.8869
+  },
+  {
+   "text": "Số/No: 990170000806",
+   "x": 324.0,
+   "y": 147.0,
+   "w": 184.0,
+   "h": 21.0,
+   "confidence": 0.8527
+  },
+  {
+   "text": "Họ tên/ Full name:",
+   "x": 215.0,
+   "y": 172.0,
+   "w": 103.0,
+   "h": 18.0,
+   "confidence": 0.8277
+  },
+  {
+   "text": "Ngày sinh/Date of Birth:",
+   "x": 216.0,
+   "y": 196.0,
+   "w": 138.0,
+   "h": 19.0,
+   "confidence": 0.8883
+  },
+  {
+   "text": "25/12/1992",
+   "x": 423.0,
+   "y": 196.0,
+   "w": 75.0,
+   "h": 19.0,
+   "confidence": 0.9029
+  },
+  {
+   "text": "Quốc tịch/Nationality:",
+   "x": 216.0,
+   "y": 218.0,
+   "w": 125.0,
+   "h": 22.0,
+   "confidence": 0.8896
+  },
+  {
+   "text": "VIỆT NAM",
+   "x": 424.0,
+   "y": 219.0,
+   "w": 79.0,
+   "h": 21.0,
+   "confidence": 0.9004
+  },
+  {
+   "text": "Nơi cư trú/Address:",
+   "x": 215.0,
+   "y": 243.0,
+   "w": 113.0,
+   "h": 18.0,
+   "confidence": 0.8862
+  },
+  {
+   "text": "P. Đông Sơn, TP. Thanh Hóa, T. Thanh Hóa",
+   "x": 260.0,
+   "y": 260.0,
+   "w": 269.0,
+   "h": 19.0,
+   "confidence": 0.8931
+  },
+  {
+   "text": "Hà Nội, ngày/date 20 máng nonth 02 năm year 2017",
+   "x": 279.0,
+   "y": 289.0,
+   "w": 295.0,
+   "h": 20.0,
+   "confidence": 0.7795
+  },
+  {
+   "text": "TL, TÔNG CỤC TRƯƠNG TCĐB VN",
+   "x": 321.0,
+   "y": 304.0,
+   "w": 216.0,
+   "h": 18.0,
+   "confidence": 0.7956
+  },
+  {
+   "text": "VU TRƯƠNG VIOLPT VÀ NLAN",
+   "x": 339.0,
+   "y": 318.0,
+   "w": 183.0,
+   "h": 18.0,
+   "confidence": 0.5652
+  },
+  {
+   "text": "Hạng/Class: B1",
+   "x": 62.0,
+   "y": 333.0,
+   "w": 100.0,
+   "h": 20.0,
+   "confidence": 0.8835
+  },
+  {
+   "text": "As",
+   "x": 380.0,
+   "y": 346.0,
+   "w": 42.0,
+   "h": 20.0,
+   "confidence": 0.0881
+  },
+  {
+   "text": "EWV",
+   "x": 433.0,
+   "y": 335.0,
+   "w": 84.0,
+   "h": 32.0,
+   "confidence": 0.2562
+  },
+  {
+   "text": "Có giá trị đến/Expires: 25/12/2052",
+   "x": 61.0,
+   "y": 363.0,
+   "w": 223.0,
+   "h": 22.0,
+   "confidence": 0.901
+  },
+  {
+   "text": "Nguyễn Tháng Quân",
+   "x": 353.0,
+   "y": 373.0,
+   "w": 156.0,
+   "h": 22.0,
+   "confidence": 0.7383
+  }
+ ]
+}

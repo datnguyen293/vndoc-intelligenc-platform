@@ -1,0 +1,189 @@
+{
+ "image": "bang-lai-xe-3.webp",
+ "lines": [
+  {
+   "text": "BỘ GTVT",
+   "x": 56.0,
+   "y": 51.0,
+   "w": 110.0,
+   "h": 28.0,
+   "confidence": 0.9055
+  },
+  {
+   "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "x": 253.0,
+   "y": 49.0,
+   "w": 489.0,
+   "h": 28.0,
+   "confidence": 0.9052
+  },
+  {
+   "text": "MOT",
+   "x": 83.0,
+   "y": 81.0,
+   "w": 58.0,
+   "h": 26.0,
+   "confidence": 0.8925
+  },
+  {
+   "text": "Độc lập - Tự do - Hạnh phúc",
+   "x": 326.0,
+   "y": 81.0,
+   "w": 337.0,
+   "h": 30.0,
+   "confidence": 0.8719
+  },
+  {
+   "text": "GIẤY PHÉP LÁI XE/DRIVER'S LICENSE",
+   "x": 229.0,
+   "y": 120.0,
+   "w": 539.0,
+   "h": 29.0,
+   "confidence": 0.8596
+  },
+  {
+   "text": "Số/No: 010103033708",
+   "x": 406.0,
+   "y": 169.0,
+   "w": 279.0,
+   "h": 32.0,
+   "confidence": 0.8368
+  },
+  {
+   "text": "Họ tên/Full name:",
+   "x": 243.0,
+   "y": 210.0,
+   "w": 157.0,
+   "h": 27.0,
+   "confidence": 0.8516
+  },
+  {
+   "text": "NGUYỄN ĐÌNH TÙNG",
+   "x": 479.0,
+   "y": 208.0,
+   "w": 241.0,
+   "h": 27.0,
+   "confidence": 0.9061
+  },
+  {
+   "text": "Ngày sinh/Date of Birth:",
+   "x": 244.0,
+   "y": 247.0,
+   "w": 208.0,
+   "h": 27.0,
+   "confidence": 0.8866
+  },
+  {
+   "text": "15/02/1988",
+   "x": 561.0,
+   "y": 247.0,
+   "w": 112.0,
+   "h": 24.0,
+   "confidence": 0.9128
+  },
+  {
+   "text": "Quốc tịch/Nationality:",
+   "x": 245.0,
+   "y": 283.0,
+   "w": 190.0,
+   "h": 29.0,
+   "confidence": 0.8947
+  },
+  {
+   "text": "VIỆT NAM",
+   "x": 561.0,
+   "y": 283.0,
+   "w": 120.0,
+   "h": 29.0,
+   "confidence": 0.9009
+  },
+  {
+   "text": "Nơi cư trú/Address",
+   "x": 245.0,
+   "y": 322.0,
+   "w": 171.0,
+   "h": 25.0,
+   "confidence": 0.8965
+  },
+  {
+   "text": "X Hoàng Diệu, H. Chương Mỹ, TP. Hà Nội",
+   "x": 315.0,
+   "y": 347.0,
+   "w": 407.0,
+   "h": 27.0,
+   "confidence": 0.8406
+  },
+  {
+   "text": "Hung Yên, ngày/date 14 thánghmonth 11 năm year 2017",
+   "x": 321.0,
+   "y": 392.0,
+   "w": 471.0,
+   "h": 30.0,
+   "confidence": 0.8229
+  },
+  {
+   "text": "KT. GIAM ĐỐC",
+   "x": 495.0,
+   "y": 416.0,
+   "w": 153.0,
+   "h": 25.0,
+   "confidence": 0.8187
+  },
+  {
+   "text": "PHÓ GIÁM ĐỐC",
+   "x": 492.0,
+   "y": 437.0,
+   "w": 160.0,
+   "h": 25.0,
+   "confidence": 0.855
+  },
+  {
+   "text": "Hạng/Class: D",
+   "x": 17.0,
+   "y": 462.0,
+   "w": 136.0,
+   "h": 28.0,
+   "confidence": 0.8866
+  },
+  {
+   "text": "GIAO THUNG",
+   "x": 469.0,
+   "y": 461.0,
+   "w": 110.0,
+   "h": 20.0,
+   "confidence": 0.636
+  },
+  {
+   "text": "Kak",
+   "x": 661.0,
+   "y": 457.0,
+   "w": 67.0,
+   "h": 31.0,
+   "confidence": 0.3729
+  },
+  {
+   "text": "VẬN LẬP",
+   "x": 485.0,
+   "y": 485.0,
+   "w": 55.0,
+   "h": 22.0,
+   "confidence": 0.6646
+  },
+  {
+   "text": "Có giá trị đến/Expires: 14/11/2022",
+   "x": 18.0,
+   "y": 509.0,
+   "w": 329.0,
+   "h": 28.0,
+   "confidence": 0.8989
+  },
+  {
+   "text": "Nguyễn Quang Khải",
+   "x": 454.0,
+   "y": 526.0,
+   "w": 237.0,
+   "h": 29.0,
+   "confidence": 0.8858
+  }
+ ]
+}

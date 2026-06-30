@@ -1,0 +1,78 @@
+# Plugin: Căn cước 2024 - Mặt sau (DOC-TYPE-010)
+# Bám theo DOC-08 §DOC-TYPE-010 và samples/cccd-2024-mau-01.md
+docType: cccd_2024_back
+displayName: "Căn cước 2024 - Mặt sau"
+version: "1.0"
+ready: true
+
+classify:
+  anchors: ["BỘ CÔNG AN", "MINISTRY OF PUBLIC SECURITY", "Nơi cư trú"]
+  signals: [has_mrz_td1, has_qr_top_right]
+
+structuredData:
+  - kind: mrz
+    format: td1
+    parser: mrz_td1
+    mapsTo: [idNumber, fullName, dateOfBirth, sex, dateOfExpiry]
+  - kind: qr
+    parser: cccd_qr
+    mapsTo: [idNumber, fullName, dateOfBirth, sex, placeOfResidence, dateOfIssue]
+
+extraction:
+  strategy: label_anchored
+  fields:
+    - name: idNumber
+      labels: ["Số định danh", "Personal identification number"]
+      take: right_of_label
+      source: [structured, ocr]
+      type: digits
+      validate: { regex: '^\d{12}$' }
+      crossCheckProvince: true
+    - name: fullName
+      labels: ["Họ", "Full name"]
+      take: below_label
+      source: [structured, ocr]
+      type: text_vi
+    - name: dateOfBirth
+      labels: ["Ngày sinh", "Date of birth"]
+      take: date_after_label
+      source: [structured, ocr]
+      type: date
+    - name: sex
+      labels: ["Giới tính", "Sex"]
+      take: right_of_label
+      source: [structured, ocr]
+      type: sex
+    - name: placeOfResidence
+      labels: ["Nơi cư trú", "Place of residence"]
+      take: right_of_label_or_below
+      source: [structured, ocr]
+      type: text_vi
+      normalize: [collapseSpaces, dictFix]
+    - name: placeOfBirth
+      labels: ["Nơi đăng ký khai sinh", "Place of birth"]
+      take: right_of_label_or_below
+      type: text_vi
+      normalize: [collapseSpaces, dictFix]
+    - name: dateOfIssue
+      labels: ["Ngày, tháng, năm cấp", "Date of issue"]
+      take: date_after_label
+      type: date
+    - name: dateOfExpiry
+      labels: ["Ngày, tháng, năm hết hạn", "Date of expiry"]
+      take: date_after_label
+      source: [structured, ocr]
+      type: date
+      checks: [warn_if_expired]
+    - name: issuedBy
+      labels: ["BỘ CÔNG AN", "Ministry of Public Security"]
+      take: right_of_label
+      type: text_vi
+      required: false
+
+confidence:
+  fieldWeights:
+    idNumber: 0.3
+    fullName: 0.3
+    dateOfBirth: 0.2
+    default: 0.1

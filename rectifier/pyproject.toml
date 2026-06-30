@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rectifier"
+version = "0.1.0"
+description = "Nắn chỉnh ảnh chụp nghiêng/méo/xoay về chữ nhật thẳng hàng (offline, thuần OpenCV)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = [
+    "opencv-python-headless>=4.8,<5",
+    "numpy>=1.23",
+    "pillow>=10,<12",
+]
+
+[project.optional-dependencies]
+# Backend segmentation bằng YOLO (tùy chọn). Cần file weights cục bộ, không tải mạng.
+yolo = ["ultralytics>=8.2"]
+# Công cụ phát triển.
+dev = ["pytest>=7"]
+
+[project.scripts]
+rectifier = "rectifier.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["rectifier*"]

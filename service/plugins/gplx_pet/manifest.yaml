@@ -1,0 +1,67 @@
+# Plugin: GPLX PET (DOC-TYPE-005)
+# Bám theo DOC-08 §DOC-TYPE-005 và docs/samples/gplx-pet-mau-01.md (3 mẫu thật).
+# Nhãn SONG NGỮ ghép "/" (Số/No, Họ tên/Full name) → take `smart`.
+docType: gplx_pet
+displayName: "GPLX PET"
+version: "1.0"
+ready: true
+
+classify:
+  anchors: ["GIẤY PHÉP LÁI XE", "DRIVER'S LICENSE"]
+
+extraction:
+  strategy: label_anchored
+  fields:
+    - name: idNumber
+      labels: ["Số", "No"]
+      take: smart
+      type: digits
+      normalize: [removeSpaces, fixDigits, stripEdgeNonDigits]
+      validate: { regex: '^\d{12}$' }   # 2 số đầu = mã tỉnh cấp
+    - name: fullName
+      labels: ["Họ tên", "Họ và tên", "Full name"]
+      take: smart
+      type: text_vi
+      required: true
+    - name: dateOfBirth
+      labels: ["Ngày sinh", "Date of Birth"]
+      take: date_after_label
+      type: date
+      required: true
+    - name: nationality
+      labels: ["Quốc tịch", "Nationality"]
+      take: smart
+      type: text_vi
+    - name: placeOfResidence
+      labels: ["Nơi cư trú", "Address"]
+      take: smart
+      multiline: true            # địa chỉ có thể wrap xuống dòng
+      type: text_vi
+      normalize: [collapseSpaces, dictFix]
+    - name: licenseClass
+      labels: ["Hạng", "Class"]
+      take: smart
+      type: enum
+      validate: { enum: [A1, A2, A3, A4, B1, B2, C, D, E, FB2, FC, FD, FE] }
+    - name: dateOfIssue
+      labels: ["ngày", "năm"]
+      take: vn_date_phrase        # "[Nơi], ngày/date .. tháng/month .. năm/year .."
+      type: date
+    - name: dateOfExpiry
+      labels: ["Có giá trị đến", "Expires"]
+      take: date_after_label
+      type: date
+      checks: [warn_if_expired]
+
+confidence:
+  fieldWeights:
+    idNumber: 0.25
+    fullName: 0.25
+    licenseClass: 0.2
+    dateOfExpiry: 0.15
+    default: 0.1
+
+# Logic ngày: sinh trước cấp; cấp trước/bằng hết hạn
+crossChecks:
+  - [dateOfBirth, "<", dateOfIssue]
+  - [dateOfIssue, "<=", dateOfExpiry]

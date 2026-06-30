@@ -1,0 +1,189 @@
+{
+ "image": "thuy-giang.jpeg",
+ "lines": [
+  {
+   "text": "BỘ GTVT",
+   "x": 146.0,
+   "y": 32.0,
+   "w": 214.0,
+   "h": 51.0,
+   "confidence": 0.9013
+  },
+  {
+   "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "x": 537.0,
+   "y": 35.0,
+   "w": 944.0,
+   "h": 59.0,
+   "confidence": 0.9025
+  },
+  {
+   "text": "MOT",
+   "x": 197.0,
+   "y": 91.0,
+   "w": 113.0,
+   "h": 46.0,
+   "confidence": 0.8909
+  },
+  {
+   "text": "Độc lập - Tự do - Hạnh phúc",
+   "x": 684.0,
+   "y": 98.0,
+   "w": 649.0,
+   "h": 57.0,
+   "confidence": 0.8795
+  },
+  {
+   "text": "GIẤY PHÉP LÁI XE/DRIVER'S LICENSE",
+   "x": 486.0,
+   "y": 164.0,
+   "w": 1046.0,
+   "h": 64.0,
+   "confidence": 0.8869
+  },
+  {
+   "text": "Số/No: 011230007240",
+   "x": 828.0,
+   "y": 247.0,
+   "w": 540.0,
+   "h": 66.0,
+   "confidence": 0.7948
+  },
+  {
+   "text": "Họ tên Full name:",
+   "x": 506.0,
+   "y": 335.0,
+   "w": 305.0,
+   "h": 43.0,
+   "confidence": 0.8029
+  },
+  {
+   "text": "NGUYỄN THỦY GIANG",
+   "x": 949.0,
+   "y": 324.0,
+   "w": 499.0,
+   "h": 50.0,
+   "confidence": 0.8948
+  },
+  {
+   "text": "Ngày sinh Date of Birth",
+   "x": 505.0,
+   "y": 403.0,
+   "w": 408.0,
+   "h": 50.0,
+   "confidence": 0.8673
+  },
+  {
+   "text": "24/09/1992",
+   "x": 1126.0,
+   "y": 397.0,
+   "w": 214.0,
+   "h": 46.0,
+   "confidence": 0.9056
+  },
+  {
+   "text": "Quốc tịch/Nationality:",
+   "x": 508.0,
+   "y": 470.0,
+   "w": 376.0,
+   "h": 53.0,
+   "confidence": 0.8804
+  },
+  {
+   "text": "VIỆT NAM",
+   "x": 1112.0,
+   "y": 467.0,
+   "w": 231.0,
+   "h": 51.0,
+   "confidence": 0.8156
+  },
+  {
+   "text": "Nơi cư trủ/Address:",
+   "x": 508.0,
+   "y": 548.0,
+   "w": 335.0,
+   "h": 43.0,
+   "confidence": 0.8503
+  },
+  {
+   "text": "P29 B12, TT Kim Liên",
+   "x": 1000.0,
+   "y": 541.0,
+   "w": 423.0,
+   "h": 43.0,
+   "confidence": 0.8868
+  },
+  {
+   "text": "P. Kim Liên, Q. Đống Đa, TP. Hà Nội",
+   "x": 864.0,
+   "y": 588.0,
+   "w": 695.0,
+   "h": 50.0,
+   "confidence": 0.8407
+  },
+  {
+   "text": "Hà Nội, ngày date 17 thang month 01 năm year 2023",
+   "x": 700.0,
+   "y": 668.0,
+   "w": 867.0,
+   "h": 69.0,
+   "confidence": 0.7981
+  },
+  {
+   "text": "TƯỢ GIÁM ĐỐC",
+   "x": 1065.0,
+   "y": 715.0,
+   "w": 300.0,
+   "h": 51.0,
+   "confidence": 0.7712
+  },
+  {
+   "text": "P",
+   "x": 1002.0,
+   "y": 725.0,
+   "w": 47.0,
+   "h": 36.0,
+   "confidence": 0.1658
+  },
+  {
+   "text": "TRƯỜNG PHONG QUPTANI",
+   "x": 966.0,
+   "y": 758.0,
+   "w": 503.0,
+   "h": 50.0,
+   "confidence": 0.6909
+  },
+  {
+   "text": "Hạng Class: B2",
+   "x": 54.0,
+   "y": 818.0,
+   "w": 294.0,
+   "h": 56.0,
+   "confidence": 0.8929
+  },
+  {
+   "text": "King thong",
+   "x": 974.0,
+   "y": 818.0,
+   "w": 198.0,
+   "h": 52.0,
+   "confidence": 0.3901
+  },
+  {
+   "text": "Có giá trị đến Expires: 17/01/2033",
+   "x": 56.0,
+   "y": 904.0,
+   "w": 656.0,
+   "h": 65.0,
+   "confidence": 0.8807
+  },
+  {
+   "text": "LÊ NGỌC DIỄN",
+   "x": 1021.0,
+   "y": 918.0,
+   "w": 387.0,
+   "h": 67.0,
+   "confidence": 0.8165
+  }
+ ]
+}

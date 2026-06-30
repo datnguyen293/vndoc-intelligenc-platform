@@ -1,0 +1,253 @@
+{
+ "image": "thuy-giang-180.jpeg",
+ "lines": [
+  {
+   "text": "BỘ GTVT",
+   "x": 141.0,
+   "y": 65.0,
+   "w": 214.0,
+   "h": 54.0,
+   "confidence": 0.888
+  },
+  {
+   "text": "CÔNG HOA XÃ HỒI CHỦ NGHĨA VIỆT NAM",
+   "x": 525.0,
+   "y": 36.0,
+   "w": 970.0,
+   "h": 73.0,
+   "confidence": 0.855
+  },
+  {
+   "text": "MOT",
+   "x": 193.0,
+   "y": 121.0,
+   "w": 114.0,
+   "h": 49.0,
+   "confidence": 0.8976
+  },
+  {
+   "text": "Độc lập Tự do - Hanh phúc",
+   "x": 671.0,
+   "y": 103.0,
+   "w": 668.0,
+   "h": 63.0,
+   "confidence": 0.8311
+  },
+  {
+   "text": "GIẤY PHÉP LÁI XE/DRIVERS LICENSE",
+   "x": 481.0,
+   "y": 164.0,
+   "w": 1067.0,
+   "h": 84.0,
+   "confidence": 0.8286
+  },
+  {
+   "text": "Số/No: 011231007240",
+   "x": 818.0,
+   "y": 254.0,
+   "w": 558.0,
+   "h": 67.0,
+   "confidence": 0.7949
+  },
+  {
+   "text": "PRECHYPHEPIANIZER",
+   "x": 1400.0,
+   "y": 268.0,
+   "w": 160.0,
+   "h": 34.0,
+   "confidence": 0.4597
+  },
+  {
+   "text": "NGUYỄN THỦY GIANG",
+   "x": 940.0,
+   "y": 331.0,
+   "w": 516.0,
+   "h": 53.0,
+   "confidence": 0.8221
+  },
+  {
+   "text": "Họ tên/Full name",
+   "x": 505.0,
+   "y": 349.0,
+   "w": 304.0,
+   "h": 46.0,
+   "confidence": 0.8869
+  },
+  {
+   "text": "SUCENSE GIA",
+   "x": 842.0,
+   "y": 362.0,
+   "w": 102.0,
+   "h": 35.0,
+   "confidence": 0.77
+  },
+  {
+   "text": "ASS CATERIPLANELORIVERS",
+   "x": 885.0,
+   "y": 374.0,
+   "w": 206.0,
+   "h": 43.0,
+   "confidence": 0.5399
+  },
+  {
+   "text": "24/09/1992",
+   "x": 1121.0,
+   "y": 406.0,
+   "w": 220.0,
+   "h": 43.0,
+   "confidence": 0.9109
+  },
+  {
+   "text": "Ngày sinhDate of Birth",
+   "x": 506.0,
+   "y": 410.0,
+   "w": 409.0,
+   "h": 59.0,
+   "confidence": 0.8632
+  },
+  {
+   "text": "Birth communication",
+   "x": 829.0,
+   "y": 420.0,
+   "w": 291.0,
+   "h": 57.0,
+   "confidence": 0.5774
+  },
+  {
+   "text": "CONTERTORES",
+   "x": 897.0,
+   "y": 443.0,
+   "w": 279.0,
+   "h": 52.0,
+   "confidence": 0.2956
+  },
+  {
+   "text": "Quốc tịch/Nationality",
+   "x": 511.0,
+   "y": 479.0,
+   "w": 370.0,
+   "h": 57.0,
+   "confidence": 0.8986
+  },
+  {
+   "text": "VIỆT NAM",
+   "x": 1104.0,
+   "y": 476.0,
+   "w": 240.0,
+   "h": 45.0,
+   "confidence": 0.6186
+  },
+  {
+   "text": "ANTERSTARIANS",
+   "x": 805.0,
+   "y": 504.0,
+   "w": 269.0,
+   "h": 53.0,
+   "confidence": 0.2886
+  },
+  {
+   "text": "Nơi cư trú/Address",
+   "x": 513.0,
+   "y": 557.0,
+   "w": 332.0,
+   "h": 43.0,
+   "confidence": 0.9002
+  },
+  {
+   "text": "P29 B12, TT Kim Liên",
+   "x": 993.0,
+   "y": 545.0,
+   "w": 430.0,
+   "h": 45.0,
+   "confidence": 0.8774
+  },
+  {
+   "text": "P. Kim Liên, Qu Đống Đa, TP. Hà Nội",
+   "x": 858.0,
+   "y": 590.0,
+   "w": 704.0,
+   "h": 55.0,
+   "confidence": 0.7831
+  },
+  {
+   "text": "ORNERS",
+   "x": 762.0,
+   "y": 611.0,
+   "w": 63.0,
+   "h": 27.0,
+   "confidence": 0.7609
+  },
+  {
+   "text": "Hà Nội, ngay/date 17 thang month 01 năm year 2023",
+   "x": 703.0,
+   "y": 670.0,
+   "w": 864.0,
+   "h": 69.0,
+   "confidence": 0.8382
+  },
+  {
+   "text": "TUỘ.GGÁT ĐỐC",
+   "x": 1056.0,
+   "y": 717.0,
+   "w": 307.0,
+   "h": 49.0,
+   "confidence": 0.5153
+  },
+  {
+   "text": "1",
+   "x": 995.0,
+   "y": 725.0,
+   "w": 63.0,
+   "h": 39.0,
+   "confidence": 0.1013
+  },
+  {
+   "text": "TRƯỜNG PHONG QLPT&NL",
+   "x": 970.0,
+   "y": 756.0,
+   "w": 502.0,
+   "h": 51.0,
+   "confidence": 0.7854
+  },
+  {
+   "text": "Hạng/Class: B2",
+   "x": 102.0,
+   "y": 814.0,
+   "w": 270.0,
+   "h": 49.0,
+   "confidence": 0.8879
+  },
+  {
+   "text": "Giao thong",
+   "x": 975.0,
+   "y": 815.0,
+   "w": 227.0,
+   "h": 46.0,
+   "confidence": 0.563
+  },
+  {
+   "text": "VANIA",
+   "x": 1041.0,
+   "y": 869.0,
+   "w": 109.0,
+   "h": 35.0,
+   "confidence": 0.7208
+  },
+  {
+   "text": "Có giá trị đến Expires: 17/01/2033",
+   "x": 108.0,
+   "y": 892.0,
+   "w": 609.0,
+   "h": 56.0,
+   "confidence": 0.8963
+  },
+  {
+   "text": "LÊ NGỌC DIỄN",
+   "x": 1014.0,
+   "y": 907.0,
+   "w": 384.0,
+   "h": 63.0,
+   "confidence": 0.8097
+  }
+ ]
+}
