@@ -128,12 +128,28 @@ GOLDEN = {
         "validFrom": "2023-07-01", "fiveYearContinuous": "2027-10-01",
         "dateOfIssue": "2023-07-31",
     },
-    "cmnd_12__thuy-giang": {  # CMND 12 số (thẻ cứng) — OCR sạch
+    "cmnd_12__thuy-giang": {  # cmnd_12 biến thể "CHỨNG MINH NHÂN DÂN" (cũ)
         "_type": "cmnd_12",
         "idNumber": "001192004768", "fullName": "NGUYỄN THÙY GIANG",
         "dateOfBirth": "1992-09-24", "sex": "Nữ",
         "placeOfOrigin": "Tân Triều, Thanh Trì, Hà Nội",
         "dateOfExpiry": "2030-11-04",
+    },
+    "cmnd_12__anh-hoang": {  # cmnd_12 biến thể "CĂN CƯỚC CÔNG DÂN" 12 số (mã vạch, không QR)
+        "_type": "cmnd_12", "_hint": "cmnd",   # trùng title cccd_chip_front → cần hint họ
+        "idNumber": "031091006890", "fullName": "NGUYỄN ANH HOÀNG",
+        "dateOfBirth": "1991-09-09", "sex": "Nam", "nationality": "Việt Nam",
+        "placeOfOrigin": "Ngũ Phúc, Kiến Thuy Hải Phòng",
+        "placeOfResidence": "1 92 Lê Thánh Tông Máy Chai, Ngô Quyền, Hải Phòng",
+        "dateOfExpiry": "2031-09-09",
+    },
+    "cmnd_12__quoc-phuong": {  # cmnd_12 biến thể "CĂN CƯỚC CÔNG DÂN" 12 số (mã vạch)
+        "_type": "cmnd_12", "_hint": "cmnd",
+        "idNumber": "001202017557", "fullName": "PHẠM QUỐC PHƯƠNG",
+        "dateOfBirth": "2002-01-17", "sex": "Nam", "nationality": "Việt Nam",
+        "placeOfOrigin": "Hà Nội",
+        "placeOfResidence": "30 Phùng Khắc Khoan Ngô Thì Nhậm, Hai Bà Trưng, Hà Nội",
+        "dateOfExpiry": "2030-08-15",
     },
     "cmnd_9__tien-dat": {  # CMND 9 số (giấy cũ ép nhựa) — số mực đỏ OCR ra rác (null).
         "_type": "cmnd_9",  # Tên + Ngày sinh + Thường trú (đã gỡ nhãn "thường trú" dính)
@@ -226,11 +242,13 @@ def test_golden_extraction(plugins, stem):
         ocr=_FixtureOcr(_load_lines(stem)),
         extractor=LabelAnchoredExtractor(),
     )
-    resp = engine.run(str(uuid.uuid4()), image=None)
-
     exp = GOLDEN[stem]
+    # _hint: hint thô họ (cmnd/cccd) như client gửi — cần cho loại nhập nhằng title
+    # (vd "CĂN CƯỚC CÔNG DÂN" 12 số mã vạch là cmnd_12 nhưng trùng title cccd_chip_front).
+    resp = engine.run(str(uuid.uuid4()), image=None, doc_type_hint=exp.get("_hint"))
+
     assert resp.documentType == exp["_type"], f"{stem}: documentType"
     for field, value in exp.items():
-        if field == "_type":
+        if field in ("_type", "_hint"):
             continue
         assert resp.fields[field].value == value, f"{stem}:{field}"

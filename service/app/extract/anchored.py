@@ -279,9 +279,7 @@ class LabelAnchoredExtractor:
             return None
 
         if take == "below_label":
-            anchor = label_line
-            col1, col2 = label_line.x, label_line.x2
-            belows = self._below(lines, anchor, col1, col2, used, labels_all)
+            belows = self._below_value(lines, label_line, used, labels_all)
             if belows:
                 txt = " ".join(b.text for b in belows)
                 return txt, belows[0].confidence, [label_line] + belows
@@ -291,7 +289,7 @@ class LabelAnchoredExtractor:
             val = _after_colon(label_line.text) or inline
             if val:
                 return val, label_line.confidence, [label_line]
-            belows = self._below(lines, label_line, label_line.x, label_line.x2, used, labels_all)
+            belows = self._below_value(lines, label_line, used, labels_all)
             if belows:
                 return " ".join(b.text for b in belows), belows[0].confidence, [label_line] + belows
             return None
@@ -382,6 +380,16 @@ class LabelAnchoredExtractor:
             and _same_row(label, l) and l.x >= label.x2 - 1.0 * label.h
         ]
         return sorted(cands, key=lambda l: l.x)
+
+    def _below_value(self, lines, label_line, used, labels_all):
+        """Dòng giá trị ngay dưới nhãn. Thử cột nhãn (hẹp) trước; nếu trống (nhãn NGẮN,
+        giá trị xuống dòng thụt sang phải, vd "Họ và tên:" → tên dòng dưới lệch phải) thì
+        nới mép phải tới mép nội dung để bắt được."""
+        belows = self._below(lines, label_line, label_line.x, label_line.x2, used, labels_all)
+        if not belows:
+            right_edge = max((l.x2 for l in lines), default=label_line.x2)
+            belows = self._below(lines, label_line, label_line.x, right_edge, used, labels_all)
+        return belows
 
     def _below(self, lines, anchor, col1, col2, used, labels_all):
         cands = sorted(

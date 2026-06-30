@@ -1,6 +1,10 @@
 # Plugin: CMND 12 số (thẻ cứng) — DOC-TYPE-002 (đổi tên từ cccd_barcode)
-# Ảnh mẫu thật: samples/cmnd_12/thuy-giang.jpeg. Title "CHỨNG MINH NHÂN DÂN", số 12 chữ số.
-# Phân biệt với CMND 9 số: trong họ 'cmnd', có dãy ≥12 số → cmnd_12 (xem classifier).
+# HAI biến thể (cùng bộ trường, label_anchored xử lý chung qua nhiều nhãn):
+#   - "CĂN CƯỚC CÔNG DÂN" 12 số (mã vạch, KHÔNG QR mặt trước): anh-hoang.jpg, quoc-phuong.jpg
+#   - "CHỨNG MINH NHÂN DÂN" 12 số (cũ): thuy-giang.jpeg
+# Phân biệt với CMND 9 số: trong họ 'cmnd', có dãy ≥12 số → cmnd_12 (classifier theo độ dài).
+# LƯU Ý: biến thể "CĂN CƯỚC CÔNG DÂN" TRÙNG title với cccd_chip_front → cần hint họ 'cmnd'
+# để vào cmnd_12 (hint 'cccd' sẽ ra cccd_chip_front). Không hint → ra cccd_chip_front.
 docType: cmnd_12
 displayName: "CMND 12 số"
 version: "1.0"
@@ -32,6 +36,11 @@ extraction:
       labels: ["Giới tính"]
       take: after_colon
       type: sex
+    - name: nationality
+      labels: ["Quốc tịch"]      # biến thể CĂN CƯỚC CÔNG DÂN 12 số (mã vạch) có Quốc tịch
+      take: after_colon
+      type: text_vi
+      required: false
     - name: placeOfOrigin
       labels: ["Quê quán"]
       take: right_of_label_or_below

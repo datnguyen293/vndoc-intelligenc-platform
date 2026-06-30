@@ -2,7 +2,11 @@
 
 - **Loại:** `cmnd_12` (DOC-TYPE-002) — *đổi tên từ `cccd_barcode_front`*.
 - **Mục đích:** ảnh mẫu thật để hiệu chỉnh nhãn/regex (KHÔNG để train).
-- **Nguồn:** `samples/cmnd_12/thuy-giang.jpeg` — 2026-06.
+- **Nguồn / 2 biến thể (cùng docType):**
+  - `samples/cmnd_12/thuy-giang.jpeg` — title **"CHỨNG MINH NHÂN DÂN"** 12 số (cũ).
+  - `samples/cmnd_12/anh-hoang.jpg`, `quoc-phuong.jpg` — title **"CĂN CƯỚC CÔNG DÂN"**
+    12 số (mã vạch, KHÔNG QR mặt trước; có thêm Quốc tịch). Trùng title với
+    `cccd_chip_front` → cần **hint họ `cmnd`** mới vào `cmnd_12`.
 - **Lưu ý taxonomy:** thẻ ghi **"CHỨNG MINH NHÂN DÂN"**, số **12 chữ số** → đây là
   **CMND 12 số** (thẻ cứng), KHÔNG phải "CCCD mã vạch". Khái niệm "CCCD mã vạch" đã bỏ
   khỏi danh mục (xem DOC-01 §4). Phân biệt với CMND 9 số bằng **độ dài số** (DEC-045).
