@@ -26,6 +26,11 @@ class Settings(BaseSettings):
 
     # OCR / tiền xử lý ảnh
     auto_orient: bool = True          # tự nắn hướng 0/90/180/270 (DEC-009)
+    # Hiệu năng OCR (NFR-001): giảm cạnh dài ảnh TRƯỚC text-detection (detection tỉ lệ
+    # với số pixel; 1280px gần như không mất box so với 2000px nhưng nhanh ~3×). Recognition
+    # vẫn crop từ ảnh GỐC để giữ độ nét. ocr_threads: số luồng torch cho recognize (CPU).
+    ocr_det_max_side: int = 1280
+    ocr_threads: int = 8
     # Document rectification: nắn méo phối cảnh + cắt nền (FR-003/004). Mặc định BẬT vì
     # "nắn-khi-cần": ảnh đã phẳng + lấp khung thì passthrough (không xê dịch OCR), chỉ
     # warp ảnh chụp nghiêng/nhiều nền. Tắt nếu muốn.

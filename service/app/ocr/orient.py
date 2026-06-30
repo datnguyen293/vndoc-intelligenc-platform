@@ -21,10 +21,12 @@ class OrientingOcr:
         if not self._enabled or self._good_enough(lines):
             return lines
 
+        # 0° chưa đạt → thử 90/180/270 và chọn chiều có ĐIỂM cao nhất. Phải recognize từng
+        # chiều vì chỉ confidence mới phân biệt được chiều đúng vs lộn ngược (hình học box
+        # KHÔNG phân biệt 90↔270, 0↔180). Đây là ca ảnh xoay (ít gặp khi chụp qua app).
         best_score, best_lines = self._score(lines), lines
         for angle in (90, 180, 270):
-            rotated = image.rotate(angle, expand=True)  # PIL: CCW, không cắt
-            cand = self._base.recognize(rotated)
+            cand = self._base.recognize(image.rotate(angle, expand=True))  # PIL CCW, không cắt
             score = self._score(cand)
             if score > best_score:
                 best_score, best_lines = score, cand

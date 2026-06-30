@@ -19,11 +19,19 @@ log = logging.getLogger("dip.ocr")
 class VietOcrEngine:
     def __init__(self, model_name: str = "vgg_seq2seq") -> None:
         import numpy as np
+        import torch
         from rapidocr_onnxruntime import RapidOCR
         from vietocr.tool.config import Cfg
         from vietocr.tool.predictor import Predictor
 
+        from app.settings import settings as _st
+
         self._np = np
+        # Giới hạn luồng torch cho recognize: nhiều luồng quá gây overhead trên CPU nhiều
+        # nhân (đo: 8 nhanh hơn 28). Tránh oversubscribe khi chạy song song nhiều request.
+        if _st.ocr_threads > 0:
+            torch.set_num_threads(_st.ocr_threads)
+        self._det_max_side = _st.ocr_det_max_side
         self._det = RapidOCR()  # chỉ dùng để lấy box (bỏ phần text của nó)
 
         cfg = Cfg.load_config_from_name(model_name)  # vgg_seq2seq nhẹ/nhanh cho CPU
@@ -51,10 +59,19 @@ class VietOcrEngine:
         res, _ = self._det(arr)
         return [item[0] for item in res] if res else []
 
-    def recognize(self, image: Any) -> list[OcrLine]:
-        arr = self._np.array(image)
-        boxes = self._boxes(arr)
+    def _detect(self, image: Any):
+        """Detection trên ảnh ĐÃ GIẢM cạnh dài (nhanh ~3×). Trả box ở toạ độ GỐC."""
         W, H = image.size
+        scale = self._det_max_side / max(W, H) if max(W, H) > self._det_max_side else 1.0
+        det_img = image.resize((round(W * scale), round(H * scale))) if scale < 1.0 else image
+        boxes = self._boxes(self._np.array(det_img))
+        if scale < 1.0:
+            boxes = [[[p[0] / scale, p[1] / scale] for p in box] for box in boxes]
+        return boxes
+
+    def recognize(self, image: Any) -> list[OcrLine]:
+        W, H = image.size
+        boxes = self._detect(image)  # crop từ ảnh GỐC (recognition giữ độ nét)
 
         crops, kept = [], []
         for box in boxes:
