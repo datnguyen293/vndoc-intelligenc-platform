@@ -136,10 +136,11 @@ GOLDEN = {
         "dateOfExpiry": "2030-11-04",
     },
     "cmnd_9__tien-dat": {  # CMND 9 số (giấy cũ ép nhựa) — số mực đỏ OCR ra rác (null).
-        "_type": "cmnd_9",  # Lấy được Tên + Ngày sinh + Thường trú; Nguyên quán mất nhãn OCR.
-        "fullName": "NGUYỄN TIẾN ĐẠT",
+        "_type": "cmnd_9",  # Tên + Ngày sinh + Thường trú (đã gỡ nhãn "thường trú" dính)
+        "fullName": "NGUYỄN TIẾN ĐẠT",  # + Nguyên quán (orphan, một phần do OCR rớt "Lam Cốt").
         "dateOfBirth": "1988-03-29",
-        "placeOfResidence": "Tưưng Trị Tân Lập Lam Cốt, Tân Yên, Bắc Giang",
+        "placeOfResidence": "Tân Lập Lam Cốt, Tân Yên, Bắc Giang",
+        "placeOfOrigin": "Tân Yên Bắc Giang",
     },
     "cccd_chip_front__tien-dat": {  # đường OCR-only (golden dùng StubStructured);
         "_type": "cccd_chip_front",  # prod: QR điền idNumber/sex/dateOfIssue/oldIdNumber

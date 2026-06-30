@@ -1,6 +1,6 @@
 """Unit test cho các hàm chuẩn hóa (DOC-08 §2)."""
 from app.extract.dates import to_iso
-from app.extract.normalize import dot_separator, norm_sex
+from app.extract.normalize import dot_separator, norm_sex, strip_residence_label_echo
 
 
 def test_dot_separator_forces_dot():
@@ -23,3 +23,14 @@ def test_to_iso_handles_mixed_separators():
 def test_norm_sex():
     assert norm_sex("NAM") == "Nam"
     assert norm_sex("nữ") == "Nữ"
+
+
+def test_strip_residence_label_echo():
+    # "thường trú" OCR sai thành "Tưưng Trị" dính đầu địa chỉ → gỡ, GIỮ địa danh thật.
+    assert strip_residence_label_echo(
+        "Tưưng Trị Tân Lập Lam Cốt, Tân Yên, Bắc Giang"
+    ) == "Tân Lập Lam Cốt, Tân Yên, Bắc Giang"
+    # KHÔNG nuốt nhầm "Tân" (~ "đăng" lev2) khi không có nhãn dính.
+    assert strip_residence_label_echo("Tân Lập, Lam Cốt") == "Tân Lập, Lam Cốt"
+    # Gỡ hết (toàn từ nhãn) → giữ nguyên cho an toàn.
+    assert strip_residence_label_echo("Thường trú") == "Thường trú"

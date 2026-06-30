@@ -32,16 +32,20 @@ extraction:
       # Nhãn "Ngày sinh" thường KHÔNG OCR được trên thẻ giấy ép cũ; CMND 9 mặt trước
       # chỉ có 1 ngày → cho fallback bắt dòng chứa ngày (regex ISO sau chuẩn hoá).
       validate: { regex: '^\d{4}-\d{2}-\d{2}$' }
-    - name: placeOfOrigin
-      labels: ["Nguyên quán", "Quê quán"]
-      take: right_of_label_or_below
-      type: text_vi
-      normalize: [collapseSpaces, dictFix]
+    # Thường trú TRƯỚC quê quán: tiêu thụ dòng "Nơi ĐKHK..." để quê quán (orphan) khỏi nhầm.
     - name: placeOfResidence
       labels: ["Nơi ĐKHK thường trú", "Nơi ĐKHK", "Nơi thường trú"]
       take: right_of_label_or_below
       type: text_vi
       multiline: true
+      # stripResidenceLabelEcho: gỡ chữ nhãn "thường trú" bị OCR đọc sai dính đầu giá trị.
+      normalize: [stripResidenceLabelEcho, collapseSpaces, dictFix]
+    - name: placeOfOrigin
+      labels: ["Nguyên quán", "Quê quán"]
+      # Nhãn "Nguyên quán" hay bị mất khi OCR thẻ cũ → take orphan: dòng địa danh dưới
+      # ngày sinh, chưa bị thường trú tiêu thụ (đặt SAU placeOfResidence).
+      take: vn_place_orphan
+      type: text_vi
       normalize: [collapseSpaces, dictFix]
 
 confidence:

@@ -184,6 +184,29 @@ class LabelAnchoredExtractor:
                     return ln.text, ln.confidence, [ln]
             return None
 
+        if take == "vn_place_orphan":
+            # Có nhãn (ảnh rõ) → lấy như right_of_label_or_below.
+            found = self._find_label(lines, spec.labels, used)
+            if found:
+                label_line, inline = found
+                if inline:
+                    return inline, label_line.confidence, [label_line]
+                belows = self._below(lines, label_line, label_line.x, label_line.x2, used, labels_all)
+                if belows:
+                    return " ".join(b.text for b in belows), belows[0].confidence, [label_line] + belows
+            # Nhãn KHÔNG được OCR (thẻ giấy ép cũ): dòng địa danh mồ côi — có chữ tiếng Việt,
+            # ≥2 từ, nằm DƯỚI dòng ngày sinh, chưa dùng, không phải ngày/nhãn.
+            date_ys = [l.y for l in lines if dates.find_date(l.text)]
+            if not date_ys:
+                return None
+            ymax = max(date_ys)
+            for l in sorted((x for x in lines if id(x) not in used and x.y > ymax),
+                            key=lambda x: x.y):
+                if (not dates.find_date(l.text) and not self._is_label(l, labels_all)
+                        and _has_vietnamese(l.text) and len(l.text.split()) >= 2):
+                    return l.text, l.confidence, [l]
+            return None
+
         found = self._find_label(lines, spec.labels, used)
         if found is None:
             return None

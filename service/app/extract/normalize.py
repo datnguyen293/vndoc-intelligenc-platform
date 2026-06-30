@@ -4,6 +4,24 @@ from __future__ import annotations
 import re
 
 from . import dates
+from .textutil import clean_token
+
+
+def _lev(a: str, b: str) -> int:
+    if a == b:
+        return 0
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        cur = [i]
+        for j, cb in enumerate(b, 1):
+            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb)))
+        prev = cur
+    return prev[-1]
+
+
+# Từ thuộc nhãn "Nơi ĐKHK thường trú" — dùng để gỡ phần nhãn bị OCR đọc sai dính vào
+# đầu giá trị địa chỉ (vd "thường trú"→"Tưưng Trị" trên thẻ giấy ép cũ).
+_RES_LABEL_ECHO = {"noi", "dkhk", "dang", "ky", "ho", "khau", "thuong", "tru"}
 
 # Nhầm lẫn OCR thường gặp trong ngữ cảnh chữ số
 _DIGIT_FIX = str.maketrans({"O": "0", "o": "0", "I": "1", "l": "1", "|": "1",
@@ -54,6 +72,27 @@ def dict_fix(s: str) -> str:
     return s
 
 
+def strip_residence_label_echo(s: str) -> str:
+    """Gỡ các TỪ ĐẦU là phần nhãn "Nơi ĐKHK thường trú" bị OCR đọc sai dính vào giá trị
+    (khớp mờ: từ dài lev≤2, từ ngắn lev≤1). Dừng ở từ đầu tiên không phải nhãn → địa danh."""
+    words = s.split()
+    i = 0
+    while i < len(words):
+        w = clean_token(words[i])
+        if not w:
+            i += 1
+            continue
+        # "thường"→OCR hay sai nặng (cho lev≤2); các từ khác siết lev≤1 để KHỎI nuốt
+        # nhầm địa danh thật (vd "Tân" ~ "đăng" lev2).
+        hit = any(w == e or _lev(w, e) <= (2 if e == "thuong" else 1) for e in _RES_LABEL_ECHO)
+        if not hit:
+            break
+        i += 1
+    if i == 0 or i >= len(words):   # không gỡ gì, hoặc gỡ hết → giữ nguyên (an toàn)
+        return s
+    return " ".join(words[i:]).strip(" ,")
+
+
 def dot_separator(s: str) -> str:
     """Mã dạng 'số.số' (vd số thẻ Đảng viên xx.xxxxxx): ép mọi dấu phân cách do OCR
     đọc nhầm (':', ',', ' ', ' - '...) về '.'."""
@@ -75,6 +114,7 @@ NORMALIZERS = {
     "normSex": norm_sex,
     "toIsoDate": to_iso_date,
     "dictFix": dict_fix,
+    "stripResidenceLabelEcho": strip_residence_label_echo,
     "dotSeparator": dot_separator,
     "stripEdgeNonDigits": strip_edge_nondigits,
 }
