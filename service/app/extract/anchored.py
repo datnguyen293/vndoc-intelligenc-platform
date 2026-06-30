@@ -348,11 +348,15 @@ class LabelAnchoredExtractor:
         return pool[0]
 
     def _right_row(self, lines, label, used):
-        """Tất cả box bên phải nhãn, cùng hàng, sắp theo x (gần → xa)."""
+        """Tất cả box bên phải nhãn, cùng hàng, sắp theo x (gần → xa).
+
+        Ngưỡng x nới tới `x2 - 1.0*h`: nhãn ngắn (vd "Họ tên") + giá trị box rộng có thể
+        bắt đầu hơi chồng mép phải nhãn do OCR; vẫn chặn box nằm hẳn bên trái nhãn.
+        """
         cands = [
             l for l in lines
             if id(l) not in used and l is not label
-            and _same_row(label, l) and l.x >= label.x2 - 0.5 * label.h
+            and _same_row(label, l) and l.x >= label.x2 - 1.0 * label.h
         ]
         return sorted(cands, key=lambda l: l.x)
 

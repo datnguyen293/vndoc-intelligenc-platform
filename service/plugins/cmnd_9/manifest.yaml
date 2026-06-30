@@ -23,12 +23,15 @@ extraction:
       validate: { regex: '^\d{9}$' }
     - name: fullName
       labels: ["Họ tên", "Họ và tên"]
-      take: after_colon_or_below
+      take: right_of_label            # tên ở bên phải nhãn "Họ tên" (cùng hàng), KHÔNG gộp dưới
       type: text_vi
     - name: dateOfBirth
       labels: ["Ngày sinh", "Sinh ngày"]
       take: date_after_label
       type: date
+      # Nhãn "Ngày sinh" thường KHÔNG OCR được trên thẻ giấy ép cũ; CMND 9 mặt trước
+      # chỉ có 1 ngày → cho fallback bắt dòng chứa ngày (regex ISO sau chuẩn hoá).
+      validate: { regex: '^\d{4}-\d{2}-\d{2}$' }
     - name: placeOfOrigin
       labels: ["Nguyên quán", "Quê quán"]
       take: right_of_label_or_below
