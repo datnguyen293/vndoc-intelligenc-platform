@@ -37,7 +37,7 @@ Header (tuỳ chọn): X-API-Key: <khóa chia sẻ cấu hình trong service>
 | Part | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
 | `image` | file (JPEG/PNG) | có | Ảnh mặt trước giấy tờ |
-| `docTypeHint` | text | không | Gợi ý loại (`cccd_chip_front`...) để bỏ qua/hỗ trợ phân loại |
+| `docTypeHint` | text | không | Gợi ý **HỌ** giấy tờ: `cmnd` hoặc `cccd` (client KHÔNG cần chọn loại con — hệ thống tự detect, xem DOC-05 §2.3). Cũng chấp nhận docType cụ thể nếu biết. |
 | `returnImage` | text (`none`\|`rectified`\|`annotated`) | không | Có trả ảnh xử lý kèm không (mặc định `none`) |
 | `options` | text (JSON) | không | Cấu hình thêm (vd `{"minConfidence":0.5}`) |
 

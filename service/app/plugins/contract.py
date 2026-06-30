@@ -63,9 +63,19 @@ class Manifest:
     display_name: str
     version: str = "1.0"
     ready: bool = True
+    # Họ giấy tờ cho hint thô từ client (DEC: client chỉ gửi 'cmnd'/'cccd', hệ thống tự
+    # detect loại con). None = không thuộc họ nào (gplx, bhyt, the_dang_vien...).
+    family: str | None = None
     anchors: list[str] = field(default_factory=list)
+    # Anti-anchor: nếu CÓ trong text thì LOẠI loại này (phân biệt look-alike, vd
+    # 'CĂN CƯỚC' (mới) phải KHÔNG có 'CÔNG DÂN').
+    excludes: list[str] = field(default_factory=list)
     signals: list[str] = field(default_factory=list)
     strategy: str = "label_anchored"   # roi_fixed | label_anchored
+    # QR/MRZ đọc được là ĐỦ → lấy toàn bộ từ structured và BỎ QUA OCR (ADR-006). Chỉ bật
+    # cho loại mà structured chứa mọi trường cần (vd BHYT: QR đủ; CCCD chip thì KHÔNG vì
+    # thiếu quê quán/hạn dùng).
+    structured_complete: bool = False
     preprocess: list[str] = field(default_factory=list)
     structured: list[StructuredSpec] = field(default_factory=list)
     fields: list[FieldSpec] = field(default_factory=list)
@@ -81,9 +91,12 @@ class Manifest:
             display_name=d.get("displayName", d["docType"]),
             version=str(d.get("version", "1.0")),
             ready=d.get("ready", True),
+            family=d.get("family"),
             anchors=classify.get("anchors", []),
+            excludes=classify.get("excludes", []),
             signals=classify.get("signals", []),
             strategy=extraction.get("strategy", "label_anchored"),
+            structured_complete=d.get("structuredComplete", False),
             preprocess=extraction.get("preprocess", d.get("preprocess", [])),
             structured=[StructuredSpec.from_dict(s) for s in d.get("structuredData", [])],
             fields=[FieldSpec.from_dict(f) for f in extraction.get("fields", [])],

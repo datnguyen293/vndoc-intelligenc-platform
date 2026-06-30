@@ -1,22 +1,25 @@
-# Plugin: Căn cước 2024 - Mặt sau (DOC-TYPE-010)
-# Bám theo DOC-08 §DOC-TYPE-010 và samples/cccd-2024-mau-01.md
+# Plugin: Căn cước 2024 - Mặt sau (sau 01/07/2024) — DOC-TYPE-010
+# Ảnh mẫu thật: samples/cccd_2024_back/dinh-nam.jpeg. Có QR lớn + MRZ TD1 + "Nơi cư trú",
+# "Nơi đăng ký khai sinh", "BỘ CÔNG AN". QR (cccd_qr) cho định danh (tên CÓ DẤU); OCR bù
+# nơi cư trú/khai sinh/ngày cấp/hạn dùng. MRZ chỉ dùng cho idNumber + dateOfExpiry khi
+# checksum đúng (OCR thường phá ký tự '<' → bỏ qua); KHÔNG lấy tên từ MRZ (không dấu).
 docType: cccd_2024_back
 displayName: "Căn cước 2024 - Mặt sau"
 version: "1.0"
 ready: true
+family: cccd
 
 classify:
-  anchors: ["BỘ CÔNG AN", "MINISTRY OF PUBLIC SECURITY", "Nơi cư trú"]
-  signals: [has_mrz_td1, has_qr_top_right]
+  anchors: ["Nơi cư trú", "Nơi đăng ký khai sinh", "BỘ CÔNG AN", "MINISTRY OF PUBLIC SECURITY"]
 
 structuredData:
-  - kind: mrz
-    format: td1
-    parser: mrz_td1
-    mapsTo: [idNumber, fullName, dateOfBirth, sex, dateOfExpiry]
   - kind: qr
     parser: cccd_qr
     mapsTo: [idNumber, fullName, dateOfBirth, sex, placeOfResidence, dateOfIssue]
+  - kind: mrz
+    format: td1
+    parser: mrz_td1
+    mapsTo: [idNumber, dateOfExpiry]   # tên MRZ không dấu → KHÔNG dùng
 
 extraction:
   strategy: label_anchored
@@ -29,9 +32,8 @@ extraction:
       validate: { regex: '^\d{12}$' }
       crossCheckProvince: true
     - name: fullName
-      labels: ["Họ", "Full name"]
       take: below_label
-      source: [structured, ocr]
+      source: [structured, ocr]        # tên có dấu từ QR (mặt sau không in tên)
       type: text_vi
     - name: dateOfBirth
       labels: ["Ngày sinh", "Date of birth"]
@@ -48,6 +50,7 @@ extraction:
       take: right_of_label_or_below
       source: [structured, ocr]
       type: text_vi
+      multiline: true
       normalize: [collapseSpaces, dictFix]
     - name: placeOfBirth
       labels: ["Nơi đăng ký khai sinh", "Place of birth"]
@@ -57,6 +60,7 @@ extraction:
     - name: dateOfIssue
       labels: ["Ngày, tháng, năm cấp", "Date of issue"]
       take: date_after_label
+      source: [structured, ocr]
       type: date
     - name: dateOfExpiry
       labels: ["Ngày, tháng, năm hết hạn", "Date of expiry"]

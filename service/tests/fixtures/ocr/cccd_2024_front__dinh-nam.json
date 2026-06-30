@@ -1,0 +1,141 @@
+{
+ "image": "dinh-nam.jpeg",
+ "lines": [
+  {
+   "text": "Caranize",
+   "x": 718.0,
+   "y": 28.0,
+   "w": 334.0,
+   "h": 49.0,
+   "confidence": 0.2689
+  },
+  {
+   "text": "CÔNG HÒA XÃ HỘI CHỦ NGHÍA VIỆT NAM",
+   "x": 458.0,
+   "y": 72.0,
+   "w": 715.0,
+   "h": 43.0,
+   "confidence": 0.8489
+  },
+  {
+   "text": "Độc lập tư do , Hạnh phúc",
+   "x": 572.0,
+   "y": 112.0,
+   "w": 505.0,
+   "h": 41.0,
+   "confidence": 0.6833
+  },
+  {
+   "text": "SOCIALISTREPUBLIC OF NIM",
+   "x": 569.0,
+   "y": 156.0,
+   "w": 506.0,
+   "h": 32.0,
+   "confidence": 0.6676
+  },
+  {
+   "text": "Independence Freedom Happiness",
+   "x": 575.0,
+   "y": 186.0,
+   "w": 493.0,
+   "h": 33.0,
+   "confidence": 0.817
+  },
+  {
+   "text": "c",
+   "x": 124.0,
+   "y": 213.0,
+   "w": 90.0,
+   "h": 78.0,
+   "confidence": 0.1866
+  },
+  {
+   "text": "CAN CƯƠC",
+   "x": 610.0,
+   "y": 274.0,
+   "w": 420.0,
+   "h": 64.0,
+   "confidence": 0.6631
+  },
+  {
+   "text": "IDENTITY CARD",
+   "x": 601.0,
+   "y": 352.0,
+   "w": 241.0,
+   "h": 29.0,
+   "confidence": 0.8749
+  },
+  {
+   "text": "Số định danh cá nhân/Personalicationnumber",
+   "x": 495.0,
+   "y": 403.0,
+   "w": 806.0,
+   "h": 41.0,
+   "confidence": 0.7957
+  },
+  {
+   "text": "026099003333",
+   "x": 499.0,
+   "y": 470.0,
+   "w": 478.0,
+   "h": 56.0,
+   "confidence": 0.9045
+  },
+  {
+   "text": "Hợ, chữ đệm và tên khai sinh / Full name",
+   "x": 503.0,
+   "y": 545.0,
+   "w": 626.0,
+   "h": 40.0,
+   "confidence": 0.7809
+  },
+  {
+   "text": "LƯƠNG ĐÌNH NAM",
+   "x": 505.0,
+   "y": 621.0,
+   "w": 486.0,
+   "h": 54.0,
+   "confidence": 0.7547
+  },
+  {
+   "text": "Ngày, tháng, năm sinh/Date of birth",
+   "x": 513.0,
+   "y": 716.0,
+   "w": 570.0,
+   "h": 43.0,
+   "confidence": 0.8207
+  },
+  {
+   "text": "Giới",
+   "x": 1234.0,
+   "y": 710.0,
+   "w": 79.0,
+   "h": 41.0,
+   "confidence": 0.7976
+  },
+  {
+   "text": "30/12/1999",
+   "x": 509.0,
+   "y": 777.0,
+   "w": 241.0,
+   "h": 46.0,
+   "confidence": 0.8681
+  },
+  {
+   "text": "Quốc tich Nationality",
+   "x": 518.0,
+   "y": 841.0,
+   "w": 356.0,
+   "h": 39.0,
+   "confidence": 0.8268
+  },
+  {
+   "text": "Việt Nam",
+   "x": 615.0,
+   "y": 900.0,
+   "w": 202.0,
+   "h": 47.0,
+   "confidence": 0.8389
+  }
+ ]
+}

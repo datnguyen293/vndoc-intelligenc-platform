@@ -97,6 +97,13 @@ class LabelAnchoredExtractor:
 
             # 2) OCR label-anchored, fallback theo mẫu regex nếu không thấy nhãn
             taken = self._take(lines, spec, labels_all, used)
+            # Trường có regex mạnh (idNumber...): nếu giá trị bám-nhãn dính nhiễu/nhãn EN
+            # song ngữ → KHÔNG khớp regex, thử token khớp regex trong các dòng (OCR dính).
+            rgx = spec.validate.get("regex")
+            if rgx and not self._matches_regex(taken, spec, rgx):
+                fb = self._pattern_fallback(lines, spec, used)
+                if fb is not None:
+                    taken = fb
             if taken is None:
                 taken = self._pattern_fallback(lines, spec, used)
             if taken is None:
@@ -132,20 +139,37 @@ class LabelAnchoredExtractor:
         value = apply_normalizers(value, spec.normalize)
         return value
 
+    def _matches_regex(self, taken, spec, rgx) -> bool:
+        """Giá trị đã lấy (taken) sau _post có khớp regex của trường không."""
+        if taken is None:
+            return False
+        try:
+            return bool(re.fullmatch(rgx, self._post(taken[0], spec) or ""))
+        except re.error:
+            return True  # regex hỏng → đừng ép fallback
+
     # --- fallback: trường có regex mạnh nhưng không thấy nhãn ---
     def _pattern_fallback(self, lines, spec, used):
         rgx = spec.validate.get("regex")
         if not rgx:
             return None
+        try:
+            pat = re.compile(rgx)
+        except re.error:
+            return None
         for ln in lines:
             if id(ln) in used:
                 continue
+            # (a) cả dòng đã normalize (gộp số bị OCR tách space, vd "0101 1400 0119").
             cand = self._post(ln.text, spec)
-            try:
-                if cand and re.fullmatch(rgx, cand):
-                    return cand, ln.confidence, [ln]
-            except re.error:
-                return None
+            if cand and pat.fullmatch(cand):
+                return cand, ln.confidence, [ln]
+            # (b) từng token trong dòng — OCR hay dính tiền tố/nhiễu (vd BHYT
+            #     "1855 0111077012" → bắt token đúng độ dài "0111077012").
+            for tok in ln.text.split():
+                c = self._post(tok, spec)
+                if c and pat.fullmatch(c):
+                    return c, ln.confidence, [ln]
         return None
 
     # --- chọn giá trị quanh nhãn theo `take` ---
@@ -184,6 +208,16 @@ class LabelAnchoredExtractor:
             for nb in self._right_row(lines, label_line, used):
                 if dates.find_date(nb.text):
                     return nb.text, nb.confidence, [label_line, nb]
+            # Layout song ngữ xếp dọc (Căn cước 2024): ngày nằm DƯỚI nhãn → quét vài dòng dưới.
+            below = sorted(
+                (l for l in lines if id(l) not in used and l is not label_line
+                 and l.cy > label_line.y2 - 0.3 * label_line.h
+                 and _overlap_x(l, label_line.x, label_line.x2)),
+                key=lambda l: l.y,
+            )
+            for b in below[:3]:
+                if dates.find_date(b.text):
+                    return b.text, b.confidence, [label_line, b]
             return None
 
         if take == "smart":

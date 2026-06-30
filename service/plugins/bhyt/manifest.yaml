@@ -1,0 +1,96 @@
+# Plugin: Thẻ BHYT (DOC-TYPE-006)
+# Bám docs/08 §BHYT và docs/samples/bhyt-mau-01.md (ảnh mẫu thật: samples/bhyt/tien-dat.jpeg).
+#
+# CHIẾN LƯỢC (chốt theo anh Đạt):
+#   1) Đọc được QR  → lấy TOÀN BỘ thông tin từ QR, DỪNG OCR (structuredComplete: true).
+#   2) QR hỏng      → OCR bề mặt toàn bộ trường (label-anchored).
+# Lưu ý: QR BHYT KHÔNG chứa `registeredHospital` và `benefitLevel` → 2 trường này null
+# khi đi đường QR (chỉ có khi rơi về OCR).
+docType: bhyt
+displayName: "Thẻ BHYT"
+version: "1.0"
+ready: true
+
+# QR đủ dữ liệu cần → đọc được là bỏ qua OCR (ADR-006, structured-data-first).
+structuredComplete: true
+
+classify:
+  anchors: ["THẺ BẢO HIỂM Y TẾ", "BẢO HIỂM XÃ HỘI VIỆT NAM"]
+  signals: [has_qr]
+
+structuredData:
+  - kind: qr
+    parser: bhyt_qr            # giải mã QR VSSID
+    # Toàn bộ trường QR cung cấp (đối chiếu ảnh thật). KHÔNG có: registeredHospital, benefitLevel.
+    mapsTo: [idNumber, fullName, dateOfBirth, sex, objectCode, validFrom, dateOfIssue, fiveYearContinuous, issuePlace]
+
+extraction:
+  strategy: label_anchored
+  fields:
+    - name: idNumber
+      labels: ["Mã số", "Ma so"]
+      take: after_colon
+      source: [structured, ocr]
+      type: code
+      normalize: [removeSpaces, fixDigits]
+      validate: { regex: '^\d{10}$' }   # mẫu mới 10 số; thẻ cũ 15 ký tự thêm sau khi gặp
+    - name: fullName
+      labels: ["Họ và tên", "Họ tên"]
+      take: after_colon
+      source: [structured, ocr]
+      type: text_vi
+    - name: dateOfBirth
+      labels: ["Ngày sinh", "Sinh ngày"]
+      take: after_colon
+      source: [structured, ocr]
+      type: date
+    - name: sex
+      labels: ["Giới tính"]
+      take: after_colon
+      source: [structured, ocr]
+      type: sex
+    - name: benefitLevel
+      labels: ["Giới tính"]            # số mức hưởng nằm cùng dòng giới tính (chỉ OCR có)
+      take: trailing_digit
+      type: digits
+      validate: { regex: '^[1-5]$' }
+      required: false
+    - name: registeredHospital
+      labels: ["Nơi ĐK KCB BĐ", "Nơi đăng ký khám chữa bệnh ban đầu"]
+      take: after_colon_or_below     # QR không có → chỉ OCR
+      type: text_vi
+      normalize: [dictFix]
+    - name: validFrom
+      labels: ["Giá trị sử dụng", "Giá trị sử dụng: từ ngày"]
+      take: date_after_label
+      source: [structured, ocr]
+      type: date
+    - name: fiveYearContinuous
+      labels: ["Thời điểm đủ 05 năm liên tục", "đủ 05 năm liên tục"]
+      take: date_after_label
+      source: [structured, ocr]
+      type: date
+      required: false
+    - name: issuePlace
+      labels: ["Nơi cấp, đổi thẻ BHYT", "Nơi cấp đổi thẻ"]
+      take: after_colon_or_below
+      source: [structured, ocr]
+      type: text_vi
+    - name: dateOfIssue
+      labels: ["Ngày", "tháng", "năm"]   # mẫu câu "Ngày .. tháng .. năm .."
+      take: vn_date_phrase
+      source: [structured, ocr]
+      type: date
+    - name: objectCode
+      labels: ["Mã"]
+      take: after_colon
+      source: [structured, ocr]
+      type: code
+      required: false
+
+confidence:
+  fieldWeights:
+    idNumber: 0.3
+    fullName: 0.25
+    dateOfBirth: 0.2
+    default: 0.1

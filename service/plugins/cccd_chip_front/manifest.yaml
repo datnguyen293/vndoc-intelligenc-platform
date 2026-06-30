@@ -1,0 +1,79 @@
+# Plugin: CCCD gắn chip - Mặt trước (trước 01/07/2024) — DOC-TYPE-001
+# Ảnh mẫu thật: samples/cccd_chip_front/tien-dat.jpeg. Title "CĂN CƯỚC CÔNG DÂN", QR nhỏ
+# góc trên phải mặt trước. QR (cccd_qr) cho định danh; OCR bù quê quán/quốc tịch/hạn dùng.
+docType: cccd_chip_front
+displayName: "CCCD gắn chip - Mặt trước"
+version: "1.0"
+ready: true
+family: cccd
+
+classify:
+  anchors: ["CĂN CƯỚC CÔNG DÂN", "Citizen Identity Card"]
+
+structuredData:
+  - kind: qr
+    parser: cccd_qr
+    mapsTo: [idNumber, oldIdNumber, fullName, dateOfBirth, sex, placeOfResidence, dateOfIssue]
+
+extraction:
+  strategy: label_anchored
+  fields:
+    - name: idNumber
+      labels: ["Số", "No"]
+      take: right_of_label
+      source: [structured, ocr]
+      type: digits
+      validate: { regex: '^\d{12}$' }
+      crossCheckProvince: true
+    - name: fullName
+      labels: ["Họ và tên", "Full name"]
+      take: below_label
+      source: [structured, ocr]
+      type: text_vi
+    - name: dateOfBirth
+      labels: ["Ngày sinh", "Date of birth"]
+      take: date_after_label
+      source: [structured, ocr]
+      type: date
+    - name: sex
+      labels: ["Giới tính", "Sex"]
+      take: right_of_label
+      source: [structured, ocr]
+      type: sex
+    - name: nationality
+      labels: ["Quốc tịch", "Nationality"]
+      take: right_of_label
+      type: text_vi
+    - name: placeOfOrigin
+      labels: ["Quê quán", "Place of origin"]
+      take: right_of_label_or_below
+      type: text_vi
+      normalize: [collapseSpaces, dictFix]
+    - name: placeOfResidence
+      labels: ["Nơi thường trú", "Place of residence"]
+      take: right_of_label_or_below
+      source: [structured, ocr]
+      type: text_vi
+      multiline: true
+      normalize: [collapseSpaces, dictFix]
+    - name: dateOfExpiry
+      labels: ["Có giá trị đến", "Date of expiry"]
+      take: date_after_label
+      type: date
+      checks: [warn_if_expired]
+    - name: dateOfIssue
+      source: [structured]      # chỉ từ QR (không in trên mặt trước)
+      type: date
+      required: false
+    - name: oldIdNumber
+      source: [structured]      # số CMND 9 số cũ — chỉ từ QR
+      type: digits
+      validate: { regex: '^\d{9}$' }
+      required: false
+
+confidence:
+  fieldWeights:
+    idNumber: 0.3
+    fullName: 0.25
+    dateOfBirth: 0.2
+    default: 0.1

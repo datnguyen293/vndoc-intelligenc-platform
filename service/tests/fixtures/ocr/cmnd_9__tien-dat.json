@@ -1,0 +1,85 @@
+{
+ "image": "tien-dat.jpeg",
+ "lines": [
+  {
+   "text": "CÔNG HOA XÃ HỒI CHU NGHĨA VIỆT NAM",
+   "x": 393.0,
+   "y": 77.0,
+   "w": 626.0,
+   "h": 64.0,
+   "confidence": 0.8297
+  },
+  {
+   "text": "Độc lập - Tự do - Hạnh phúc",
+   "x": 505.0,
+   "y": 121.0,
+   "w": 395.0,
+   "h": 52.0,
+   "confidence": 0.7783
+  },
+  {
+   "text": "NGIÂY CHỨNG MINH NHÂN DÂN",
+   "x": 414.0,
+   "y": 171.0,
+   "w": 588.0,
+   "h": 64.0,
+   "confidence": 0.8216
+  },
+  {
+   "text": "SOMERO1644953",
+   "x": 459.0,
+   "y": 224.0,
+   "w": 454.0,
+   "h": 77.0,
+   "confidence": 0.1913
+  },
+  {
+   "text": "NGUYỄN TIẾN ĐẠT",
+   "x": 452.0,
+   "y": 296.0,
+   "w": 504.0,
+   "h": 65.0,
+   "confidence": 0.8911
+  },
+  {
+   "text": "Ho tên",
+   "x": 358.0,
+   "y": 315.0,
+   "w": 112.0,
+   "h": 27.0,
+   "confidence": 0.6231
+  },
+  {
+   "text": "29-03 1988",
+   "x": 656.0,
+   "y": 430.0,
+   "w": 197.0,
+   "h": 47.0,
+   "confidence": 0.8438
+  },
+  {
+   "text": "Tân Yên Bắc Giang",
+   "x": 458.0,
+   "y": 529.0,
+   "w": 390.0,
+   "h": 75.0,
+   "confidence": 0.7362
+  },
+  {
+   "text": "Nơi ĐKHK Tưưng Trị Tân Lập",
+   "x": 345.0,
+   "y": 588.0,
+   "w": 565.0,
+   "h": 71.0,
+   "confidence": 0.6197
+  },
+  {
+   "text": "Lam Cốt, Tân Yên, Bắc Giang",
+   "x": 391.0,
+   "y": 641.0,
+   "w": 529.0,
+   "h": 70.0,
+   "confidence": 0.8771
+  }
+ ]
+}

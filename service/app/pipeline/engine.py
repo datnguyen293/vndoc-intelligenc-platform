@@ -72,6 +72,28 @@ class PipelineEngine:
         ctx.image_rectified = self.rectifier.rectify(image, ctx.document_polygon)
         ctx.mark("rectify", t)
 
+        # S3.5 — QR-FIRST (ADR-006): thử QR TRƯỚC OCR. Đọc được + plugin
+        # `structuredComplete` → lấy TOÀN BỘ trường từ QR và BỎ QUA OCR (nhanh + chính
+        # xác). QR hỏng/không khớp → identify=None → rơi xuống đường OCR bên dưới.
+        t = time.perf_counter()
+        ident = self.structured.identify(ctx.image_rectified, hint=doc_type_hint)
+        ctx.mark("structured", t)
+        if ident is not None:
+            doc_type, structured_fields, used = ident
+            manifest = self.plugins.get(doc_type)
+            if manifest is not None and manifest.structured_complete:
+                ctx.document_type = doc_type
+                ctx.classification_confidence = 0.99
+                ctx.structured_data = structured_fields
+                ctx.structured_used = used
+                # Trích xuất CHỈ từ structured (lines rỗng): trường nào QR không có sẽ null.
+                fields, warns = self.extractor.extract([], manifest, structured_fields)
+                ctx.fields = fields
+                ctx.warnings += warns
+                return self._build(
+                    ctx, label=manifest.display_name, weights=manifest.confidence_weights
+                )
+
         # S4 — OCR thô MỘT LẦN (dùng cho cả phân loại lẫn trích xuất) (FR-008/009)
         t = time.perf_counter()
         lines = self.ocr.recognize(ctx.image_rectified)
@@ -92,10 +114,10 @@ class PipelineEngine:
         if not manifest.ready:
             ctx.warnings.append("plugin_chua_co_mau")
 
-        # S6 — Structured-data first (ADR-006)
+        # S6 — Structured-data (ADR-006): QR (ảnh) + MRZ (dòng OCR) bù cho OCR
         t = time.perf_counter()
         ctx.structured_data, ctx.structured_used = self.structured.read(
-            ctx.image_rectified, ctx.document_type
+            ctx.image_rectified, ctx.document_type, lines
         )
         ctx.mark("structured", t)
         if not lines and not ctx.structured_data:

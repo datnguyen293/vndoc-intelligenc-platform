@@ -1,0 +1,47 @@
+# Plugin: Căn cước 2024 - Mặt trước (sau 01/07/2024) — DOC-TYPE-009
+# Ảnh mẫu thật: samples/cccd_2024_front/dinh-nam.jpeg. Title "CĂN CƯỚC" (KHÔNG "CÔNG DÂN"),
+# song ngữ "IDENTITY CARD", nhãn "Số định danh cá nhân". QR ở MẶT SAU → mặt trước OCR thuần.
+# Mặt trước thiếu địa chỉ/quê quán/hạn → chỉ trả tập rút gọn (DEC-008).
+docType: cccd_2024_front
+displayName: "Căn cước 2024 - Mặt trước"
+version: "1.0"
+ready: true
+family: cccd
+
+classify:
+  anchors: ["CĂN CƯỚC", "IDENTITY CARD", "Số định danh"]
+  # Loại trừ look-alike: 'CÔNG DÂN' → là CCCD chip cũ; 'Nơi cư trú'/'thường trú' → mặt sau/CMND.
+  excludes: ["CÔNG DÂN", "Nơi cư trú", "Nơi thường trú"]
+
+extraction:
+  strategy: label_anchored
+  fields:
+    - name: idNumber
+      labels: ["Số định danh cá nhân", "Số định danh", "Personal identification number"]
+      take: below_label
+      type: digits
+      validate: { regex: '^\d{12}$' }
+      crossCheckProvince: true
+    - name: fullName
+      labels: ["Họ, chữ đệm và tên khai sinh", "Họ và tên", "Full name"]
+      take: below_label
+      type: text_vi
+    - name: dateOfBirth
+      labels: ["Ngày, tháng, năm sinh", "Date of birth"]
+      take: date_after_label
+      type: date
+    - name: sex
+      labels: ["Giới tính", "Sex"]
+      take: right_of_label
+      type: sex
+    - name: nationality
+      labels: ["Quốc tịch", "Nationality"]
+      take: right_of_label_or_below
+      type: text_vi
+
+confidence:
+  fieldWeights:
+    idNumber: 0.35
+    fullName: 0.3
+    dateOfBirth: 0.2
+    default: 0.1

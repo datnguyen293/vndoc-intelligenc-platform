@@ -16,13 +16,13 @@ from app.cv import build_preprocessors
 from app.extract import LabelAnchoredExtractor
 from app.ocr import (
     StubQualityChecker,
-    StubStructuredReader,
     create_ocr_engine,
 )
 from app.pipeline import PipelineEngine
 from app.pipeline.classifier import RuleClassifier
 from app.plugins import PluginManager
 from app.settings import settings
+from app.structured import RealStructuredReader
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("dip")
@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI):
         detector=detector,
         rectifier=rectifier,
         classifier=RuleClassifier(plugins),
-        structured=StubStructuredReader(),
+        structured=RealStructuredReader(plugins),
         ocr=ocr,
         extractor=LabelAnchoredExtractor(),
     )

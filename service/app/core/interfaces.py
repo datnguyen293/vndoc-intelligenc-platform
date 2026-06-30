@@ -33,8 +33,18 @@ class Classifier(Protocol):
 
 
 class StructuredReader(Protocol):
-    def read(self, image: Any, doc_type: str) -> tuple[dict[str, str], list[str]]:
-        """Đọc QR/MRZ/barcode (ADR-006) → ({field: value}, [kind_used])."""
+    def read(
+        self, image: Any, doc_type: str, lines: list[Any] | None = None
+    ) -> tuple[dict[str, str], list[str]]:
+        """Đọc QR (từ ảnh) / MRZ (từ dòng OCR) của docType đã biết (ADR-006)
+        → ({field: value}, [kind])."""
+        ...
+
+    def identify(
+        self, image: Any, hint: str | None = None
+    ) -> tuple[str, dict[str, str], list[str]] | None:
+        """QR-first: thử đọc QR TRƯỚC khi OCR. Nếu khớp một loại 'structuredComplete'
+        → (doc_type, {field: value}, [kind]) để bỏ qua OCR; ngược lại None (rơi về OCR)."""
         ...
 
 

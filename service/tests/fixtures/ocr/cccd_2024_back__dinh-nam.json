@@ -1,0 +1,101 @@
+{
+ "image": "dinh-nam.jpeg",
+ "lines": [
+  {
+   "text": "Nơi cutru/Place ofresidence - Thôn Tư",
+   "x": 75.0,
+   "y": 25.0,
+   "w": 745.0,
+   "h": 54.0,
+   "confidence": 0.7402
+  },
+  {
+   "text": "Tân Phú, Vĩnh Tường, Vĩnh Phúc",
+   "x": 82.0,
+   "y": 82.0,
+   "w": 663.0,
+   "h": 57.0,
+   "confidence": 0.7855
+  },
+  {
+   "text": "Nơi đăng ký khai sinh / Place of birth:",
+   "x": 79.0,
+   "y": 175.0,
+   "w": 567.0,
+   "h": 47.0,
+   "confidence": 0.8393
+  },
+  {
+   "text": "Tân Phú, Vĩnh Tường, Vĩnh Phúc",
+   "x": 75.0,
+   "y": 234.0,
+   "w": 669.0,
+   "h": 52.0,
+   "confidence": 0.858
+  },
+  {
+   "text": "Ngày, tháng, năm cấp DDte of issue:",
+   "x": 529.0,
+   "y": 309.0,
+   "w": 536.0,
+   "h": 47.0,
+   "confidence": 0.8026
+  },
+  {
+   "text": "01/08/2024",
+   "x": 714.0,
+   "y": 362.0,
+   "w": 224.0,
+   "h": 44.0,
+   "confidence": 0.9065
+  },
+  {
+   "text": "Ngày, tháng, năm hết hạn/ Date ofexpiry",
+   "x": 497.0,
+   "y": 409.0,
+   "w": 626.0,
+   "h": 55.0,
+   "confidence": 0.8182
+  },
+  {
+   "text": "30/12/2039",
+   "x": 714.0,
+   "y": 465.0,
+   "w": 224.0,
+   "h": 42.0,
+   "confidence": 0.9022
+  },
+  {
+   "text": "BỘ CONG AN/MINISTRY OF PUBLIC SECURITY",
+   "x": 451.0,
+   "y": 512.0,
+   "w": 703.0,
+   "h": 58.0,
+   "confidence": 0.8877
+  },
+  {
+   "text": "IDVNMO9900333320260933364",
+   "x": 106.0,
+   "y": 674.0,
+   "w": 1383.0,
+   "h": 77.0,
+   "confidence": 0.6847
+  },
+  {
+   "text": "09912304M3912302vnmsc",
+   "x": 101.0,
+   "y": 757.0,
+   "w": 1389.0,
+   "h": 74.0,
+   "confidence": 0.6999
+  },
+  {
+   "text": "LUONGCODINHKNAMCESCECCECCS",
+   "x": 99.0,
+   "y": 838.0,
+   "w": 1398.0,
+   "h": 69.0,
+   "confidence": 0.552
+  }
+ ]
+}

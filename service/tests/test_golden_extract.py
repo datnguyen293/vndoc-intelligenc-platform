@@ -118,6 +118,43 @@ GOLDEN = {
         "placeOfResidence": "P29 B12, TT Kim Liên P. Kim Liên, Qu Đống Đa, TP. Hà Nội",
         "licenseClass": "B2", "dateOfIssue": "2023-01-17", "dateOfExpiry": "2033-01-17",
     },
+    "bhyt__tien-dat": {  # BHYT đường OCR FALLBACK (QR hỏng). QR-first là đường chính.
+        "_type": "bhyt",
+        # OCR ra "1855 0111077012" (dính tiền tố nhiễu); _pattern_fallback bắt token
+        # 10 số → idNumber đúng kể cả khi mất nhãn "Mã số".
+        "idNumber": "0111077012",
+        "fullName": "NGUYỄN TIẾN ĐẠT", "dateOfBirth": "1988-03-29", "sex": "Nam",
+        "registeredHospital": "Trạm Y tế phường Láng Thượng (TTYT Đống",  # wrap "Đa)" rớt
+        "validFrom": "2023-07-01", "fiveYearContinuous": "2027-10-01",
+        "dateOfIssue": "2023-07-31",
+    },
+    "cmnd_12__thuy-giang": {  # CMND 12 số (thẻ cứng) — OCR sạch
+        "_type": "cmnd_12",
+        "idNumber": "001192004768", "fullName": "NGUYỄN THÙY GIANG",
+        "dateOfBirth": "1992-09-24", "sex": "Nữ",
+        "placeOfOrigin": "Tân Triều, Thanh Trì, Hà Nội",
+        "dateOfExpiry": "2030-11-04",
+    },
+    "cmnd_9__tien-dat": {  # CMND 9 số (giấy cũ) — OCR kém, chỉ chốt PHÂN LOẠI đúng
+        "_type": "cmnd_9",
+    },
+    "cccd_chip_front__tien-dat": {  # đường OCR-only (golden dùng StubStructured);
+        "_type": "cccd_chip_front",  # prod: QR điền idNumber/sex/dateOfIssue/oldIdNumber
+        "idNumber": "024088010438", "fullName": "NGUYỄN TIẾN ĐẠT",
+        "dateOfBirth": "1988-03-29",
+        "placeOfResidence": "Lam Cốt, Tân Yên, Bắc Giang",
+        "dateOfExpiry": "2028-03-29",
+    },
+    "cccd_2024_front__dinh-nam": {  # Căn cước mới mặt trước — OCR thuần (không QR mặt trước)
+        "_type": "cccd_2024_front",
+        "idNumber": "026099003333", "fullName": "LƯƠNG ĐÌNH NAM",
+        "dateOfBirth": "1999-12-30", "nationality": "Việt Nam",
+    },
+    "cccd_2024_back__dinh-nam": {  # OCR-only; prod: QR điền idNumber/fullName/dob/sex
+        "_type": "cccd_2024_back",
+        "placeOfBirth": "Tân Phú, Vĩnh Tường, Vĩnh Phúc",
+        "dateOfIssue": "2024-08-01", "dateOfExpiry": "2039-12-30",
+    },
 }
 
 

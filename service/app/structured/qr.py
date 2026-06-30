@@ -1,0 +1,173 @@
+"""Đọc & parse QR (ADR-006 — structured-data-first).
+
+- `decode_qr`: giải mã payload QR từ ảnh. Ưu tiên zxing-cpp (bền với xoay/nghiêng),
+  fallback OpenCV. Import lib BÊN TRONG hàm để service vẫn chạy khi máy đích chưa cài
+  (degrade an toàn: trả []).
+- `parse_*`: chuyển payload chuỗi → {field: value} THUẦN (không cần ảnh) → test được
+  độc lập với spec trong docs/samples.
+"""
+from __future__ import annotations
+
+import logging
+import re
+
+log = logging.getLogger("dip.structured.qr")
+
+
+def decode_qr(image) -> list[str]:
+    """Giải mã mọi QR trong ảnh → danh sách payload (chuỗi). Ảnh None / chưa cài lib
+    / không có QR → []."""
+    if image is None:
+        return []
+    payloads = _decode_zxing(image)
+    if payloads:
+        return payloads
+    return _decode_opencv(image)
+
+
+def _decode_zxing(image) -> list[str]:
+    try:
+        import zxingcpp
+    except Exception:  # noqa: BLE001 — chưa cài → bỏ qua, thử backend khác
+        return []
+    try:
+        results = zxingcpp.read_barcodes(image)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("zxing-cpp đọc QR lỗi: %s", exc)
+        return []
+    return [r.text for r in results if getattr(r, "text", "")]
+
+
+def _decode_opencv(image) -> list[str]:
+    try:
+        import cv2
+        import numpy as np
+    except Exception:  # noqa: BLE001
+        return []
+    try:
+        arr = np.asarray(image)
+        if arr.ndim == 3 and arr.shape[2] == 3:
+            arr = arr[:, :, ::-1]  # PIL RGB → BGR cho OpenCV
+        ok, infos, _pts, _ = cv2.QRCodeDetector().detectAndDecodeMulti(arr)
+        return [t for t in infos if t] if ok else []
+    except Exception as exc:  # noqa: BLE001
+        log.warning("OpenCV đọc QR lỗi: %s", exc)
+        return []
+
+
+def _hex_to_text(s: str) -> str | None:
+    """Một số trường QR BHYT mã hoá HEX của UTF-8 (vd '4e6775...'→'Nguyễn Tiến Đạt')."""
+    if not s or len(s) % 2 != 0 or not re.fullmatch(r"[0-9a-fA-F]+", s):
+        return None
+    try:
+        return bytes.fromhex(s).decode("utf-8")
+    except (ValueError, UnicodeDecodeError):
+        return None
+
+
+def _field(parts: list[str], idx: int) -> str | None:
+    """Lấy trường thứ idx, bỏ khoảng trắng/NUL; coi rỗng và '-' (placeholder) là None."""
+    if idx >= len(parts):
+        return None
+    v = parts[idx].strip().strip("\x00").strip()
+    return v if v and v != "-" else None
+
+
+def parse_bhyt_qr(payload: str) -> dict[str, str]:
+    """Parse QR thẻ BHYT (VSSID) → {field: value}. Các trường ngăn bằng '|':
+
+      [0] mã số BHYT          [1] họ tên (HEX UTF-8)   [2] ngày sinh dd/MM/yyyy
+      [3] giới tính 1=Nam/2=Nữ                          [5] mã đối tượng
+      [6] giá trị sử dụng từ  [8] ngày cấp              [12] đủ 5 năm liên tục
+      [15] nơi cấp/đổi (HEX UTF-8)
+
+    Chỉ trả trường giải mã chắc chắn; trường rỗng/'-' bị loại. Ngày giữ nguyên dạng
+    thô dd/MM/yyyy (pipeline tự chuẩn hoá ISO theo kiểu field).
+    """
+    if not payload:
+        return {}
+    parts = payload.split("\x00", 1)[0].split("|")
+    out: dict[str, str] = {}
+
+    id_number = _field(parts, 0)
+    if id_number and re.fullmatch(r"\d{10,15}", id_number):
+        out["idNumber"] = id_number
+
+    name = _field(parts, 1)
+    if name:
+        out["fullName"] = _hex_to_text(name) or name
+
+    for key, idx in (("dateOfBirth", 2), ("objectCode", 5), ("validFrom", 6),
+                     ("dateOfIssue", 8), ("fiveYearContinuous", 12)):
+        v = _field(parts, idx)
+        if v:
+            out[key] = v
+
+    sex = _field(parts, 3)
+    if sex in {"1", "2"}:
+        out["sex"] = "Nam" if sex == "1" else "Nữ"
+
+    place = _field(parts, 15)
+    if place:
+        out["issuePlace"] = _hex_to_text(place) or place
+
+    return out
+
+
+def _ddmmyyyy(s: str) -> str:
+    """QR CCCD ghi ngày dạng ddMMyyyy liền (vd '29031988') → 'dd/MM/yyyy' để pipeline
+    (_post → dates.to_iso) chuẩn hoá ISO. Không khớp thì trả nguyên."""
+    return f"{s[0:2]}/{s[2:4]}/{s[4:8]}" if re.fullmatch(r"\d{8}", s) else s
+
+
+def parse_cccd_qr(payload: str) -> dict[str, str]:
+    """Parse QR CCCD gắn chip / Căn cước (cùng định dạng 7 trường ngăn '|'):
+
+      [0] số CCCD (12 số)   [1] số CMND 9 số cũ (có thể rỗng)   [2] họ tên (UTF-8 thường)
+      [3] ngày sinh ddMMyyyy   [4] giới tính (Nam/Nữ)   [5] nơi thường trú
+      [6] ngày cấp ddMMyyyy
+
+    Dùng cho cả chip mặt trước (có số CMND cũ) lẫn Căn cước mặt sau (trường [1] rỗng,
+    có thể thừa trường rỗng phía sau). Tên KHÔNG mã hoá hex (khác QR BHYT).
+    """
+    if not payload:
+        return {}
+    parts = payload.split("\x00", 1)[0].split("|")
+    out: dict[str, str] = {}
+
+    idn = _field(parts, 0)
+    if idn and re.fullmatch(r"\d{12}", idn):
+        out["idNumber"] = idn
+
+    old = _field(parts, 1)
+    if old and re.fullmatch(r"\d{9,12}", old):
+        out["oldIdNumber"] = old
+
+    name = _field(parts, 2)
+    if name:
+        out["fullName"] = name
+
+    dob = _field(parts, 3)
+    if dob:
+        out["dateOfBirth"] = _ddmmyyyy(dob)
+
+    sex = _field(parts, 4)
+    if sex:
+        out["sex"] = sex  # 'Nam'/'Nữ' — norm_sex ở _post
+
+    res = _field(parts, 5)
+    if res:
+        out["placeOfResidence"] = res
+
+    issue = _field(parts, 6)
+    if issue:
+        out["dateOfIssue"] = _ddmmyyyy(issue)
+
+    return out
+
+
+# Registry parser QR theo tên (manifest structuredData.parser). Thêm loại = thêm 1 hàm.
+QR_PARSERS = {
+    "bhyt_qr": parse_bhyt_qr,
+    "cccd_qr": parse_cccd_qr,
+}

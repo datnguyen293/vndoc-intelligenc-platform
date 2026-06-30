@@ -22,8 +22,8 @@ router = APIRouter(prefix=settings.api_prefix)
 # Nhãn hiển thị tiếng Việt cho mỗi docType (DOC-01).
 DOC_TYPE_LABELS = {
     "cccd_chip_front": "CCCD gắn chip - Mặt trước",
-    "cccd_barcode_front": "CCCD mã vạch - Mặt trước",
-    "cmnd_9": "CMND 09 số",
+    "cmnd_9": "CMND 9 số",
+    "cmnd_12": "CMND 12 số",
     "passport_vn": "Hộ chiếu Việt Nam",
     "gplx_pet": "GPLX PET",
     "bhyt": "Thẻ BHYT",

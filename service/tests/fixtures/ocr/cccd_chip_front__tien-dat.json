@@ -1,0 +1,149 @@
+{
+ "image": "tien-dat.jpeg",
+ "lines": [
+  {
+   "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "x": 483.0,
+   "y": 86.0,
+   "w": 749.0,
+   "h": 57.0,
+   "confidence": 0.8857
+  },
+  {
+   "text": "Độc lập - Tự do - Hạnh phúc",
+   "x": 650.0,
+   "y": 136.0,
+   "w": 414.0,
+   "h": 47.0,
+   "confidence": 0.895
+  },
+  {
+   "text": "SOCIALIST REPUBLIC OF VIET NAM",
+   "x": 593.0,
+   "y": 180.0,
+   "w": 526.0,
+   "h": 45.0,
+   "confidence": 0.9021
+  },
+  {
+   "text": "Independence - Freedom - Happiness",
+   "x": 599.0,
+   "y": 212.0,
+   "w": 511.0,
+   "h": 45.0,
+   "confidence": 0.8732
+  },
+  {
+   "text": "CĂN CƯỚC CÔNG DÂN",
+   "x": 479.0,
+   "y": 270.0,
+   "w": 746.0,
+   "h": 84.0,
+   "confidence": 0.6585
+  },
+  {
+   "text": "Citizen Identity Card I",
+   "x": 479.0,
+   "y": 371.0,
+   "w": 346.0,
+   "h": 46.0,
+   "confidence": 0.8645
+  },
+  {
+   "text": "Số 1 No 024088010438",
+   "x": 474.0,
+   "y": 447.0,
+   "w": 684.0,
+   "h": 70.0,
+   "confidence": 0.6355
+  },
+  {
+   "text": "Họ và tên 1 Full name:",
+   "x": 478.0,
+   "y": 530.0,
+   "w": 367.0,
+   "h": 41.0,
+   "confidence": 0.8293
+  },
+  {
+   "text": "NGUYỄN TIẾN ĐẠT",
+   "x": 469.0,
+   "y": 574.0,
+   "w": 541.0,
+   "h": 69.0,
+   "confidence": 0.9002
+  },
+  {
+   "text": "Ngày sinh / Date of birth:",
+   "x": 477.0,
+   "y": 649.0,
+   "w": 417.0,
+   "h": 40.0,
+   "confidence": 0.8366
+  },
+  {
+   "text": "29/03/1988",
+   "x": 924.0,
+   "y": 651.0,
+   "w": 254.0,
+   "h": 46.0,
+   "confidence": 0.9065
+  },
+  {
+   "text": "Giới tính//Sex Nam Quốc tịch / Nationality: Việt Nam",
+   "x": 470.0,
+   "y": 700.0,
+   "w": 1024.0,
+   "h": 68.0,
+   "confidence": 0.8234
+  },
+  {
+   "text": "Quê quán / Place of origin:",
+   "x": 475.0,
+   "y": 782.0,
+   "w": 436.0,
+   "h": 43.0,
+   "confidence": 0.8744
+  },
+  {
+   "text": "Lam Cốt, Tần Yên, Bắc Giang",
+   "x": 467.0,
+   "y": 809.0,
+   "w": 671.0,
+   "h": 75.0,
+   "confidence": 0.8927
+  },
+  {
+   "text": "Nơi thường trú 1 Place of residence:",
+   "x": 472.0,
+   "y": 882.0,
+   "w": 600.0,
+   "h": 40.0,
+   "confidence": 0.8717
+  },
+  {
+   "text": "Có giá trị đến 29/03/2028",
+   "x": 53.0,
+   "y": 894.0,
+   "w": 399.0,
+   "h": 63.0,
+   "confidence": 0.8416
+  },
+  {
+   "text": "Date ofexpiry",
+   "x": 55.0,
+   "y": 937.0,
+   "w": 183.0,
+   "h": 37.0,
+   "confidence": 0.8721
+  },
+  {
+   "text": "Lam Cốt, Tân Yên, Bắc Giang",
+   "x": 468.0,
+   "y": 933.0,
+   "w": 665.0,
+   "h": 66.0,
+   "confidence": 0.8965
+  }
+ ]
+}

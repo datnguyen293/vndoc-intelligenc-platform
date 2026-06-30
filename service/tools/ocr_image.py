@@ -15,13 +15,13 @@ from app.cv import build_preprocessors
 from app.extract import LabelAnchoredExtractor
 from app.ocr import (
     StubQualityChecker,
-    StubStructuredReader,
     create_ocr_engine,
 )
 from app.pipeline import PipelineEngine
 from app.pipeline.classifier import RuleClassifier
 from app.plugins import PluginManager
 from app.settings import settings
+from app.structured import RealStructuredReader
 
 
 def main() -> None:
@@ -39,7 +39,7 @@ def main() -> None:
         detector=detector,
         rectifier=rectifier,
         classifier=RuleClassifier(plugins),
-        structured=StubStructuredReader(),
+        structured=RealStructuredReader(plugins),
         ocr=create_ocr_engine(),
         extractor=LabelAnchoredExtractor(),
     )

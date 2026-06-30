@@ -20,34 +20,59 @@ từng loại. Đây là phần làm cho hệ thống mở rộng được mà k
 
 ### 2.2 Phân loại thuần luật (rule-based, không train — ADR-008, ADR-012)
 
-**Không dùng CNN** (cần dữ liệu train). Phân loại bằng **tín hiệu cứng**, nhanh, không model:
+**Không dùng CNN.** Phân loại bằng **anchor text** (cụm chữ tiêu đề/nhãn so khớp bỏ dấu
++ bỏ space) và **anti-anchor (`excludes`)** để tách các loại nhìn gần giống nhau.
 
-| Tín hiệu | Cách lấy | Gợi ý loại |
-|---|---|---|
-| Cụm chữ tiêu đề (anchor text) | OCR nhanh 1-2 dòng tiêu đề | "CĂN CƯỚC CÔNG DÂN", "CHỨNG MINH NHÂN DÂN", "GIẤY PHÉP LÁI XE", "THẺ BẢO HIỂM Y TẾ", "HỘ CHIẾU/PASSPORT", "THẺ ĐẢNG VIÊN", "THẺ QUÂN NHÂN" |
-| Có vùng QR ở góc trên phải | QR detector | CCCD gắn chip (vs mã vạch) |
-| Có MRZ (2 dòng `<<<` ở đáy) | dò pattern MRZ | Hộ chiếu VN |
-| Số chữ số định danh | đếm digit của số | CMND 9 số vs 12 số |
-| Tỉ lệ khung (aspect ratio) | từ polygon khung | thẻ ID-1 vs hộ chiếu (TD3) |
-| Màu nền / hoa văn chủ đạo | histogram vùng | phân biệt nhóm gần giống |
+> **Quan trọng — tín hiệu QR/MRZ KHÔNG dùng để phân loại** (DEC-046): trên ảnh thật,
+> OCR thường **phá ký tự `<` của MRZ** (thành chữ) và QR có thể mờ/không đọc được. Vì
+> vậy phân loại chỉ dựa anchor text (bền hơn); QR/MRZ chỉ dùng để **bóc dữ liệu** ở bước
+> sau. Riêng phân biệt CMND 9/12 dùng **độ dài dãy số** trong OCR.
 
-Mỗi plugin khai bảng anchor/luật trong khối `classify` của manifest. Bộ phân loại
-OCR nhanh vùng tiêu đề rồi so khớp anchor của từng loại.
+### 2.3 Hint thô theo HỌ + tự nhận loại con (DEC-044, DEC-045)
 
-### 2.3 Quy tắc quyết định
+Client chỉ gửi `docTypeHint` = **họ** `cmnd` hoặc `cccd` (cán bộ không phân biệt loại
+con). Hệ thống tự nhận loại con trong họ:
+
+**Họ `cmnd`** → theo **độ dài số** (ưu tiên loại mới):
 ```text
-for mỗi loại đã đăng ký:
-    score(loại) = khớp_anchor(tiêu đề) + dấu_hiệu_phụ(QR?, MRZ?, tỉ lệ, số chữ số)
-type = argmax(score)
-if score(type) < NGƯỠNG:  type = unknown
-confidence = chuẩn_hóa(score(type))
+nếu OCR có dãy ≥12 chữ số  → cmnd_12   (thẻ cứng, mới hơn)
+ngược lại                  → cmnd_9    (giấy cũ — fallback; bền cả khi OCR số sai)
 ```
-- Phân biệt khó bằng luật bổ sung:
-  - CCCD gắn chip vs mã vạch → có QR mặt trước hay không.
-  - **CCCD gắn chip ("CĂN CƯỚC CÔNG DÂN") vs Căn cước 2024 ("CĂN CƯỚC")** → tiêu đề
-    có chữ "CÔNG DÂN" hay không.
-  - **Căn cước 2024 mặt trước vs mặt sau** → mặt sau có MRZ TD1 + QR + "BỘ CÔNG AN" +
-    nhãn "Nơi cư trú"; mặt trước có ảnh chân dung + "Số định danh cá nhân", không QR.
+
+**Họ `cccd`** → theo anchor + exclude của mặt:
+```text
+title chứa "CĂN CƯỚC CÔNG DÂN"             → cccd_chip_front   (chip cũ, trước 01/07/2024)
+title "CĂN CƯỚC" và KHÔNG có "CÔNG DÂN"
+   + "Số định danh" / "IDENTITY CARD"      → cccd_2024_front   (Căn cước mới mặt trước)
+"Nơi cư trú" + "BỘ CÔNG AN" (+ vùng MRZ)   → cccd_2024_back    (Căn cước mới mặt sau)
+```
+`excludes` là then chốt: `cccd_2024_front` loại bỏ nếu thấy "CÔNG DÂN" (→ chip) hoặc
+"Nơi cư trú"/"Nơi thường trú" (→ mặt sau/CMND). Nhờ đó dù "căn cước" là tiền tố của
+"căn cước công dân", không bị nhận nhầm.
+
+**Không hint:** chấm điểm anchor toàn bộ loại (vẫn áp `excludes`); nếu ra CMND thì tinh
+chỉnh theo độ dài số. (Phân loại vẫn đúng không cần hint, nhờ anchor+exclude.)
+
+### 2.3b Thứ tự xử lý CCCD/Căn cước (point 4 — QR trước, OCR bù)
+```text
+1. Giải QR (cccd_qr) — nếu đọc được: lấy ĐỊNH DANH (idNumber, họ tên CÓ DẤU, ngày sinh,
+   giới tính, nơi thường trú, ngày cấp, [số CMND cũ]). QR chip-front & back CÙNG định dạng.
+2. OCR bề mặt → vừa PHÂN LOẠI (anchor, xác định chip-front vs 2024-front vs 2024-back)
+   vừa BÙ trường QR không có (quê quán, quốc tịch, ngày hết hạn, nơi khai sinh).
+3. Hợp nhất theo field.source = [structured, ocr] (QR thắng, OCR bù).
+```
+QR KHÔNG quyết định mặt trước/sau (cùng định dạng) → **anchor OCR** mới phân biệt
+chip-front (cũ) với 2024-back. MRZ TD1 chỉ bù `idNumber`/`dateOfExpiry` khi checksum
+đúng (xem DOC-06), KHÔNG lấy tên (MRZ không dấu).
+
+### 2.3c Quy tắc chấm điểm
+```text
+for loại trong (ứng viên theo họ, hoặc tất cả nếu không hint):
+    nếu CÓ bất kỳ exclude nào trong text → loại bỏ
+    score = số anchor khớp
+type = argmax(score>0);  nếu không có → unknown
+confidence = min(0.99, 0.6 + 0.2*score)   (CMND theo độ dài số: 0.9 nếu có 12, else 0.7)
+```
 
 ### 2.4 Xử lý `unknown`
 - Không nạp plugin; trả JSON với `documentType="unknown"`, `warnings=["khong_nhan_dang_duoc_loai"]`.
@@ -219,6 +244,9 @@ Ngoài `validate`/`normalize`, manifest hỗ trợ thêm:
 
 | Khóa | Cấp | Ý nghĩa |
 |---|---|---|
+| `family: cmnd\|cccd` | plugin | Họ giấy tờ cho hint thô (DEC-044). Cùng họ = các loại con client không phân biệt được |
+| `classify.excludes: [...]` | plugin | Anti-anchor: nếu CÓ trong text → loại loại này (tách look-alike, vd "CÔNG DÂN") |
+| `structuredComplete: true` | plugin | QR/MRZ đủ → đọc được là DỪNG OCR (vd BHYT). CCCD/CMND **không** bật (cần OCR bù) |
 | `checks: [warn_if_expired]` | field | rule nghiệp vụ tạo cảnh báo (không chặn). `warn_if_expired`: so `dateOfExpiry` với hôm nay → `da_het_han` |
 | `crossCheckProvince: true` | field | đối chiếu 3 số đầu `idNumber` (mã tỉnh) với tỉnh trong địa chỉ → cảnh báo nếu lệch |
 | `crossCheck: true` | field | đối chiếu giá trị giữa nguồn `structured` và `ocr` (xem DOC-08 §4) |
@@ -271,3 +299,6 @@ class DocumentPlugin(Protocol):
 | DEC-021 | Plugin khai báo bằng manifest YAML; hook code là tuỳ chọn |
 | DEC-022 | Plugin nạp warm lúc startup; lỗi 1 plugin không làm chết service |
 | DEC-023 | Field nội bộ định nghĩa đủ; ROI map chờ ảnh mẫu thật |
+| DEC-044 | `docTypeHint` chỉ gửi HỌ (`cmnd`/`cccd`); hệ thống tự nhận loại con (cán bộ không phân biệt được) |
+| DEC-045 | CMND nhận loại con theo độ dài số (≥12 → cmnd_12, ngược lại cmnd_9); CCCD theo anchor+exclude |
+| DEC-046 | Phân loại CHỈ dùng anchor text (không dùng QR/MRZ vì OCR phá MRZ, QR có thể mờ); QR/MRZ chỉ để bóc dữ liệu |

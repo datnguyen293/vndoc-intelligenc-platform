@@ -1,0 +1,57 @@
+# Plugin: CMND 12 số (thẻ cứng) — DOC-TYPE-002 (đổi tên từ cccd_barcode)
+# Ảnh mẫu thật: samples/cmnd_12/thuy-giang.jpeg. Title "CHỨNG MINH NHÂN DÂN", số 12 chữ số.
+# Phân biệt với CMND 9 số: trong họ 'cmnd', có dãy ≥12 số → cmnd_12 (xem classifier).
+docType: cmnd_12
+displayName: "CMND 12 số"
+version: "1.0"
+ready: true
+family: cmnd
+
+classify:
+  anchors: ["CHỨNG MINH NHÂN DÂN"]
+
+extraction:
+  strategy: label_anchored
+  fields:
+    - name: idNumber
+      labels: ["Số"]
+      take: right_of_label
+      type: digits
+      normalize: [removeSpaces, fixDigits]
+      validate: { regex: '^\d{12}$' }
+      crossCheckProvince: true
+    - name: fullName
+      labels: ["Họ và tên khai sinh", "Họ và tên"]
+      take: after_colon_or_below
+      type: text_vi
+    - name: dateOfBirth
+      labels: ["Ngày, tháng, năm sinh", "Ngày sinh"]
+      take: date_after_label
+      type: date
+    - name: sex
+      labels: ["Giới tính"]
+      take: after_colon
+      type: sex
+    - name: placeOfOrigin
+      labels: ["Quê quán"]
+      take: right_of_label_or_below
+      type: text_vi
+      normalize: [collapseSpaces, dictFix]
+    - name: placeOfResidence
+      labels: ["Nơi thường trú"]
+      take: right_of_label_or_below
+      type: text_vi
+      multiline: true
+      normalize: [collapseSpaces, dictFix]
+    - name: dateOfExpiry
+      labels: ["Có giá trị đến"]
+      take: date_after_label
+      type: date
+      checks: [warn_if_expired]
+
+confidence:
+  fieldWeights:
+    idNumber: 0.3
+    fullName: 0.3
+    dateOfBirth: 0.2
+    default: 0.1

@@ -1,0 +1,49 @@
+# Plugin: CMND 9 số (giấy cũ) — DOC-TYPE-003
+# Ảnh mẫu thật: samples/cmnd_9/tien-dat.jpeg. Title "GIẤY CHỨNG MINH NHÂN DÂN", số 9 chữ số.
+# Loại RẤT cũ, còn ít người dùng; OCR thường kém (ảnh giấy ép, mờ). Là FALLBACK khi
+# trong họ 'cmnd' KHÔNG thấy dãy ≥12 số (xem classifier).
+docType: cmnd_9
+displayName: "CMND 9 số"
+version: "1.0"
+ready: true
+family: cmnd
+
+classify:
+  # Cùng cụm "CHỨNG MINH NHÂN DÂN" với cmnd_12; phân biệt bằng độ dài số (classifier).
+  anchors: ["CHỨNG MINH NHÂN DÂN"]
+
+extraction:
+  strategy: label_anchored
+  fields:
+    - name: idNumber
+      labels: ["Số"]
+      take: right_of_label
+      type: digits
+      normalize: [removeSpaces, fixDigits]
+      validate: { regex: '^\d{9}$' }
+    - name: fullName
+      labels: ["Họ tên", "Họ và tên"]
+      take: after_colon_or_below
+      type: text_vi
+    - name: dateOfBirth
+      labels: ["Ngày sinh", "Sinh ngày"]
+      take: date_after_label
+      type: date
+    - name: placeOfOrigin
+      labels: ["Nguyên quán", "Quê quán"]
+      take: right_of_label_or_below
+      type: text_vi
+      normalize: [collapseSpaces, dictFix]
+    - name: placeOfResidence
+      labels: ["Nơi ĐKHK thường trú", "Nơi ĐKHK", "Nơi thường trú"]
+      take: right_of_label_or_below
+      type: text_vi
+      multiline: true
+      normalize: [collapseSpaces, dictFix]
+
+confidence:
+  fieldWeights:
+    idNumber: 0.3
+    fullName: 0.3
+    dateOfBirth: 0.2
+    default: 0.1

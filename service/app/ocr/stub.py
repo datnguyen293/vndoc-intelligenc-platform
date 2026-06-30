@@ -41,9 +41,15 @@ class StubClassifier:
 
 
 class StubStructuredReader:
-    def read(self, image: Any, doc_type: str) -> tuple[dict[str, str], list[str]]:
+    def read(
+        self, image: Any, doc_type: str, lines: Any = None
+    ) -> tuple[dict[str, str], list[str]]:
         # Skeleton: chưa giải mã QR/MRZ/barcode (ADR-006).
         return {}, []
+
+    def identify(self, image: Any, hint: str | None = None):
+        # Skeleton: không có QR → luôn rơi về đường OCR.
+        return None
 
 
 class StubOcrEngine:
