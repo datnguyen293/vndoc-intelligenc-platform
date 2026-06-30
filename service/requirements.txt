@@ -21,6 +21,10 @@ rapidocr-onnxruntime         # PP-OCR trên ONNX Runtime, model đóng gói sẵ
 # --- Độ chính xác tiếng Việt CÓ DẤU (ADR-004) — backend "vietocr" ---
 # Cài thêm để bật: pip install vietocr torch torchvision
 #   rồi đặt DIP_OCR_BACKEND=vietocr (mặc định factory ưu tiên vietocr nếu có)
+# GPU NVIDIA (tuỳ chọn): cài torch bản CUDA rồi đặt DIP_OCR_DEVICE=cuda. Vd CUDA 12.4:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+#   (recognition nhanh ~1.5-2x trên GPU cũ như GTX 1070 Ti; detection vẫn chạy CPU.
+#    Không có GPU thì tự lùi về CPU.) Lưu ý giữ pillow==10.2.0, numpy>=2.
 # vietocr
 # torch
 # torchvision

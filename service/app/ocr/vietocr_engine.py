@@ -34,8 +34,13 @@ class VietOcrEngine:
         self._det_max_side = _st.ocr_det_max_side
         self._det = RapidOCR()  # chỉ dùng để lấy box (bỏ phần text của nó)
 
-        cfg = Cfg.load_config_from_name(model_name)  # vgg_seq2seq nhẹ/nhanh cho CPU
-        cfg["device"] = "cpu"
+        cfg = Cfg.load_config_from_name(model_name)  # vgg_seq2seq nhẹ/nhanh
+        # Thiết bị recognition theo cấu hình; chọn cuda mà không có GPU → lùi về cpu.
+        device = _st.ocr_device
+        if device.startswith("cuda") and not torch.cuda.is_available():
+            log.warning("DIP_OCR_DEVICE=%s nhưng không thấy GPU CUDA → dùng CPU", device)
+            device = "cpu"
+        cfg["device"] = device
         cfg["predictor"]["beamsearch"] = False
 
         # Offline: nếu có weights cục bộ trong models_dir thì dùng, khỏi tải mạng.
@@ -46,7 +51,7 @@ class VietOcrEngine:
             log.info("VietOCR dùng weights cục bộ: %s", local)
 
         self._rec = Predictor(cfg)
-        log.info("VietOCR (%s) + RapidOCR-det sẵn sàng", model_name)
+        log.info("VietOCR (%s, device=%s) + RapidOCR-det sẵn sàng", model_name, device)
 
     def _boxes(self, arr) -> list:
         # Ưu tiên det-only để khỏi chạy recognition thừa của RapidOCR.
