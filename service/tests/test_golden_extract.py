@@ -142,6 +142,34 @@ GOLDEN = {
         "placeOfResidence": "Tân Lập Lam Cốt, Tân Yên, Bắc Giang",
         "placeOfOrigin": "Tân Yên Bắc Giang",
     },
+    "cmnd_9__bao-duy": {  # ảnh rõ → đọc đủ 5 trường (số 9 sạch sau digitsOnly)
+        "_type": "cmnd_9",
+        "idNumber": "020016298", "fullName": "THÁI BẢO DUY",
+        "dateOfBirth": "1994-04-30",
+        "placeOfOrigin": "TP. Hồ Chí Minh",
+        "placeOfResidence": "18 Lê Văn Lương Phước Kiểng, Nhà Bè, TP. Hồ Chí Minh",
+    },
+    "cmnd_9__bao-ngoc": {  # 'THUYỄN' là lỗi OCR cố hữu (đóng băng)
+        "_type": "cmnd_9",
+        "idNumber": "145064321", "fullName": "THUYỄN BẢO NGỌC",
+        "dateOfBirth": "1983-09-07",
+        "placeOfOrigin": "Khoái Châu, Hưng Yên",
+        "placeOfResidence": "Bình Minh Khoái Châu, Hưng Yên",
+    },
+    "cmnd_9__ngoc-chi": {
+        "_type": "cmnd_9",
+        "idNumber": "023806188", "fullName": "TRẦN NGỌC TRÍ",
+        "dateOfBirth": "1985-02-08",
+        "placeOfOrigin": "TP. Hồ Chí Minh",
+        "placeOfResidence": "254 33 40 Bến Vân Đồn, Phường 5, Q4, TP. Hồ Chí Minh",
+    },
+    "cmnd_9__thu-huong": {
+        "_type": "cmnd_9",
+        "idNumber": "206207791", "fullName": "TRƯƠNG THỊ THU HƯƠNG",
+        "dateOfBirth": "1998-09-30",
+        "placeOfOrigin": "Thăng Bình, Quảng Nam",
+        "placeOfResidence": "1 Bình Triều, Thăng Bình, Quảng Nam",
+    },
     "cccd_chip_front__tien-dat": {  # đường OCR-only (golden dùng StubStructured);
         "_type": "cccd_chip_front",  # prod: QR điền idNumber/sex/dateOfIssue/oldIdNumber
         "idNumber": "024088010438", "fullName": "NGUYỄN TIẾN ĐẠT",

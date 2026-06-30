@@ -1,0 +1,109 @@
+{
+ "image": "bao-ngoc.jpg",
+ "lines": [
+  {
+   "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "x": 227.0,
+   "y": 49.0,
+   "w": 288.0,
+   "h": 20.0,
+   "confidence": 0.8899
+  },
+  {
+   "text": "Độc lập - Tự do , Hạnh phúc",
+   "x": 280.0,
+   "y": 67.0,
+   "w": 185.0,
+   "h": 17.0,
+   "confidence": 0.8334
+  },
+  {
+   "text": "NGIẤY CHỨNG MINH NHÂN DÂN",
+   "x": 238.0,
+   "y": 88.0,
+   "w": 273.0,
+   "h": 22.0,
+   "confidence": 0.8309
+  },
+  {
+   "text": "SỐ 145064321",
+   "x": 261.0,
+   "y": 116.0,
+   "w": 170.0,
+   "h": 24.0,
+   "confidence": 0.814
+  },
+  {
+   "text": "HỌ TÊN THUYỄN BẢO NGỌC",
+   "x": 209.0,
+   "y": 145.0,
+   "w": 295.0,
+   "h": 31.0,
+   "confidence": 0.6983
+  },
+  {
+   "text": "Sinh ngày",
+   "x": 210.0,
+   "y": 208.0,
+   "w": 75.0,
+   "h": 24.0,
+   "confidence": 0.9004
+  },
+  {
+   "text": "07-09-1983",
+   "x": 358.0,
+   "y": 208.0,
+   "w": 94.0,
+   "h": 20.0,
+   "confidence": 0.8791
+  },
+  {
+   "text": "Nguyên quán",
+   "x": 211.0,
+   "y": 239.0,
+   "w": 102.0,
+   "h": 18.0,
+   "confidence": 0.8333
+  },
+  {
+   "text": "Bình Minh",
+   "x": 372.0,
+   "y": 234.0,
+   "w": 93.0,
+   "h": 21.0,
+   "confidence": 0.8828
+  },
+  {
+   "text": "Khoái Châu, Hưng Yên",
+   "x": 262.0,
+   "y": 263.0,
+   "w": 203.0,
+   "h": 24.0,
+   "confidence": 0.8906
+  },
+  {
+   "text": "Nơi ĐKHK thường trứ:",
+   "x": 210.0,
+   "y": 292.0,
+   "w": 191.0,
+   "h": 23.0,
+   "confidence": 0.8292
+  },
+  {
+   "text": "Bình Minh",
+   "x": 396.0,
+   "y": 290.0,
+   "w": 94.0,
+   "h": 20.0,
+   "confidence": 0.8797
+  },
+  {
+   "text": "Khoái Châu, Hưng Yên",
+   "x": 260.0,
+   "y": 315.0,
+   "w": 203.0,
+   "h": 25.0,
+   "confidence": 0.8521
+  }
+ ]
+}

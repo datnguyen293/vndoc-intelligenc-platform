@@ -29,6 +29,7 @@ extraction:
       take: right_of_label
       source: [structured, ocr]
       type: digits
+      normalize: [fixDigits, digitsOnly]
       validate: { regex: '^\d{12}$' }
       crossCheckProvince: true
     - name: fullName

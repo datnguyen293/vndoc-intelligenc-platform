@@ -17,7 +17,7 @@ extraction:
       labels: ["Số"]
       take: right_of_label
       type: digits
-      normalize: [removeSpaces, fixDigits]
+      normalize: [fixDigits, digitsOnly]
       validate: { regex: '^\d{12}$' }
       crossCheckProvince: true
     - name: fullName

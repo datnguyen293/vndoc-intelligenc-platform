@@ -20,6 +20,7 @@ extraction:
       labels: ["Số định danh cá nhân", "Số định danh", "Personal identification number"]
       take: below_label
       type: digits
+      normalize: [fixDigits, digitsOnly]
       validate: { regex: '^\d{12}$' }
       crossCheckProvince: true
     - name: fullName

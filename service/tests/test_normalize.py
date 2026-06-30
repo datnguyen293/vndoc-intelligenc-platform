@@ -1,6 +1,11 @@
 """Unit test cho các hàm chuẩn hóa (DOC-08 §2)."""
 from app.extract.dates import to_iso
-from app.extract.normalize import dot_separator, norm_sex, strip_residence_label_echo
+from app.extract.normalize import (
+    digits_only,
+    dot_separator,
+    norm_sex,
+    strip_residence_label_echo,
+)
 
 
 def test_dot_separator_forces_dot():
@@ -23,6 +28,12 @@ def test_to_iso_handles_mixed_separators():
 def test_norm_sex():
     assert norm_sex("NAM") == "Nam"
     assert norm_sex("nữ") == "Nữ"
+
+
+def test_digits_only():
+    assert digits_only('""020016298') == "020016298"   # OCR thêm dấu nháy quanh số
+    assert digits_only("024088010438") == "024088010438"
+    assert digits_only("1 No 024") == "1024"            # gộp số dính (sau đó fallback token lo)
 
 
 def test_strip_residence_label_echo():

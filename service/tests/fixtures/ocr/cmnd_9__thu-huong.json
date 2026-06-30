@@ -1,0 +1,109 @@
+{
+ "image": "thu-huong.jpg",
+ "lines": [
+  {
+   "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "x": 169.0,
+   "y": 33.0,
+   "w": 284.0,
+   "h": 18.0,
+   "confidence": 0.8982
+  },
+  {
+   "text": "Độc lập - Tự do - Hạnh phúc",
+   "x": 220.0,
+   "y": 50.0,
+   "w": 181.0,
+   "h": 17.0,
+   "confidence": 0.8686
+  },
+  {
+   "text": "GIẤY CHỨNG MINH NHÂN DÂN",
+   "x": 178.0,
+   "y": 71.0,
+   "w": 272.0,
+   "h": 26.0,
+   "confidence": 0.8656
+  },
+  {
+   "text": "SỐ \"\"206207791",
+   "x": 200.0,
+   "y": 100.0,
+   "w": 180.0,
+   "h": 30.0,
+   "confidence": 0.7677
+  },
+  {
+   "text": "HỌ TÊN TRƯƠNG THỊ THU HƯƠNG",
+   "x": 151.0,
+   "y": 132.0,
+   "w": 322.0,
+   "h": 35.0,
+   "confidence": 0.8672
+  },
+  {
+   "text": "Sinh ngày",
+   "x": 151.0,
+   "y": 203.0,
+   "w": 70.0,
+   "h": 25.0,
+   "confidence": 0.886
+  },
+  {
+   "text": "30-09-1998",
+   "x": 301.0,
+   "y": 198.0,
+   "w": 94.0,
+   "h": 22.0,
+   "confidence": 0.899
+  },
+  {
+   "text": "Nguyên quân",
+   "x": 152.0,
+   "y": 236.0,
+   "w": 104.0,
+   "h": 21.0,
+   "confidence": 0.8461
+  },
+  {
+   "text": "Bình Triều",
+   "x": 310.0,
+   "y": 229.0,
+   "w": 94.0,
+   "h": 23.0,
+   "confidence": 0.8905
+  },
+  {
+   "text": "Thăng Bình, Quảng Nam",
+   "x": 204.0,
+   "y": 258.0,
+   "w": 216.0,
+   "h": 26.0,
+   "confidence": 0.8755
+  },
+  {
+   "text": "Nơi ĐKHK thường trú:",
+   "x": 152.0,
+   "y": 294.0,
+   "w": 147.0,
+   "h": 21.0,
+   "confidence": 0.8669
+  },
+  {
+   "text": "Thôn 1",
+   "x": 353.0,
+   "y": 289.0,
+   "w": 64.0,
+   "h": 23.0,
+   "confidence": 0.8984
+  },
+  {
+   "text": "Bình Triều, Thăng Bình, Quảng Nam",
+   "x": 154.0,
+   "y": 315.0,
+   "w": 316.0,
+   "h": 26.0,
+   "confidence": 0.9003
+  }
+ ]
+}

@@ -48,6 +48,12 @@ def fix_digits(s: str) -> str:
     return s.translate(_DIGIT_FIX)
 
 
+def digits_only(s: str) -> str:
+    """Bỏ MỌI ký tự không phải số (vd OCR thêm '\"', '.', '-' quanh số định danh).
+    Dùng SAU fixDigits để O→0/I→1 trước rồi mới lọc rác còn lại."""
+    return re.sub(r"\D", "", s)
+
+
 def strip_dots(s: str) -> str:
     s = re.sub(r"[·…]+", " ", s)
     s = re.sub(r"\.{2,}", " ", s)
@@ -108,6 +114,7 @@ NORMALIZERS = {
     "trim": trim,
     "collapseSpaces": collapse_spaces,
     "removeSpaces": remove_spaces,
+    "digitsOnly": digits_only,
     "upperVi": upper_vi,
     "fixDigits": fix_digits,
     "stripDots": strip_dots,
