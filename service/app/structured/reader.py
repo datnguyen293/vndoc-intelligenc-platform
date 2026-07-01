@@ -28,14 +28,15 @@ class RealStructuredReader:
         self.plugins = plugins
 
     @staticmethod
-    def _qr_payloads(*images: Any) -> list[str]:
+    def _qr_payloads(*images: Any, upscale: bool = False) -> list[str]:
         """Giải QR trên NHIỀU ảnh (vd ảnh đã rectify + ảnh GỐC full-res) rồi gộp lại —
-        rectifier có thể crop mất vùng QR hoặc thu nhỏ thẻ; ảnh gốc là dự phòng giữ QR."""
+        rectifier có thể crop mất vùng QR hoặc thu nhỏ thẻ; ảnh gốc là dự phòng giữ QR.
+        `upscale` (chỉ loại có QR): phóng to cứu QR nhỏ khi native thất bại."""
         out: list[str] = []
         for img in images:
             if img is None:
                 continue
-            for p in decode_qr(img):
+            for p in decode_qr(img, upscale=upscale):
                 if p not in out:
                     out.append(p)
         return out
@@ -106,7 +107,10 @@ class RealStructuredReader:
             return {}, []
 
         texts = [getattr(l, "text", "") for l in (lines or [])]
-        payloads = self._qr_payloads(image, image_alt)
+        # Upscale cứu QR nhỏ CHỈ khi loại này có QR (BHYT/CCCD) — passport/CMND... không QR
+        # thì bỏ qua để khỏi tốn thời gian (yêu cầu: chỉ 2 họ BHYT + CCCD/CC mới có QR).
+        has_qr = any(spec.kind == "qr" for spec in manifest.structured)
+        payloads = self._qr_payloads(image, image_alt, upscale=has_qr)
         fields: dict[str, str] = {}
         used: list[str] = []
         for spec in manifest.structured:

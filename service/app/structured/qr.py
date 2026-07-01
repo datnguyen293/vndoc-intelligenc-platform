@@ -14,18 +14,19 @@ import re
 log = logging.getLogger("dip.structured.qr")
 
 
-def decode_qr(image) -> list[str]:
-    """Giải mã mọi QR trong ảnh → danh sách payload (chuỗi). Ảnh None / chưa cài lib
-    / không có QR → []."""
+def decode_qr(image, upscale: bool = False) -> list[str]:
+    """Giải mã mọi QR trong ảnh → danh sách payload. Ảnh None / chưa cài lib / không có
+    QR → []. `upscale`: nếu đọc native thất bại thì phóng to ảnh nhỏ rồi thử lại — CHỈ bật
+    cho loại giấy tờ CÓ QR (BHYT/CCCD), tránh tốn thời gian cho loại không QR."""
     if image is None:
         return []
     payloads = _decode_zxing(image) or _decode_opencv(image)
-    if payloads:
+    if payloads or not upscale:
         return payloads
-    # Fallback QR NHỎ: CHỈ áp cho ảnh ĐỘ PHÂN GIẢI THẤP (< _UPSCALE_MAX_SRC) — nơi QR nhỏ
-    # + ít pixel nên phóng to (nội suy) giúp zxing định vị finder pattern (vd thẻ 589px,
-    # QR ~50px chỉ giải được khi phóng ~4× lên ~2400px). Ảnh đã đủ lớn mà không giải được
-    # thì upscale KHÔNG thêm thông tin → BỎ QUA (tránh tốn ~vài giây cho thẻ KHÔNG có QR).
+    # Fallback QR NHỎ (chỉ khi upscale=True, SAU khi native fail): áp cho ảnh ĐỘ PHÂN GIẢI
+    # THẤP (< _UPSCALE_MAX_SRC) — QR nhỏ + ít pixel, phóng to (nội suy) giúp zxing định vị
+    # finder pattern (vd thẻ 589px, QR ~50px chỉ giải được khi phóng ~4× lên ~2400px). Ảnh
+    # đủ lớn mà không giải được thì upscale KHÔNG thêm thông tin → bỏ qua.
     pil = _as_pil(image)
     if pil is None:
         return []

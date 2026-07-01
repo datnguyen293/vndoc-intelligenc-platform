@@ -122,14 +122,18 @@ def test_old_model_qr_first(plugins, name, idnum, fullname):
 
 
 def test_small_qr_upscale_recovers_idnumber(reader):
-    # Thẻ NHỎ trong ảnh res thấp (manh-hung 589px → QR ~50px): giải ở res gốc thất bại,
-    # phải phóng to (~4×) mới đọc được → idNumber vẫn lấy qua QR (không phải OCR).
-    ident = reader.identify(_img("manh-hung.jpeg"))
-    assert ident is not None
-    doc_type, fields, _used = ident
-    assert doc_type == "bhyt"
+    # Thẻ NHỎ res thấp (manh-hung 589px → QR ~50px): native fail → read() PHÓNG TO cứu QR.
+    # Upscale CHỈ chạy vì bhyt là loại CÓ QR (identify native-only không cứu ở đây).
+    fields, used = reader.read(_img("manh-hung.jpeg"), "bhyt")
+    assert used == ["qr"]
     assert fields["idNumber"] == "0132790125"
     assert fields["fullName"] == "Nguyễn Mạnh Hùng"
+
+
+def test_no_upscale_for_non_qr_type(reader):
+    # Loại KHÔNG có QR (passport) → read KHÔNG giải/không phóng QR (dù ảnh nhỏ manh-hung).
+    fields, used = reader.read(_img("manh-hung.jpeg"), "passport_vn")
+    assert used == []          # passport chỉ có MRZ (từ dòng OCR), không QR
 
 
 def test_qr_fallback_to_original(reader):
