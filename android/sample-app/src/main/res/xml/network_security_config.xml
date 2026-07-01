@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Cho phép HTTP (cleartext) tới OCR service trong LAN nội bộ (DOC-09 §9, DEC-067).
+  Android 9+ chặn cleartext mặc định. Vì host là IP người dùng nhập (không biết trước),
+  bật cleartext cho toàn app — CHẤP NHẬN vì chỉ gọi server nội bộ đã whitelist.
+  Nếu sau này dùng HTTPS self-signed → siết lại (chỉ cho host cụ thể + trust anchor cert).
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

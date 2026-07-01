@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme tối giản cho màn chụp (Compose tự vẽ UI, chỉ cần nền + không ActionBar). -->
+    <style name="Theme.VNDoc" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
