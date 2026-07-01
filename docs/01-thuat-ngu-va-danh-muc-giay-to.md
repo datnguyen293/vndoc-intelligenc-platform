@@ -60,7 +60,7 @@ Căn cước 2024 mặt trước, Căn cước 2024 mặt sau}. Quy tắc nhận
 | DOC-TYPE-005 | GPLX PET | `gplx_pet` | — | (QR tuỳ bản) | GPLX vật liệu PET; có hạng Class |
 | DOC-TYPE-006 | Thẻ BHYT | `bhyt` | — | **QR** (mẫu mới) | Mã số 10 số; QR đọc được → dừng OCR (structuredComplete) |
 | DOC-TYPE-007 | Thẻ Đảng viên | `the_dang_vien` | — | — | Nội bộ; label-anchored |
-| DOC-TYPE-008 | Thẻ quân nhân | `the_quan_nhan` | — | — | Nội bộ, nhạy cảm, chờ ảnh mẫu |
+| DOC-TYPE-008 | Thẻ quân nhân | `the_quan_nhan` | — | — | "CHỨNG MINH QUÂN NHÂN CHUYÊN NGHIỆP"; Số 12 số + họ tên + sinh + đơn vị; OCR thuần (không QR) |
 | DOC-TYPE-009 | Căn cước 2024 — Mặt trước | `cccd_2024_front` | `cccd` | — | Title "CĂN CƯỚC" (KHÔNG "CÔNG DÂN"), song ngữ; QR ở mặt sau → mặt trước OCR thuần |
 | DOC-TYPE-010 | Căn cước 2024 — Mặt sau | `cccd_2024_back` | `cccd` | **QR + MRZ (TD1)** | "Nơi cư trú", "BỘ CÔNG AN"; QR cho định danh, OCR bù |
 | — | (Không xác định) | `unknown` | — | — | Trả khi không đủ tín hiệu phân loại |

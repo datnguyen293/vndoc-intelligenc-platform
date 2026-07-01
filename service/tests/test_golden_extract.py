@@ -233,6 +233,17 @@ GOLDEN = {
         "personalIdNumber": "024088010438",
         "dateOfIssue": "2024-05-20", "dateOfExpiry": "2034-05-20",
     },
+    "the_quan_nhan__phan-van-trung": {  # Chứng minh quân nhân chuyên nghiệp (ảnh nhỏ)
+        "_type": "the_quan_nhan",
+        "idNumber": "438910546888", "fullName": "PHAN VĂN TRUNG",
+        "dateOfBirth": "1989-03-18", "unit": "TỔNG CỤC HẬU CẦN",
+    },
+    "the_quan_nhan__the-quan-nhan": {  # ảnh 350x200 rất nhỏ: tên nhoè (null), còn lại ổn
+        "_type": "the_quan_nhan",
+        "idNumber": "549201042187", "dateOfBirth": "1992-04-19",
+        "unit": "Tổng cực Kỹ thuật", "dateOfIssue": "2019-10-01",
+        "dateOfExpiry": "9 2031",
+    },
 }
 
 

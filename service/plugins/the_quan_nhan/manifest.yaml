@@ -1,0 +1,49 @@
+# Plugin: Thẻ quân nhân — CHỨNG MINH QUÂN NHÂN CHUYÊN NGHIỆP (DOC-TYPE-008)
+# Ảnh mẫu thật: samples/the_quan_nhan/{phan-van-trung,the-quan-nhan}.jpg (nội bộ, nhạy cảm).
+# Layout: Số 12 số, Họ tên, Sinh (ngày..tháng..năm), Đơn vị, Ngày cấp (câu), Hạn sử dụng
+# (M/YYYY - chỉ tháng/năm), người cấp (cấp bậc + tên). KHÔNG có QR/MRZ → OCR thuần.
+docType: the_quan_nhan
+displayName: "Thẻ quân nhân"
+version: "1.0"
+ready: true
+
+classify:
+  anchors: ["QUÂN NHÂN CHUYÊN NGHIỆP", "CHỨNG MINH QUÂN NHÂN"]
+
+extraction:
+  strategy: label_anchored
+  fields:
+    - name: idNumber
+      labels: ["Số"]
+      take: after_colon
+      type: digits
+      normalize: [removeSpaces, digitsOnly]
+      validate: { regex: '^\d{12}$' }
+    - name: fullName
+      labels: ["Họ tên", "Họ và tên"]
+      take: after_colon
+      type: text_vi
+    - name: dateOfBirth
+      labels: ["Sinh", "Ngày sinh"]
+      take: vn_date_phrase          # "Sinh: ngày 18 tháng 03 năm 1989"
+      type: date
+    - name: unit
+      labels: ["Đơn vị"]
+      take: after_colon
+      type: text_vi
+    - name: dateOfIssue
+      labels: ["Ngày", "tháng", "năm"]
+      take: vn_date_phrase          # "Ngày 02 tháng 3 năm 2020" (sau dateOfBirth → dòng kế)
+      type: date
+    - name: dateOfExpiry
+      labels: ["Hạn sử dụng", "Hạn sd", "Có giá trị đến"]
+      take: after_colon             # "3/2031" (tháng/năm) — KHÔNG phải date đầy đủ
+      type: code
+      required: false
+
+confidence:
+  fieldWeights:
+    idNumber: 0.3
+    fullName: 0.3
+    dateOfBirth: 0.2
+    default: 0.1
