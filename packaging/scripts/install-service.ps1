@@ -37,10 +37,14 @@ if ($existing) {
 }
 
 Write-Host "Đăng ký service '$ServiceName'..."
-& $Nssm install $ServiceName $PythonExe $Launcher
-& $Nssm set $ServiceName DisplayName $DisplayName
-& $Nssm set $ServiceName Description 'OCR giấy tờ tuỳ thân VN — FastAPI offline (127.0.0.1:11001)'
+& $Nssm install $ServiceName $PythonExe
+# AppParameters đặt TƯƠNG ĐỐI ('launcher.py') + AppDirectory = thư mục cài → tránh lỗi dấu
+# cách trong đường dẫn (vd "C:\Program Files\VNDoc"): NSSM KHÔNG bọc ngoặc AppParameters nên
+# nếu để đường dẫn tuyệt đối có space thì python nhận nhầm "C:\Program" là tên file.
 & $Nssm set $ServiceName AppDirectory $InstallRoot
+& $Nssm set $ServiceName AppParameters "launcher.py"
+& $Nssm set $ServiceName DisplayName $DisplayName
+& $Nssm set $ServiceName Description 'OCR giấy tờ tuỳ thân VN — FastAPI offline (:11001)'
 & $Nssm set $ServiceName Start SERVICE_AUTO_START
 
 # Tự restart khi crash (NFR-002): NSSM khởi động lại tiến trình, có throttle chống loop.
