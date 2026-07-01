@@ -15,6 +15,16 @@ service/logs/
 *.log
 .DS_Store
 
+# --- Đóng gói (DOC-11): artifact build nặng, KHÔNG commit ---
+# (comment phải ở DÒNG RIÊNG — git coi '# ...' cùng dòng là một phần của pattern)
+/build/
+# nssm.exe (tự tải, public-domain)
+/packaging/bin/
+# Python nhúng + deps (tự tải, ~1.5GB)
+/packaging/runtime/
+# bộ cài .exe do Inno sinh ra
+/packaging/installer/Output/
+
 # --- Tooling cục bộ ---
 .claude/settings.local.json
 

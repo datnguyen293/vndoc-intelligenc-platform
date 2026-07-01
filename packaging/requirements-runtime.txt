@@ -1,0 +1,24 @@
+# Dependencies bản GIAO HÀNG (CPU-only, DOC-11 §10). Cài THẲNG vào Python nhúng:
+#   packaging\runtime\python.exe -m pip install -r packaging\requirements-runtime.txt
+#
+# Ghi chú:
+# - torch/torchvision KHÔNG hậu tố +cuXXX: wheel Windows trên PyPI vốn là CPU-only → gọn,
+#   chạy mọi máy (ADR-002). Máy có NVIDIA muốn tăng tốc: cài riêng bản +cu124 (DOC-11 §10).
+# - KHÔNG cài `-e ../rectifier` ở đây: rectifier được PyArmor obfuscate & ship riêng (stage\rectifier).
+# - opencv-python-headless (không GUI) đủ cho service; rapidocr/rectifier đều dùng cv2 từ đây.
+# - Pin đúng phiên bản đã kiểm thử trong venv dev để tái lập được.
+
+fastapi==0.138.2
+uvicorn[standard]==0.49.0
+pydantic==2.13.4
+pydantic-settings==2.14.2
+python-multipart==0.0.32
+PyYAML==6.0.3
+pillow==10.2.0
+numpy==2.2.6
+opencv-python-headless==4.13.0.92
+zxing-cpp==3.0.0
+rapidocr-onnxruntime==1.4.4
+vietocr==0.3.13
+torch==2.6.0
+torchvision==0.21.0

@@ -49,6 +49,7 @@ nhận về JSON đã bóc tách, đạt tốc độ < 500 ms/ảnh.
 | DOC-08 | [Đặc tả trường & Validation](08-dac-ta-truong-va-validation.md) | DRAFT | DOC-01, DOC-05 |
 | DOC-09 | [Android Capture SDK](09-android-capture-sdk.md) | DRAFT | DOC-07 |
 | DOC-10 | [Triển khai & Hiệu năng](10-trien-khai-va-hieu-nang.md) | DRAFT | DOC-03, DOC-06 |
+| DOC-11 | [Đóng gói, Cài đặt & Cấp phép](11-dong-goi-cai-dat-va-cap-phep.md) | DRAFT | DOC-03, DOC-04, DOC-10 |
 
 ## 4b. Mẫu tham chiếu (hiệu chỉnh, không train)
 
