@@ -9,9 +9,43 @@ Chạy:  python finetune.py --weights runs/pose/weights/best.pt --synth data --r
 from __future__ import annotations
 
 import argparse
+import glob
 import os
+import shutil
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def _oversample_real(real: str, target_ratio: float, n_synth: int) -> str:
+    """Nhân bản ảnh thật (train) ~target_ratio so với synth → real đủ 'nặng' để fine-tune
+    kéo model về phân phối thật (34 ảnh/7200 synth = 0.5% thì quá loãng). Val giữ nguyên."""
+    reals = sorted(glob.glob(os.path.join(real, "images", "train", "*")))
+    n = len(reals)
+    if n == 0:
+        raise SystemExit("real_data/images/train rỗng")
+    repeat = max(1, round(target_ratio * n_synth / max(1, n * (1 - target_ratio))))
+    out = os.path.join(_HERE, "real_oversampled")
+    if os.path.exists(out):
+        shutil.rmtree(out)
+    for split in ("train", "val"):
+        os.makedirs(os.path.join(out, "images", split), exist_ok=True)
+        os.makedirs(os.path.join(out, "labels", split), exist_ok=True)
+    # val: copy nguyên
+    for ip in glob.glob(os.path.join(real, "images", "val", "*")):
+        stem = os.path.splitext(os.path.basename(ip))[0]
+        shutil.copy(ip, os.path.join(out, "images", "val", os.path.basename(ip)))
+        shutil.copy(os.path.join(real, "labels", "val", stem + ".txt"),
+                    os.path.join(out, "labels", "val", stem + ".txt"))
+    # train: nhân bản ×repeat
+    for ip in reals:
+        stem = os.path.splitext(os.path.basename(ip))[0]
+        ext = os.path.splitext(ip)[1]
+        lp = os.path.join(real, "labels", "train", stem + ".txt")
+        for k in range(repeat):
+            shutil.copy(ip, os.path.join(out, "images", "train", f"{stem}_{k}{ext}"))
+            shutil.copy(lp, os.path.join(out, "labels", "train", f"{stem}_{k}.txt"))
+    print(f"Oversample real: {n} ảnh ×{repeat} = {n * repeat} (mục tiêu ~{target_ratio:.0%} mix)")
+    return out
 
 
 def _combined_yaml(synth: str, real: str) -> str:
@@ -38,12 +72,15 @@ def main() -> None:
     ap.add_argument("--epochs", type=int, default=40)
     ap.add_argument("--batch", type=int, default=16)
     ap.add_argument("--device", default="0")
+    ap.add_argument("--ratio", type=float, default=0.15, help="tỉ lệ ảnh thật trong mix train")
     args = ap.parse_args()
 
     if not os.path.isdir(os.path.join(args.real, "images", "train")):
         raise SystemExit(f"Chưa có nhãn thật trong {args.real}/ — gán bằng label_corners.py trước.")
 
-    data = _combined_yaml(args.synth, args.real)
+    n_synth = len(glob.glob(os.path.join(args.synth, "images", "train", "*")))
+    real_os = _oversample_real(args.real, args.ratio, n_synth)
+    data = _combined_yaml(args.synth, real_os)
     from ultralytics import YOLO
 
     model = YOLO(args.weights)
