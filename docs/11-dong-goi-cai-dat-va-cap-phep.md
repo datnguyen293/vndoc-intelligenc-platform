@@ -142,7 +142,9 @@ Nâng cấp: cài đè cùng thư mục; giữ `config/` & `models/`; restart se
   **bind `0.0.0.0`**. An toàn nhờ **whitelist dải CIDR** ở tầng ứng dụng: `IPWhitelistMiddleware`
   (`app/security.py`) chặn client IP ngoài `DIP_ALLOWED_IPS` bằng `403`.
 - Mặc định `127.0.0.1/32,192.168.0.0/24`; admin sửa cho khớp subnet đơn vị (vd `10.0.0.0/24`).
-  Rỗng = tắt whitelist. Host không phải IP (Starlette `TestClient`) → bỏ qua (test chạy được).
+  Host không phải IP (Starlette `TestClient`) → bỏ qua (test chạy được).
+- **TESTING — không giới hạn IP:** `DIP_ALLOWED_IPS=*` (hoặc rỗng / `all` / `0.0.0.0/0`) →
+  whitelist tắt, cho mọi IP. Middleware ghi **cảnh báo log** khi ở chế độ này (nhắc không dùng thật).
 - **Tường lửa**: `install-service.ps1` tự `netsh` mở cổng `11001` (TCP inbound, profile
   private+domain) khi cài; `uninstall-service.ps1` xoá luật khi gỡ (phòng thủ nhiều lớp).
 

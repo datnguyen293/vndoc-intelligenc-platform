@@ -19,9 +19,15 @@ log = logging.getLogger("dip.security")
 
 
 def parse_networks(raw: str) -> list:
-    """'127.0.0.1/32, 192.168.0.0/24' → [IPv4Network, ...]. Dải sai bị bỏ (cảnh báo log)."""
+    """'127.0.0.1/32, 192.168.0.0/24' → [IPv4Network, ...]. Dải sai bị bỏ (cảnh báo log).
+
+    KHÔNG giới hạn (cho MỌI IP — dùng cho môi trường TESTING): để rỗng, hoặc đặt
+    `DIP_ALLOWED_IPS=*` / `all` / `0.0.0.0/0` → trả [] (whitelist tắt)."""
+    raw = (raw or "").strip()
+    if raw == "" or raw.lower() in ("*", "all", "0.0.0.0/0", "::/0"):
+        return []
     nets: list = []
-    for part in (raw or "").split(","):
+    for part in raw.split(","):
         part = part.strip()
         if not part:
             continue
@@ -50,6 +56,11 @@ class IPWhitelistMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, allowed_ips: str) -> None:
         super().__init__(app)
         self.networks = parse_networks(allowed_ips)
+        if not self.networks:
+            log.warning(
+                "⚠️  Whitelist IP ĐANG TẮT (DIP_ALLOWED_IPS rỗng/'*'/'all') — CHO PHÉP MỌI IP "
+                "truy cập. CHỈ dùng cho môi trường testing, KHÔNG dùng thật."
+            )
 
     async def dispatch(self, request: Request, call_next):
         client = request.client

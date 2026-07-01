@@ -1,4 +1,6 @@
 """Whitelist IP (DOC-11 §7, DEC-087) — parser CIDR + logic cho phép + middleware 403."""
+import pytest
+
 from app.security import IPWhitelistMiddleware, ip_allowed, parse_networks
 
 DEFAULT = "127.0.0.1/32,192.168.0.0/24"
@@ -25,6 +27,15 @@ def test_outside_blocked():
 
 def test_empty_disables_whitelist():
     assert ip_allowed("8.8.8.8", parse_networks("")) is True
+
+
+@pytest.mark.parametrize("val", ["", "*", "all", "ALL", " * ", "0.0.0.0/0"])
+def test_allow_all_sentinels(val):
+    # Môi trường testing: rỗng/'*'/'all'/'0.0.0.0/0' → không giới hạn IP.
+    nets = parse_networks(val)
+    assert nets == []
+    assert ip_allowed("8.8.8.8", nets) is True
+    assert ip_allowed("10.0.0.9", nets) is True
 
 
 def test_non_ip_host_not_blocked():
