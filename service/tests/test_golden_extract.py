@@ -128,9 +128,9 @@ GOLDEN = {
         "validFrom": "2023-07-01", "fiveYearContinuous": "2027-10-01",
         "dateOfIssue": "2023-07-31",
     },
-    "bhyt__manh-hung": {  # BHYT MẪU MỚI, ảnh nhỏ+nghiêng → OCR mã số hỏng (idNumber null);
-        "_type": "bhyt",  # QR quá nhỏ không giải được. Ảnh tốt thì QR cho idNumber đủ.
-        "idNumber": None,
+    "bhyt__manh-hung": {  # Golden = đường OCR-only (StubStructured): mã số OCR hỏng → null.
+        "_type": "bhyt",  # PRODUCTION: QR nhỏ được phóng to (~4×) → idNumber=0132790125
+        "idNumber": None,  # (xem test_small_qr_upscale_recovers_idnumber).
         "fullName": "NGUYỄN MẠNH HÙNG", "dateOfBirth": "2024-12-23", "sex": "Nam",
         "validFrom": "2024-12-23", "fiveYearContinuous": "2029-12-23",
         "dateOfIssue": "2025-03-28",

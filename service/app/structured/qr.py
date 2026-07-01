@@ -19,10 +19,42 @@ def decode_qr(image) -> list[str]:
     / không có QR → []."""
     if image is None:
         return []
-    payloads = _decode_zxing(image)
+    payloads = _decode_zxing(image) or _decode_opencv(image)
     if payloads:
         return payloads
-    return _decode_opencv(image)
+    # Fallback QR NHỎ (thẻ nhỏ trong ảnh / ảnh độ phân giải thấp): phóng to đủ pixel rồi
+    # thử lại — zxing cần đủ pixel để định vị finder pattern (vd thẻ 589px, QR ~50px chỉ
+    # giải được khi phóng ~4× lên ~2400px). Chỉ chạy khi giải ở res gốc thất bại.
+    pil = _as_pil(image)
+    if pil is None:
+        return []
+    w, h = pil.size
+    longest = max(w, h)
+    for target in (2400, 4000):
+        if longest >= target:
+            continue
+        scale = target / longest
+        up = pil.resize((round(w * scale), round(h * scale)))
+        payloads = _decode_zxing(up)
+        if payloads:
+            return payloads
+    return []
+
+
+def _as_pil(image):
+    """Đưa ảnh (PIL hoặc numpy) về PIL để phóng to; None nếu không được."""
+    if hasattr(image, "resize") and hasattr(image, "size"):
+        return image
+    try:
+        import numpy as np
+        from PIL import Image as _PILImage
+
+        arr = np.asarray(image)
+        if arr.ndim >= 2:
+            return _PILImage.fromarray(arr)
+    except Exception:  # noqa: BLE001
+        return None
+    return None
 
 
 def _decode_zxing(image) -> list[str]:

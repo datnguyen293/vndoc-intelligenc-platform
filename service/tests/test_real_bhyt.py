@@ -121,6 +121,17 @@ def test_old_model_qr_first(plugins, name, idnum, fullname):
     assert f["placeOfResidence"].value                    # mẫu cũ: QR [4] có địa chỉ
 
 
+def test_small_qr_upscale_recovers_idnumber(reader):
+    # Thẻ NHỎ trong ảnh res thấp (manh-hung 589px → QR ~50px): giải ở res gốc thất bại,
+    # phải phóng to (~4×) mới đọc được → idNumber vẫn lấy qua QR (không phải OCR).
+    ident = reader.identify(_img("manh-hung.jpeg"))
+    assert ident is not None
+    doc_type, fields, _used = ident
+    assert doc_type == "bhyt"
+    assert fields["idNumber"] == "0132790125"
+    assert fields["fullName"] == "Nguyễn Mạnh Hùng"
+
+
 def test_qr_fallback_to_original(reader):
     # Ảnh chính (bản rectify) None/mất QR → dùng ảnh GỐC (image_alt) để giải QR.
     img = _img("bhyt-1.jpeg")
