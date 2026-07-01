@@ -47,8 +47,24 @@ def _load_card(path: str) -> np.ndarray | None:
 
 # ------------------------- nền ngẫu nhiên -------------------------
 
-def _random_background(rng: random.Random) -> np.ndarray:
-    """Nền giả lập bàn/folder: màu trơn, gradient, vân sọc, hoặc nhiễu."""
+def _random_background(rng: random.Random, cards: list[np.ndarray]) -> np.ndarray:
+    """Nền: ~55% ẢNH THẬT (mẫu thẻ khác, làm MỜ NẶNG → xoá nhận dạng, giữ vân/ánh sáng
+    thật) + ~45% thủ tục. Nền thật giúp thu hẹp khoảng cách synthetic-to-real (v2)."""
+    if cards and rng.random() < 0.55:
+        src = rng.choice(cards)
+        h, w = src.shape[:2]
+        cw, ch = rng.randint(w // 2, w), rng.randint(h // 2, h)
+        x, y = rng.randint(0, max(1, w - cw)), rng.randint(0, max(1, h - ch))
+        bg = cv2.resize(src[y:y + ch, x:x + cw], (CANVAS, CANVAS))
+        k = rng.choice([21, 31, 41, 51])
+        bg = cv2.GaussianBlur(bg, (k, k), 0)
+        return np.clip(bg.astype(np.float32) * rng.uniform(0.6, 1.2) + rng.uniform(-20, 20),
+                       0, 255).astype(np.uint8)
+    return _proc_bg(rng)
+
+
+def _proc_bg(rng: random.Random) -> np.ndarray:
+    """Nền thủ tục: màu trơn, gradient, vân sọc, khối, hoặc nhiễu."""
     kind = rng.choice(["solid", "gradient", "stripes", "noise", "blocks"])
     base = np.zeros((CANVAS, CANVAS, 3), np.uint8)
     c1 = np.array([rng.randint(20, 200) for _ in range(3)], np.float32)
@@ -85,7 +101,7 @@ def _random_background(rng: random.Random) -> np.ndarray:
 
 def _dst_quad(rng: random.Random) -> np.ndarray:
     """4 góc đích trên canvas: chọn hộp cơ sở (scale + vị trí) rồi jitter phối cảnh + xoay."""
-    fill = rng.uniform(0.32, 0.85)                 # thẻ chiếm bao nhiêu cạnh canvas
+    fill = rng.uniform(0.22, 0.82)                 # thẻ chiếm bao nhiêu cạnh canvas (nhỏ hơn=bền hơn)
     bw = CANVAS * fill
     bh = bw / rng.uniform(1.45, 1.75)              # ~ tỉ lệ ID-1 (1.585) ± dao động
     cx = rng.uniform(bw / 2, CANVAS - bw / 2)
@@ -149,8 +165,52 @@ def _add_glare(canvas: np.ndarray, quad: np.ndarray, rng: random.Random) -> None
     cv2.addWeighted(overlay, a, canvas, 1 - a, 0, canvas)
 
 
-def _compose(card: np.ndarray, rng: random.Random) -> tuple[np.ndarray, np.ndarray]:
-    """Trả (ảnh canvas, quad 4 góc). quad theo thứ tự TL,TR,BR,BL trên canvas."""
+def _draw_sleeve(bg: np.ndarray, quad: np.ndarray, rng: random.Random) -> None:
+    """Mô phỏng BAO NHỰA lanyard: vùng sáng đục TO HƠN thẻ quanh mép. Nhãn vẫn là góc THẺ
+    bên trong → model học BỎ QUA bao, chỉ lấy góc thẻ (đúng ca sĩ quan v1 bị bám sai)."""
+    if rng.random() > 0.5:
+        return
+    c = quad.mean(axis=0)
+    exp = ((quad - c) * rng.uniform(1.06, 1.22) + c).astype(np.int32)
+    color = tuple(int(rng.randint(190, 255)) for _ in range(3))
+    overlay = bg.copy()
+    cv2.fillConvexPoly(overlay, exp, color)
+    a = rng.uniform(0.45, 0.8)
+    cv2.addWeighted(overlay, a, bg, 1 - a, 0, bg)
+
+
+def _scene_aug(canvas: np.ndarray, rng: random.Random) -> None:
+    """Augment cảnh: bóng, color jitter (HSV), vignette, motion blur."""
+    if rng.random() < 0.4:                                   # bóng
+        ov = canvas.copy()
+        cv2.circle(ov, (rng.randint(0, CANVAS), rng.randint(0, CANVAS)),
+                   rng.randint(120, 360), (0, 0, 0), -1)
+        a = rng.uniform(0.1, 0.35)
+        cv2.addWeighted(ov, a, canvas, 1 - a, 0, canvas)
+    if rng.random() < 0.6:                                   # color jitter HSV
+        hsv = cv2.cvtColor(canvas, cv2.COLOR_BGR2HSV).astype(np.int16)
+        hsv[..., 0] = (hsv[..., 0] + rng.randint(-8, 8)) % 180
+        hsv[..., 1] = np.clip(hsv[..., 1] * rng.uniform(0.7, 1.3), 0, 255)
+        hsv[..., 2] = np.clip(hsv[..., 2] * rng.uniform(0.7, 1.2), 0, 255)
+        canvas[:] = cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2BGR)
+    if rng.random() < 0.4:                                   # vignette
+        yy, xx = np.ogrid[:CANVAS, :CANVAS]
+        r = np.sqrt((xx - CANVAS / 2) ** 2 + (yy - CANVAS / 2) ** 2) / (CANVAS / 1.4)
+        v = np.clip(1 - rng.uniform(0.3, 0.7) * r, 0.3, 1)[:, :, None]
+        canvas[:] = np.clip(canvas.astype(np.float32) * v, 0, 255).astype(np.uint8)
+    if rng.random() < 0.25:                                  # motion blur
+        k = rng.choice([7, 9, 11])
+        kern = np.zeros((k, k), np.float32)
+        if rng.random() < 0.5:
+            kern[k // 2, :] = 1
+        else:
+            kern[:, k // 2] = 1
+        canvas[:] = cv2.filter2D(canvas, -1, kern / k)
+
+
+def _compose(card: np.ndarray, rng: random.Random,
+             cards: list[np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
+    """Trả (ảnh canvas, quad 4 góc TL,TR,BR,BL). v2: nền thật + bao nhựa + scene aug."""
     h, w = card.shape[:2]
     src = np.array([[0, 0], [w, 0], [w, h], [0, h]], np.float32)
     dst = _dst_quad(rng)
@@ -160,12 +220,14 @@ def _compose(card: np.ndarray, rng: random.Random) -> tuple[np.ndarray, np.ndarr
     warped = cv2.warpPerspective(card, H, (CANVAS, CANVAS), borderValue=(0, 0, 0))
     mask = cv2.warpPerspective(np.full((h, w), 255, np.uint8), H, (CANVAS, CANVAS))
 
-    bg = _random_background(rng)
+    bg = _random_background(rng, cards)
+    _draw_sleeve(bg, dst, rng)                       # bao nhựa: trên nền, dưới thẻ
     m3 = (mask > 127)[:, :, None]
-    canvas = np.where(m3, warped, bg)
+    canvas = np.where(m3, warped, bg).astype(np.uint8)
     _add_glare(canvas, dst, rng)
-    if rng.random() < 0.6:                          # nén JPEG như ảnh chụp
-        q = rng.randint(45, 92)
+    _scene_aug(canvas, rng)
+    if rng.random() < 0.6:                           # nén JPEG như ảnh chụp
+        q = rng.randint(40, 92)
         ok, enc = cv2.imencode(".jpg", canvas, [cv2.IMWRITE_JPEG_QUALITY, q])
         if ok:
             canvas = cv2.imdecode(enc, cv2.IMREAD_COLOR)
@@ -210,7 +272,7 @@ def main() -> None:
     for i in range(args.n):
         split = "val" if i < n_val else "train"
         card = rng.choice(cards)
-        canvas, quad = _compose(card, rng)
+        canvas, quad = _compose(card, rng, cards)
         stem = f"{i:06d}"
         cv2.imwrite(os.path.join(args.out, "images", split, stem + ".jpg"), canvas)
         with open(os.path.join(args.out, "labels", split, stem + ".txt"), "w") as f:

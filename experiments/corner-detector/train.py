@@ -6,6 +6,9 @@ Chạy:  python train.py --data data/data.yaml --epochs 60
 from __future__ import annotations
 
 import argparse
+import os
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def main() -> None:
@@ -27,7 +30,7 @@ def main() -> None:
         imgsz=args.imgsz,
         batch=args.batch,
         device=args.device,
-        project="runs",
+        project=os.path.join(_HERE, "runs"),   # path tuyệt đối → không lồng runs/runs
         name="pose",
         exist_ok=True,
         # Augment nhẹ tay: dữ liệu tổng hợp đã đa dạng nền/phối cảnh; TẮT lật/mosaic/xoay
