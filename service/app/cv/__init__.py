@@ -55,7 +55,20 @@ def build_preprocessors(card_detect: bool = True):
         sharpen=settings.rectify_sharpen,
         denoise=settings.rectify_denoise,
     )
-    return _NoopDetector(), _RectifierAdapter(rectifier.Rectifier(cfg))
+    adapter = _RectifierAdapter(rectifier.Rectifier(cfg))
+
+    # Corner-detector fallback (thử nghiệm) — bọc thêm khi bật + có model ONNX.
+    if settings.rectify_corner_fallback and settings.corner_model.exists():
+        try:
+            from app.cv.corner import CornerAssistRectifier, CornerModel
+            model = CornerModel(settings.corner_model)
+            adapter = CornerAssistRectifier(adapter, model, settings.corner_min_ratio)
+            log.info("Corner-detector fallback BẬT (model %s, ngưỡng %.2f)",
+                     settings.corner_model.name, settings.corner_min_ratio)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("Không bật được corner fallback (%s) → chỉ classic", exc)
+
+    return _NoopDetector(), adapter
 
 
 __all__ = ["build_preprocessors"]

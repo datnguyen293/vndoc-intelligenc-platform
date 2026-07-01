@@ -55,6 +55,11 @@ class Settings(BaseSettings):
     rectify_clahe: bool = True
     rectify_sharpen: bool = True
     rectify_denoise: bool = False
+    # Corner-detector FALLBACK (thử nghiệm): bật + có model ONNX → khi thẻ NHỎ trên nền,
+    # classic hay hỏng thì dùng model detect 4 góc để nắn. Mặc định TẮT (không đổi hành vi).
+    rectify_corner_fallback: bool = False
+    corner_model: Path = SERVICE_ROOT / "models" / "corner.onnx"
+    corner_min_ratio: float = 0.55        # thẻ chiếm < tỉ lệ này của khung → dùng corner
 
     # Bảo mật (NFR-007)
     api_key: str | None = None        # nếu đặt → bắt buộc header X-API-Key
