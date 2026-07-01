@@ -1,0 +1,7 @@
+# Dữ liệu tổng hợp + model + runs (nặng, tự sinh — KHÔNG commit)
+data/
+runs/
+*.pt
+*.onnx
+*.jpg
+*.png

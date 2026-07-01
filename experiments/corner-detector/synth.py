@@ -1,0 +1,217 @@
+"""Sinh dữ liệu TỔNG HỢP để train YOLOv8-pose detect 4 góc thẻ (nhánh thử nghiệm).
+
+Ý tưởng (theo cơ chế các bài báo, nhưng tự sinh nhãn): lấy ảnh thẻ phẳng → biến đổi
+PHỐI CẢNH ngẫu nhiên (nghiêng/xoay/scale) → ghép lên NỀN NHIỄU ngẫu nhiên (giả lập bàn,
+bìa folder, vân gỗ...) + nhiễu quang học (sáng/mờ/loá/JPEG). Vì ta TỰ biến đổi nên biết
+CHÍNH XÁC 4 góc trong ảnh kết quả → nhãn tự động, khỏi gán tay.
+
+Xuất định dạng YOLOv8-pose: mỗi ảnh 1 instance = 1 bbox (bao thẻ) + 4 keypoint (góc theo
+thứ tự TL, TR, BR, BL), toạ độ chuẩn hoá [0,1].
+
+Chạy:  python -m synth --cards ../../service/samples --out data --n 4000
+(cần: numpy, opencv-python, pillow — đã có trong venv service)
+"""
+from __future__ import annotations
+
+import argparse
+import glob
+import os
+import random
+
+import cv2
+import numpy as np
+
+CANVAS = 640                    # ảnh train vuông 640 (YOLO)
+KPT_ORDER = ("TL", "TR", "BR", "BL")
+
+
+def _list_cards(root: str) -> list[str]:
+    exts = ("*.jpg", "*.jpeg", "*.png", "*.webp")
+    files: list[str] = []
+    for e in exts:
+        files += glob.glob(os.path.join(root, "**", e), recursive=True)
+    return sorted(files)
+
+
+def _load_card(path: str) -> np.ndarray | None:
+    img = cv2.imread(path, cv2.IMREAD_COLOR)
+    if img is None:
+        return None
+    # Chuẩn hoá chiều rộng ~600 để nhất quán tốc độ warp.
+    h, w = img.shape[:2]
+    if w > 700:
+        s = 700 / w
+        img = cv2.resize(img, (int(w * s), int(h * s)))
+    return img
+
+
+# ------------------------- nền ngẫu nhiên -------------------------
+
+def _random_background(rng: random.Random) -> np.ndarray:
+    """Nền giả lập bàn/folder: màu trơn, gradient, vân sọc, hoặc nhiễu."""
+    kind = rng.choice(["solid", "gradient", "stripes", "noise", "blocks"])
+    base = np.zeros((CANVAS, CANVAS, 3), np.uint8)
+    c1 = np.array([rng.randint(20, 200) for _ in range(3)], np.float32)
+    c2 = np.array([rng.randint(20, 200) for _ in range(3)], np.float32)
+    if kind == "solid":
+        base[:] = c1
+    elif kind == "gradient":
+        t = np.linspace(0, 1, CANVAS, dtype=np.float32)[:, None, None]
+        base[:] = (c1 * (1 - t) + c2 * t).astype(np.uint8)
+    elif kind == "stripes":
+        base[:] = c1
+        step = rng.randint(12, 48)
+        base[:, ::step] = c2
+        if rng.random() < 0.5:
+            base = cv2.rotate(base, cv2.ROTATE_90_CLOCKWISE)
+    elif kind == "blocks":
+        n = rng.randint(3, 8)
+        for _ in range(n):
+            x, y = rng.randint(0, CANVAS), rng.randint(0, CANVAS)
+            w, h = rng.randint(60, 300), rng.randint(60, 300)
+            col = tuple(rng.randint(20, 210) for _ in range(3))
+            cv2.rectangle(base, (x, y), (x + w, y + h), col, -1)
+    else:  # noise
+        base[:] = c1
+        noise = np.random.randint(0, 60, (CANVAS, CANVAS, 3), np.uint8)
+        base = cv2.add(base, noise)
+    if rng.random() < 0.5:
+        k = rng.choice([3, 5, 7])
+        base = cv2.GaussianBlur(base, (k, k), 0)
+    return base
+
+
+# ------------------------- biến đổi thẻ -------------------------
+
+def _dst_quad(rng: random.Random) -> np.ndarray:
+    """4 góc đích trên canvas: chọn hộp cơ sở (scale + vị trí) rồi jitter phối cảnh + xoay."""
+    fill = rng.uniform(0.32, 0.85)                 # thẻ chiếm bao nhiêu cạnh canvas
+    bw = CANVAS * fill
+    bh = bw / rng.uniform(1.45, 1.75)              # ~ tỉ lệ ID-1 (1.585) ± dao động
+    cx = rng.uniform(bw / 2, CANVAS - bw / 2)
+    cy = rng.uniform(bh / 2, CANVAS - bh / 2)
+    # góc cơ sở (chưa xoay)
+    base = np.array([
+        [cx - bw / 2, cy - bh / 2],
+        [cx + bw / 2, cy - bh / 2],
+        [cx + bw / 2, cy + bh / 2],
+        [cx - bw / 2, cy + bh / 2],
+    ], np.float32)
+    # jitter phối cảnh: dịch mỗi góc ngẫu nhiên (tối đa ~12% cạnh)
+    jit = 0.12 * min(bw, bh)
+    base += np.array([[rng.uniform(-jit, jit), rng.uniform(-jit, jit)] for _ in range(4)], np.float32)
+    # xoay VỪA PHẢI (±30°) để giữ định danh keypoint ổn định (TL vẫn ~trên-trái). Ảnh xoay
+    # 90/180/270 để OrientingOcr lo ở khâu OCR — không nhồi vào bài toán detect góc.
+    ang = rng.uniform(-30, 30)
+    R = cv2.getRotationMatrix2D((cx, cy), ang, 1.0)
+    ones = np.ones((4, 1), np.float32)
+    base = (R @ np.hstack([base, ones]).T).T.astype(np.float32)
+    return base
+
+
+def _photometric(card: np.ndarray, rng: random.Random) -> np.ndarray:
+    out = card.astype(np.float32)
+    out = out * rng.uniform(0.6, 1.2) + rng.uniform(-25, 25)         # sáng/tương phản
+    out = np.clip(out, 0, 255).astype(np.uint8)
+    if rng.random() < 0.4:
+        k = rng.choice([3, 5])
+        out = cv2.GaussianBlur(out, (k, k), 0)
+    return out
+
+
+def _add_glare(canvas: np.ndarray, quad: np.ndarray, rng: random.Random) -> None:
+    """Vệt loá trắng trên bề mặt thẻ (giả lập phản quang laminate)."""
+    if rng.random() > 0.5:
+        return
+    cx, cy = quad.mean(axis=0)
+    overlay = canvas.copy()
+    axes = (rng.randint(40, 160), rng.randint(15, 60))
+    cv2.ellipse(overlay, (int(cx), int(cy)), axes, rng.randint(0, 180), 0, 360, (255, 255, 255), -1)
+    a = rng.uniform(0.15, 0.5)
+    cv2.addWeighted(overlay, a, canvas, 1 - a, 0, canvas)
+
+
+def _compose(card: np.ndarray, rng: random.Random) -> tuple[np.ndarray, np.ndarray]:
+    """Trả (ảnh canvas, quad 4 góc). quad theo thứ tự TL,TR,BR,BL trên canvas."""
+    h, w = card.shape[:2]
+    src = np.array([[0, 0], [w, 0], [w, h], [0, h]], np.float32)
+    dst = _dst_quad(rng)
+    H = cv2.getPerspectiveTransform(src, dst)
+
+    card = _photometric(card, rng)
+    warped = cv2.warpPerspective(card, H, (CANVAS, CANVAS), borderValue=(0, 0, 0))
+    mask = cv2.warpPerspective(np.full((h, w), 255, np.uint8), H, (CANVAS, CANVAS))
+
+    bg = _random_background(rng)
+    m3 = (mask > 127)[:, :, None]
+    canvas = np.where(m3, warped, bg)
+    _add_glare(canvas, dst, rng)
+    if rng.random() < 0.6:                          # nén JPEG như ảnh chụp
+        q = rng.randint(45, 92)
+        ok, enc = cv2.imencode(".jpg", canvas, [cv2.IMWRITE_JPEG_QUALITY, q])
+        if ok:
+            canvas = cv2.imdecode(enc, cv2.IMREAD_COLOR)
+    return canvas, dst
+
+
+# ------------------------- nhãn YOLO-pose -------------------------
+
+def _label(quad: np.ndarray) -> str:
+    xs, ys = quad[:, 0], quad[:, 1]
+    x1, y1, x2, y2 = xs.min(), ys.min(), xs.max(), ys.max()
+    cx, cy = (x1 + x2) / 2 / CANVAS, (y1 + y2) / 2 / CANVAS
+    bw, bh = (x2 - x1) / CANVAS, (y2 - y1) / CANVAS
+    parts = ["0", f"{cx:.6f}", f"{cy:.6f}", f"{bw:.6f}", f"{bh:.6f}"]
+    for (px, py) in quad:                            # 4 keypoint (chuẩn hoá) + visible=2
+        parts += [f"{px / CANVAS:.6f}", f"{py / CANVAS:.6f}", "2"]
+    return " ".join(parts)
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--cards", required=True, help="thư mục ảnh thẻ phẳng (nguồn)")
+    ap.add_argument("--out", default="data", help="thư mục xuất dataset YOLO")
+    ap.add_argument("--n", type=int, default=4000, help="số ảnh sinh")
+    ap.add_argument("--val", type=float, default=0.1, help="tỉ lệ val")
+    ap.add_argument("--seed", type=int, default=42)
+    args = ap.parse_args()
+
+    rng = random.Random(args.seed)
+    np.random.seed(args.seed)
+
+    cards = [c for c in (_load_card(p) for p in _list_cards(args.cards)) if c is not None]
+    if not cards:
+        raise SystemExit(f"Không có ảnh thẻ trong {args.cards}")
+    print(f"Nguồn: {len(cards)} ảnh thẻ")
+
+    for split in ("train", "val"):
+        os.makedirs(os.path.join(args.out, "images", split), exist_ok=True)
+        os.makedirs(os.path.join(args.out, "labels", split), exist_ok=True)
+
+    n_val = int(args.n * args.val)
+    for i in range(args.n):
+        split = "val" if i < n_val else "train"
+        card = rng.choice(cards)
+        canvas, quad = _compose(card, rng)
+        stem = f"{i:06d}"
+        cv2.imwrite(os.path.join(args.out, "images", split, stem + ".jpg"), canvas)
+        with open(os.path.join(args.out, "labels", split, stem + ".txt"), "w") as f:
+            f.write(_label(quad) + "\n")
+        if (i + 1) % 500 == 0:
+            print(f"  {i + 1}/{args.n}")
+
+    # data.yaml cho YOLOv8-pose (1 class 'card', 4 keypoint)
+    yaml = (
+        f"path: {os.path.abspath(args.out)}\n"
+        "train: images/train\nval: images/val\n"
+        "kpt_shape: [4, 3]\n"                       # 4 điểm, mỗi điểm (x,y,visible)
+        "flip_idx: [1, 0, 3, 2]\n"                  # lật ngang: TL<->TR, BL<->BR
+        "names:\n  0: card\n"
+    )
+    with open(os.path.join(args.out, "data.yaml"), "w") as f:
+        f.write(yaml)
+    print(f"Xong: {args.n} ảnh → {args.out}  (data.yaml đã ghi)")
+
+
+if __name__ == "__main__":
+    main()
