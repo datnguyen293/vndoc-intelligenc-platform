@@ -45,12 +45,16 @@ class CornerRectifier:
             return None
         return kpts
 
-    def rectify(self, bgr: np.ndarray, out_long: int = 1100) -> np.ndarray | None:
-        """Nắn thẻ về ảnh thẳng dựa 4 góc. None nếu không detect được."""
+    def rectify(self, bgr: np.ndarray, out_long: int = 1100, pad: float = 0.04) -> np.ndarray | None:
+        """Nắn thẻ về ảnh thẳng dựa 4 góc. `pad`: nới 4 góc ra ngoài (%) để không cắt mất
+        chữ sát mép (vd 'Hạn sử dụng' ở góc). None nếu không detect được."""
         pts = self.corners(bgr)
         if pts is None:
             return None
         rect = order_points(pts)
+        if pad > 0:                                   # nới ra ngoài quanh tâm
+            c = rect.mean(axis=0)
+            rect = ((rect - c) * (1.0 + pad) + c).astype("float32")
         tl, tr, br, bl = rect
         w = (np.linalg.norm(tr - tl) + np.linalg.norm(br - bl)) / 2
         h = (np.linalg.norm(bl - tl) + np.linalg.norm(br - tr)) / 2

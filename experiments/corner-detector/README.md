@@ -29,12 +29,35 @@ $PY export.py --weights runs/pose/train/weights/best.pt
 # 4) Tích hợp: CornerDetector (ONNX) → 4 góc → order_points → warp (dùng lại geometry.py)
 ```
 
-## Trạng thái
-- [x] `synth.py` — sinh dữ liệu tổng hợp (verify: 4 góc bám khít mép thẻ).
-- [ ] `train.py` — train YOLOv8-pose.
-- [ ] `export.py` — ONNX.
-- [ ] Tích hợp vào rectifier + so sánh vs classic trên ảnh thật.
+## Bước B — fine-tune bằng ẢNH THẬT gán nhãn (thu hẹp nốt gap)
 
-## Giới hạn đã biết
-- Nguồn chỉ ~38 ảnh thẻ (ít) → augmentation nặng bù lại; thêm ảnh thẻ phẳng sẽ tốt hơn.
-- Xoay chỉ ±30° trong data (giữ keypoint ổn định); 90/180/270 để `OrientingOcr` lo.
+Iter 1 (synth v1) fail trên ảnh thật; iter 2 (synth v2: nền thật+bao nhựa) đã tổng quát khá
+(bám được thẻ trong bao trên bàn gỗ) nhưng chưa khít mép in. Bước B: gán vài chục ảnh thật.
+
+```bash
+PY=../../service/.venv/Scripts/python.exe
+
+# 1) Bỏ ảnh thẻ THẬT (đa dạng nền/nghiêng/bao) vào  real_images/
+# 2) Gán 4 góc bằng GUI (bấm 4 góc/ảnh; tự bỏ qua ảnh đã gán → gán theo đợt)
+$PY label_corners.py --images real_images --out real_data
+
+# 3) Fine-tune từ best.pt trên SYNTH + REAL gộp (LR thấp, tránh overfit ít ảnh thật)
+$PY finetune.py --weights runs/pose/weights/best.pt --synth data --real real_data
+
+# 4) Đánh giá lại bằng anchor
+DIP_OCR_BACKEND=vietocr DIP_OCR_DEVICE=cpu $PY evaluate.py \
+    --weights runs/finetune/weights/best.pt --images real_images/<ảnh>:<hint> ...
+```
+
+## Trạng thái
+- [x] `synth.py` v2 — nền thật + bao nhựa + domain randomization.
+- [x] `train.py` — train YOLOv8-pose (val mAP tốt; v2 tổng quát khá sang ảnh thật).
+- [x] `corner_rectify.py` + `evaluate.py` — inference + so sánh anchor.
+- [x] `label_corners.py` + `finetune.py` — công cụ gán 4 góc + fine-tune (bước B).
+- [ ] Fine-tune trên ảnh thật đủ tốt → export ONNX → tích hợp rectifier (fallback khi classic fail).
+
+## Giới hạn / bài học
+- Val synth cao (0.99) KHÔNG đồng nghĩa tốt trên thật (iter 1 chứng minh) → phải đánh giá ảnh thật.
+- Trên thẻ LẤP KHUNG, classic vốn đã tốt → corner ngang bằng; corner THẮNG ở ca thẻ NHỎ/nền nhiễu.
+  → nên dùng corner làm **fallback/bổ trợ** khi classic không ra tứ giác tốt, không thay thế mù.
+- Nguồn synth chỉ ~38 ảnh thẻ; bước B (ảnh thật) là đòn bẩy tổng quát mạnh nhất.
