@@ -1,43 +1,55 @@
-# Plugin: Thẻ quân nhân — CHỨNG MINH QUÂN NHÂN CHUYÊN NGHIỆP (DOC-TYPE-008)
-# Ảnh mẫu thật: samples/the_quan_nhan/{phan-van-trung,the-quan-nhan}.jpg (nội bộ, nhạy cảm).
-# Layout: Số 12 số, Họ tên, Sinh (ngày..tháng..năm), Đơn vị, Ngày cấp (câu), Hạn sử dụng
-# (M/YYYY - chỉ tháng/năm), người cấp (cấp bậc + tên). KHÔNG có QR/MRZ → OCR thuần.
+# Plugin: Thẻ quân nhân (DOC-TYPE-008) — GỘP 2 BIẾN THỂ (nội bộ, nhạy cảm):
+#   A. CHỨNG MINH QUÂN NHÂN CHUYÊN NGHIỆP: số 12 số, nhãn–giá trị INLINE (sau ':'), có ngày sinh.
+#      Ảnh mẫu: samples/the_quan_nhan/{phan-van-trung,the-quan-nhan}.jpg
+#   B. GIẤY CHỨNG MINH SĨ QUAN: số 8 số, layout 2 CỘT (nhãn trái / giá trị phải), có "Cấp bậc",
+#      "Đơn vị cấp", KHÔNG có ngày sinh. Ảnh mẫu: samples/the_quan_nhan/test-upload.jpeg
+# KHÔNG có QR/MRZ → OCR thuần. Take right_of_label chạy cả inline lẫn 2 cột.
 docType: the_quan_nhan
 displayName: "Thẻ quân nhân"
-version: "1.0"
+version: "1.1"
 ready: true
 
 classify:
-  anchors: ["QUÂN NHÂN CHUYÊN NGHIỆP", "CHỨNG MINH QUÂN NHÂN"]
+  anchors: ["QUÂN NHÂN CHUYÊN NGHIỆP", "CHỨNG MINH QUÂN NHÂN", "CHỨNG MINH SĨ QUAN"]
 
 extraction:
   strategy: label_anchored
   fields:
+    # Số: quân nhân CN 12 số; sĩ quan 8 số (vd "20 056 913").
     - name: idNumber
       labels: ["Số"]
       take: after_colon
       type: digits
       normalize: [removeSpaces, digitsOnly]
-      validate: { regex: '^\d{12}$' }
+      validate: { regex: '^(\d{8}|\d{12})$' }
+    # right_of_label: mẫu A giá trị inline sau ':'; mẫu B giá trị ở CỘT PHẢI (dòng khác).
     - name: fullName
       labels: ["Họ tên", "Họ và tên"]
-      take: after_colon
+      take: right_of_label
       type: text_vi
+    # Chỉ mẫu A có ngày sinh (câu, trên dòng "Sinh: ..."); mẫu B không có → null.
     - name: dateOfBirth
       labels: ["Sinh", "Ngày sinh"]
-      take: vn_date_phrase          # "Sinh: ngày 18 tháng 03 năm 1989"
+      take: vn_date_phrase_labeled
       type: date
+    # Cấp bậc: chỉ mẫu B (sĩ quan) — vd "Cấp úy".
+    - name: rank
+      labels: ["Cấp bậc"]
+      take: right_of_label
+      type: text_vi
+      required: false
+    # Đơn vị (A) / Đơn vị cấp (B). "Đơn vị cấp" đặt TRƯỚC để nuốt trọn nhãn mẫu B.
     - name: unit
-      labels: ["Đơn vị"]
-      take: after_colon
+      labels: ["Đơn vị cấp", "Đơn vị"]
+      take: right_of_label
       type: text_vi
     - name: dateOfIssue
       labels: ["Ngày", "tháng", "năm"]
-      take: vn_date_phrase          # "Ngày 02 tháng 3 năm 2020" (sau dateOfBirth → dòng kế)
+      take: vn_date_phrase          # câu "Ngày .. tháng .. năm .." (sau dateOfBirth)
       type: date
     - name: dateOfExpiry
       labels: ["Hạn sử dụng", "Hạn sd", "Có giá trị đến"]
-      take: after_colon             # "3/2031" (tháng/năm) — KHÔNG phải date đầy đủ
+      take: after_colon             # "12/2034" (tháng/năm) — KHÔNG phải date đầy đủ
       type: code
       required: false
 

@@ -193,6 +193,19 @@ class LabelAnchoredExtractor:
                     return ln.text, ln.confidence, [ln]
             return None
 
+        if take == "vn_date_phrase_labeled":
+            # Ngày dạng CÂU nhưng CHỈ nhận khi dòng CÓ NHÃN tương ứng (vd dateOfBirth chỉ lấy
+            # câu ngày trên dòng "Sinh: ..."). Thẻ KHÔNG có trường đó (vd sĩ quan không ghi
+            # ngày sinh) → None, tránh vồ nhầm ngày cấp.
+            keys = [_label_key(lb) for lb in spec.labels if _label_key(lb)]
+            for ln in lines:
+                if id(ln) in used:
+                    continue
+                lk = _label_key(ln.text)
+                if any(k and k in lk for k in keys) and dates.find_date_phrase(ln.text):
+                    return ln.text, ln.confidence, [ln]
+            return None
+
         if take == "date_phrase_or_issue":
             # Ngày cấp: mẫu cũ dạng CÂU "Ngày 07 tháng 11 năm 2024"; mẫu mới dạng nhãn
             # "Ngày cấp: 14-09-2025". Thử câu trước (giữ hành vi cũ), rồi tới dòng có 'ngaycap'.

@@ -261,6 +261,15 @@ GOLDEN = {
         "unit": "Tổng cực Kỹ thuật", "dateOfIssue": "2019-10-01",
         "dateOfExpiry": "9 2031",
     },
+    # BIẾN THỂ SĨ QUAN (cuong): số 8 số, layout 2 cột (right_of_label), có rank "Cấp úy",
+    # KHÔNG có ngày sinh (dateOfBirth=null đúng). dateOfIssue ngày "16" là OCR đọc nhầm "10"
+    # do loá — khoá nguyên trạng OCR (test bộ trích xuất, không phải độ chính xác OCR).
+    "the_quan_nhan__cuong": {
+        "_type": "the_quan_nhan",
+        "idNumber": "20056913", "fullName": "TRẦN QUỐC CƯỜNG",
+        "dateOfBirth": None, "rank": "Cấp úy", "unit": "Bộ đội Biên phòng",
+        "dateOfIssue": "2022-02-16", "dateOfExpiry": "12/2034",
+    },
 }
 
 
