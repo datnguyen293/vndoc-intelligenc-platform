@@ -99,26 +99,31 @@ def _proc_bg(rng: random.Random) -> np.ndarray:
 
 # ------------------------- biến đổi thẻ -------------------------
 
-def _dst_quad(rng: random.Random) -> np.ndarray:
-    """4 góc đích trên canvas: chọn hộp cơ sở (scale + vị trí) rồi jitter phối cảnh + xoay."""
-    fill = rng.uniform(0.22, 0.82)                 # thẻ chiếm bao nhiêu cạnh canvas (nhỏ hơn=bền hơn)
-    bw = CANVAS * fill
-    bh = bw / rng.uniform(1.45, 1.75)              # ~ tỉ lệ ID-1 (1.585) ± dao động
+def _dst_quad(rng: random.Random, aspect: float) -> np.ndarray:
+    """4 góc đích trên canvas theo TỈ LỆ ảnh nguồn (aspect = w/h) → thẻ DỌC lẫn NGANG (thẻ
+    Đảng viên chip dọc, CCCD/CMND chụp dọc...). Jitter phối cảnh MẠNH + xoay RỘNG để bền với
+    ảnh chụp góc chéo tự do của người dùng."""
+    aspect = max(0.3, aspect * rng.uniform(0.9, 1.1))     # jitter nhẹ tỉ lệ
+    fill = rng.uniform(0.30, 0.85)                         # cạnh DÀI chiếm bao nhiêu canvas
+    long_px = CANVAS * fill
+    if aspect >= 1.0:                                     # ngang: rộng là cạnh dài
+        bw, bh = long_px, long_px / aspect
+    else:                                                # dọc: cao là cạnh dài
+        bh, bw = long_px, long_px * aspect
     cx = rng.uniform(bw / 2, CANVAS - bw / 2)
     cy = rng.uniform(bh / 2, CANVAS - bh / 2)
-    # góc cơ sở (chưa xoay)
     base = np.array([
         [cx - bw / 2, cy - bh / 2],
         [cx + bw / 2, cy - bh / 2],
         [cx + bw / 2, cy + bh / 2],
         [cx - bw / 2, cy + bh / 2],
     ], np.float32)
-    # jitter phối cảnh: dịch mỗi góc ngẫu nhiên (tối đa ~12% cạnh)
-    jit = 0.12 * min(bw, bh)
+    # phối cảnh mạnh hơn (±18% cạnh) → mô phỏng góc chụp chéo/foreshortening.
+    jit = 0.18 * min(bw, bh)
     base += np.array([[rng.uniform(-jit, jit), rng.uniform(-jit, jit)] for _ in range(4)], np.float32)
-    # xoay VỪA PHẢI (±30°) để giữ định danh keypoint ổn định (TL vẫn ~trên-trái). Ảnh xoay
-    # 90/180/270 để OrientingOcr lo ở khâu OCR — không nhồi vào bài toán detect góc.
-    ang = rng.uniform(-30, 30)
+    # xoay ±40° (rộng hơn) — giữ dưới ~45° để định danh keypoint theo vị trí còn ổn định;
+    # xoay 90/180/270 vẫn để OrientingOcr lo ở khâu OCR.
+    ang = rng.uniform(-40, 40)
     R = cv2.getRotationMatrix2D((cx, cy), ang, 1.0)
     ones = np.ones((4, 1), np.float32)
     base = (R @ np.hstack([base, ones]).T).T.astype(np.float32)
@@ -213,7 +218,7 @@ def _compose(card: np.ndarray, rng: random.Random,
     """Trả (ảnh canvas, quad 4 góc TL,TR,BR,BL). v2: nền thật + bao nhựa + scene aug."""
     h, w = card.shape[:2]
     src = np.array([[0, 0], [w, 0], [w, h], [0, h]], np.float32)
-    dst = _dst_quad(rng)
+    dst = _dst_quad(rng, w / h)                       # theo tỉ lệ ảnh nguồn → dọc/ngang
     H = cv2.getPerspectiveTransform(src, dst)
 
     card = _photometric(card, rng)
