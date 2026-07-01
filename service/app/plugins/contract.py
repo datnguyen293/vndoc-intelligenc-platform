@@ -19,6 +19,9 @@ class FieldSpec:
     cross_check: bool = False
     cross_check_province: bool = False
     multiline: bool = False
+    # Ghép giá trị từ các trường khác khi bóc trực tiếp không được (vd hộ chiếu MỚI tách
+    # 'Họ/Surname' + 'Chữ đệm và tên/Given names' → fullName = surname + givenNames).
+    compose_from: list[str] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> "FieldSpec":
@@ -35,6 +38,7 @@ class FieldSpec:
             cross_check=d.get("crossCheck", False),
             cross_check_province=d.get("crossCheckProvince", False),
             multiline=d.get("multiline", False),
+            compose_from=d.get("composeFrom", []),
         )
 
 

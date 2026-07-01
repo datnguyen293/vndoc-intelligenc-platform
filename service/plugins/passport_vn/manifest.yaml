@@ -1,0 +1,96 @@
+# Plugin: Hộ chiếu Việt Nam (DOC-TYPE-004)
+# Bám docs/samples/ho-chieu-mau-01.md (CŨ) + ho-chieu-mau-02.md (MỚI e-passport).
+# MỘT docType, plugin nhận CẢ 2 layout qua nhiều nhãn:
+#   - CŨ:  "Họ và tên" (1 trường), "Số GCMND" 9 số, có "Nơi cấp".
+#   - MỚI: "Họ/Surname" + "Chữ đệm và tên/Given names" (2 trường), "Số ĐDCN" 12 số, không "Nơi cấp".
+# MRZ TD3 (2 dòng) là nguồn structured chính (có checksum) cho số HC/ngày/số ĐDCN; tên
+# lấy OCR vùng nhìn (MRZ không dấu). MRZ hỏng (OCR phá '<') → OCR vùng nhìn bù toàn bộ.
+docType: passport_vn
+displayName: "Hộ chiếu Việt Nam"
+version: "1.0"
+ready: true
+
+classify:
+  anchors: ["HỘ CHIẾU", "PASSPORT"]
+
+structuredData:
+  - kind: mrz
+    format: td3
+    parser: mrz_td3
+    mapsTo: [idNumber, nationality, dateOfBirth, sex, dateOfExpiry, personalIdNumber]
+
+extraction:
+  strategy: label_anchored
+  fields:
+    - name: idNumber
+      labels: ["Số hộ chiếu", "Passport No"]
+      take: right_of_label_or_below
+      source: [structured, ocr]
+      type: code
+      normalize: [removeSpaces]
+      validate: { regex: '^[A-Z]\d{7,8}$' }   # cũ 1 chữ+7 số / mới 1 chữ+8 số
+    - name: surname
+      # Nhãn GHÉP "Họ Surname" để chỉ khớp khi "Họ" đi liền "Surname" (né trùng "HỘ" của
+      # tiêu đề "HỘ CHIẾU"). Chỉ hộ chiếu MỚI (tách họ/tên).
+      labels: ["Họ Surname"]
+      take: right_of_label_or_below
+      type: text_vi
+      required: false
+    - name: givenNames
+      labels: ["Chữ đệm và tên", "Given names"]
+      take: right_of_label_or_below
+      type: text_vi
+      required: false
+    - name: fullName
+      labels: ["Họ và tên", "Full name"]      # hộ chiếu CŨ có; MỚI thì ghép từ surname+givenNames
+      take: below_label
+      type: text_vi
+      composeFrom: [surname, givenNames]
+    - name: nationality
+      labels: ["Quốc tịch", "Nationality"]
+      take: right_of_label_or_below
+      source: [structured, ocr]
+      type: text_vi
+    - name: dateOfBirth
+      labels: ["Ngày sinh", "Date of birth"]
+      take: date_after_label
+      source: [structured, ocr]
+      type: date
+    - name: sex
+      labels: ["Giới tính", "Sex"]
+      take: right_of_label_or_below
+      source: [structured, ocr]
+      type: sex
+    - name: placeOfBirth
+      labels: ["Nơi sinh", "Place of birth"]
+      take: right_of_label_or_below
+      type: text_vi
+      normalize: [dictFix]
+    - name: personalIdNumber
+      labels: ["Số GCMND", "ID card No", "Số ĐDCN", "Số định danh cá nhân", "ID No"]
+      take: right_of_label_or_below
+      source: [structured, ocr]
+      type: code
+      validate: { regex: '^\d{9}$|^\d{12}$' }
+    - name: dateOfIssue
+      labels: ["Ngày cấp", "Date of issue"]
+      take: date_after_label
+      type: date
+    - name: dateOfExpiry
+      labels: ["Có giá trị đến", "Ngày hết hạn", "Date of expiry"]
+      take: date_after_label
+      source: [structured, ocr]
+      type: date
+      checks: [warn_if_expired]
+    - name: issuedBy
+      labels: ["Nơi cấp", "Place of issue"]   # chỉ hộ chiếu CŨ
+      take: right_of_label_or_below
+      type: text_vi
+      required: false
+
+confidence:
+  fieldWeights:
+    idNumber: 0.3
+    fullName: 0.25
+    dateOfBirth: 0.2
+    default: 0.1

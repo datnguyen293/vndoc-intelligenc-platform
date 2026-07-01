@@ -12,7 +12,14 @@ from typing import Any
 
 from app.plugins.contract import Manifest, StructuredSpec
 from app.plugins.manager import PluginManager
-from app.structured.mrz import find_mrz_td1, mrz_td1_checksums_ok, parse_mrz_td1
+from app.structured.mrz import (
+    find_mrz_td1,
+    find_mrz_td3,
+    mrz_td1_checksums_ok,
+    mrz_td3_checksums_ok,
+    parse_mrz_td1,
+    parse_mrz_td3,
+)
 from app.structured.qr import QR_PARSERS, decode_qr
 
 
@@ -115,11 +122,15 @@ class RealStructuredReader:
                 if parsed:
                     return parsed
             return {}
-        if spec.kind == "mrz" and (spec.format == "td1" or spec.parser == "mrz_td1"):
+        if spec.kind == "mrz":
             # CHỈ tin MRZ khi checksum đúng — OCR thường phá ký tự '<' của MRZ thành chữ.
-            td = find_mrz_td1(texts)
+            if spec.format == "td3" or spec.parser == "mrz_td3":
+                td = find_mrz_td3(texts)   # hộ chiếu (2 dòng × 44)
+                if td and mrz_td3_checksums_ok(td):
+                    return parse_mrz_td3(td)
+                return {}
+            td = find_mrz_td1(texts)       # mặc định td1 (căn cước 2024 mặt sau)
             if td and mrz_td1_checksums_ok(td):
                 return parse_mrz_td1(td)
             return {}
-        # mrz td3 (hộ chiếu) / barcode: bổ sung sau.
         return {}

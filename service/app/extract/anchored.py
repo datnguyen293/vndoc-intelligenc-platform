@@ -106,6 +106,15 @@ class LabelAnchoredExtractor:
                     taken = fb
             if taken is None:
                 taken = self._pattern_fallback(lines, spec, used)
+            if taken is None and spec.compose_from:
+                # Ghép từ trường khác (vd hộ chiếu mới: fullName = surname + givenNames).
+                parts = [fields[n].value for n in spec.compose_from
+                         if fields.get(n) and fields[n].value]
+                if parts:
+                    value = self._post(" ".join(parts), spec)
+                    fields[spec.name] = FieldValue(value=value or None, confidence=0.9, source="ocr")
+                    warnings += validate_field(value, spec) + run_checks(value, spec)
+                    continue
             if taken is None:
                 fields[spec.name] = FieldValue(value=None, confidence=0.0, source="ocr")
                 if spec.required:

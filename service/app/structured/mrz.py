@@ -102,3 +102,62 @@ def find_mrz_td1(texts: list[str]) -> list[str] | None:
         if 25 <= len(s) <= 36 and "<" in s and re.fullmatch(r"[A-Z0-9<]+", s):
             cands.append(s)
     return cands[:3] if len(cands) >= 3 else None
+
+
+def parse_mrz_td3(lines: list[str]) -> dict[str, str]:
+    """Parse MRZ TD3 (hộ chiếu, 2 dòng × 44). Trả {field: value}; ngày dd/MM/yyyy.
+    Tên KHÔNG lấy (MRZ không dấu → dùng OCR vùng nhìn).
+
+    Bố cục dòng 2 (ICAO 9303 TD3):
+      [0:9] số hộ chiếu  [9] cd  [10:13] quốc tịch  [13:19] ngày sinh  [19] cd
+      [20] giới tính  [21:27] hạn  [27] cd  [28:42] số ĐDCN/GCMND  [42] cd  [43] cd tổng
+    """
+    if len(lines) < 2:
+        return {}
+    l2 = re.sub(r"\s+", "", lines[1]).upper()
+    if len(l2) < 28:
+        return {}
+    out: dict[str, str] = {}
+
+    pno = l2[0:9].replace("<", "")
+    if pno:
+        out["idNumber"] = pno
+    if l2[10:13] == "VNM":
+        out["nationality"] = "Việt Nam"
+    dob = _yymmdd_to_slash(l2[13:19])
+    if dob:
+        out["dateOfBirth"] = dob
+    if len(l2) > 20 and l2[20] in ("M", "F"):
+        out["sex"] = "Nam" if l2[20] == "M" else "Nữ"
+    exp = _yymmdd_to_slash(l2[21:27], expiry=True)
+    if exp:
+        out["dateOfExpiry"] = exp
+    if len(l2) >= 42:
+        pn = l2[28:42].replace("<", "")
+        if pn:
+            out["personalIdNumber"] = pn
+    return out
+
+
+def mrz_td3_checksums_ok(lines: list[str]) -> bool:
+    """Verify 3 check digit chính TD3 (số hộ chiếu, ngày sinh, hạn dùng)."""
+    if len(lines) < 2:
+        return False
+    l2 = re.sub(r"\s+", "", lines[1]).upper()
+    if len(l2) < 28:
+        return False
+    return (
+        _check_digit(l2[0:9]) == l2[9]
+        and _check_digit(l2[13:19]) == l2[19]
+        and _check_digit(l2[21:27]) == l2[27]
+    )
+
+
+def find_mrz_td3(texts: list[str]) -> list[str] | None:
+    """Tìm 2 dòng MRZ TD3 trong text OCR (mỗi dòng ~44 ký tự [A-Z0-9<], có '<')."""
+    cands = []
+    for t in texts:
+        s = re.sub(r"\s+", "", t).upper()
+        if 40 <= len(s) <= 48 and "<" in s and re.fullmatch(r"[A-Z0-9<]+", s):
+            cands.append(s)
+    return cands[:2] if len(cands) >= 2 else None
