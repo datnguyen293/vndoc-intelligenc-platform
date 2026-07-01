@@ -15,7 +15,8 @@ qua `config\vndoc.env`.
 | `scripts/init-config.ps1` | Lần cài đầu: tạo `vndoc.env` + **sinh API Key ngẫu nhiên** (idempotent) |
 | `scripts/install-service.ps1` | Đăng ký service qua NSSM (Inno gọi ở `[Run]`; auto-start + auto-restart + log) |
 | `scripts/uninstall-service.ps1` | Gỡ service (Inno gọi ở `[UninstallRun]`) |
-| `installer/vndoc.iss` | Inno Setup → `VNDoc-Setup-x.y.z.exe` |
+| `installer/vndoc.iss` | Inno Setup → `VNDoc-Setup-x.y.z.exe` (ship kèm hướng dẫn + shortcut) |
+| `HUONG-DAN-CAI-DAT.md` | **Hướng dẫn cho cán bộ triển khai** (ship vào `{app}` + Start Menu) |
 | `bin/nssm.exe` | *(tự tải)* NSSM public-domain — KHÔNG commit (xem `.gitignore`) |
 
 ## Chuẩn bị (một lần) — phần lớn ĐÃ tự động

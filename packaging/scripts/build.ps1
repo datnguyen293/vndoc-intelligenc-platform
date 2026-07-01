@@ -62,6 +62,7 @@ if ($SkipObfuscate) {
 # 3) Tài nguyên KHÔNG mã hoá ------------------------------------------------
 Copy-Item (Join-Path $RepoRoot 'service\plugins') (Join-Path $StageDir 'plugins') -Recurse
 Copy-Item (Join-Path $Pkg 'config\vndoc.env.example') (Join-Path $StageDir 'config\vndoc.env.example')
+Copy-Item (Join-Path $Pkg 'HUONG-DAN-CAI-DAT.md')          $StageDir   # hướng dẫn cho cán bộ
 Copy-Item (Join-Path $Pkg 'scripts\init-config.ps1')       $StageDir
 Copy-Item (Join-Path $Pkg 'scripts\install-service.ps1')   $StageDir
 Copy-Item (Join-Path $Pkg 'scripts\uninstall-service.ps1') $StageDir

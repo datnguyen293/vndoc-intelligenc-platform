@@ -57,6 +57,11 @@ Write-Host "Đăng ký service '$ServiceName'..."
 & $Nssm set $ServiceName AppRotateOnline 1
 & $Nssm set $ServiceName AppRotateBytes 10485760
 
+# Mở tường lửa Windows cho cổng 11001 (TCP inbound) để thiết bị Android trong LAN gọi được.
+Write-Host "Mở tường lửa cổng 11001 (LAN)..."
+netsh advfirewall firewall delete rule name="VNDoc OCR 11001" 2>$null | Out-Null
+netsh advfirewall firewall add rule name="VNDoc OCR 11001" dir=in action=allow protocol=TCP localport=11001 profile=private,domain | Out-Null
+
 Write-Host "Khởi động service..."
 & $Nssm start $ServiceName
 

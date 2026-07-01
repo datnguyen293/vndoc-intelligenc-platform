@@ -11,6 +11,8 @@ $ErrorActionPreference = 'SilentlyContinue'
 $ServiceName = 'VNDocOCR'
 $Nssm = Join-Path $InstallRoot 'nssm.exe'
 
+netsh advfirewall firewall delete rule name="VNDoc OCR 11001" 2>$null | Out-Null
+
 if (Test-Path $Nssm) {
     & $Nssm stop $ServiceName confirm
     & $Nssm remove $ServiceName confirm

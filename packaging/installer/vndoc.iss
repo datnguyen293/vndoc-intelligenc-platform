@@ -38,7 +38,17 @@ Source: "{#StageDir}\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdir
 Name: "{app}\logs";   Flags: uninsneveruninstall
 Name: "{app}\config"; Flags: uninsneveruninstall
 
+[Icons]
+; Lối tắt Start Menu cho cán bộ triển khai.
+Name: "{group}\Hướng dẫn cài đặt VNDoc";     Filename: "{app}\HUONG-DAN-CAI-DAT.md"
+Name: "{group}\Thư mục cấu hình (API key)";   Filename: "{app}\config"
+Name: "{group}\Kiểm tra VNDoc (health)";      Filename: "http://127.0.0.1:11001/api/v1/health"
+
 [Run]
+; 0) Mở hướng dẫn sau khi cài (tuỳ chọn — checkbox ở màn hình cuối).
+Filename: "{app}\HUONG-DAN-CAI-DAT.md"; \
+    Description: "Mở hướng dẫn cài đặt & cấu hình"; \
+    Flags: postinstall shellexec skipifsilent nowait unchecked
 ; 1) Tạo config + SINH API KEY ngẫu nhiên lần cài đầu (DEC-088) — TRƯỚC khi service chạy.
 Filename: "powershell.exe"; \
     Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\init-config.ps1"" -InstallRoot ""{app}"""; \

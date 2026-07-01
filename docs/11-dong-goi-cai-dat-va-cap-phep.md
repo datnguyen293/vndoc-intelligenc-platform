@@ -143,7 +143,13 @@ Nâng cấp: cài đè cùng thư mục; giữ `config/` & `models/`; restart se
   (`app/security.py`) chặn client IP ngoài `DIP_ALLOWED_IPS` bằng `403`.
 - Mặc định `127.0.0.1/32,192.168.0.0/24`; admin sửa cho khớp subnet đơn vị (vd `10.0.0.0/24`).
   Rỗng = tắt whitelist. Host không phải IP (Starlette `TestClient`) → bỏ qua (test chạy được).
-- Vẫn nên bật tường lửa Windows chỉ mở `:11001` cho subnet LAN (phòng thủ nhiều lớp).
+- **Tường lửa**: `install-service.ps1` tự `netsh` mở cổng `11001` (TCP inbound, profile
+  private+domain) khi cài; `uninstall-service.ps1` xoá luật khi gỡ (phòng thủ nhiều lớp).
+
+### 7.4 Hướng dẫn cho cán bộ triển khai
+`packaging/HUONG-DAN-CAI-DAT.md` — tài liệu **cho người cài** (không kỹ thuật): cài EXE, lấy
+API Key, chỉnh dải IP LAN, bật/tắt service, cấu hình Android, xử lý sự cố. Bộ cài ship file này
+vào `{app}` + tạo shortcut Start Menu + hỏi mở sau khi cài.
 
 ### 7.3 Nạp config & vận hành
 - `settings.py` sửa (bổ sung, an toàn) để đọc file trỏ bởi env `VNDOC_CONFIG`; không đặt thì
