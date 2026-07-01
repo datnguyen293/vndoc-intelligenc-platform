@@ -1,0 +1,229 @@
+{
+ "image": "cu.jpg",
+ "lines": [
+  {
+   "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM - SOCIALIST REPUBLIC OF VIETNAM",
+   "x": 131.2,
+   "y": 61.2,
+   "w": 1351.2,
+   "h": 45.0,
+   "confidence": 0.8954
+  },
+  {
+   "text": "HỘ CHIẾU / PASSPORT",
+   "x": 112.5,
+   "y": 137.5,
+   "w": 390.0,
+   "h": 45.0,
+   "confidence": 0.8252
+  },
+  {
+   "text": "Loại /Type",
+   "x": 558.8,
+   "y": 142.5,
+   "w": 187.5,
+   "h": 50.0,
+   "confidence": 0.7991
+  },
+  {
+   "text": "Mã số / Code",
+   "x": 820.0,
+   "y": 145.0,
+   "w": 212.5,
+   "h": 41.2,
+   "confidence": 0.8583
+  },
+  {
+   "text": "Số hô chiếu / Passport N",
+   "x": 1111.2,
+   "y": 140.0,
+   "w": 401.2,
+   "h": 50.0,
+   "confidence": 0.8322
+  },
+  {
+   "text": "P",
+   "x": 627.5,
+   "y": 198.8,
+   "w": 36.2,
+   "h": 40.0,
+   "confidence": 0.6675
+  },
+  {
+   "text": "VNM",
+   "x": 890.0,
+   "y": 197.5,
+   "w": 100.0,
+   "h": 42.5,
+   "confidence": 0.9195
+  },
+  {
+   "text": "B7849474",
+   "x": 1142.5,
+   "y": 208.8,
+   "w": 195.0,
+   "h": 42.5,
+   "confidence": 0.9074
+  },
+  {
+   "text": "Họ và tên / Full name",
+   "x": 567.5,
+   "y": 250.0,
+   "w": 340.0,
+   "h": 36.2,
+   "confidence": 0.8691
+  },
+  {
+   "text": "NGUYỄN TIẾN ĐẠT",
+   "x": 558.8,
+   "y": 296.2,
+   "w": 413.8,
+   "h": 53.8,
+   "confidence": 0.7398
+  },
+  {
+   "text": "Quốc tịch 1 Nationality",
+   "x": 567.5,
+   "y": 352.5,
+   "w": 361.2,
+   "h": 36.2,
+   "confidence": 0.7675
+  },
+  {
+   "text": "VIỆT NAM/VIETNAMESE",
+   "x": 1048.8,
+   "y": 342.5,
+   "w": 442.5,
+   "h": 45.0,
+   "confidence": 0.7331
+  },
+  {
+   "text": "Ngày sinh / Date ofbirth",
+   "x": 563.8,
+   "y": 401.2,
+   "w": 390.0,
+   "h": 45.0,
+   "confidence": 0.8461
+  },
+  {
+   "text": "Nơi sinh/ Place afbirth",
+   "x": 1042.5,
+   "y": 400.0,
+   "w": 387.5,
+   "h": 43.8,
+   "confidence": 0.7542
+  },
+  {
+   "text": "29/03/1988",
+   "x": 557.5,
+   "y": 457.5,
+   "w": 261.2,
+   "h": 48.8,
+   "confidence": 0.7767
+  },
+  {
+   "text": "BẮC GIANG",
+   "x": 1041.2,
+   "y": 450.0,
+   "w": 265.0,
+   "h": 53.8,
+   "confidence": 0.9019
+  },
+  {
+   "text": "Giới tính / Sex",
+   "x": 562.5,
+   "y": 505.0,
+   "w": 227.5,
+   "h": 40.0,
+   "confidence": 0.8145
+  },
+  {
+   "text": "SỐ GCMND / ID card N",
+   "x": 1042.5,
+   "y": 503.8,
+   "w": 386.2,
+   "h": 36.2,
+   "confidence": 0.7758
+  },
+  {
+   "text": "NAM/M",
+   "x": 560.0,
+   "y": 562.5,
+   "w": 187.5,
+   "h": 42.5,
+   "confidence": 0.8805
+  },
+  {
+   "text": "121647952",
+   "x": 1043.8,
+   "y": 562.5,
+   "w": 206.2,
+   "h": 41.2,
+   "confidence": 0.9057
+  },
+  {
+   "text": "Ngày cấp / Date ofissue",
+   "x": 562.5,
+   "y": 603.8,
+   "w": 383.8,
+   "h": 51.2,
+   "confidence": 0.8562
+  },
+  {
+   "text": "Có giá trị đến / Date ofexpiry",
+   "x": 1042.5,
+   "y": 603.8,
+   "w": 460.0,
+   "h": 46.2,
+   "confidence": 0.8626
+  },
+  {
+   "text": "13/05/2013",
+   "x": 558.8,
+   "y": 661.2,
+   "w": 257.5,
+   "h": 47.5,
+   "confidence": 0.739
+  },
+  {
+   "text": "13/05/2023",
+   "x": 1045.0,
+   "y": 665.0,
+   "w": 251.2,
+   "h": 41.2,
+   "confidence": 0.8183
+  },
+  {
+   "text": "Nơi cấp / Place.ofissue",
+   "x": 562.5,
+   "y": 710.0,
+   "w": 371.2,
+   "h": 43.8,
+   "confidence": 0.8516
+  },
+  {
+   "text": "Cục Quản lý xuất nhập cảnh",
+   "x": 557.5,
+   "y": 770.0,
+   "w": 621.2,
+   "h": 58.8,
+   "confidence": 0.8984
+  },
+  {
+   "text": "pevnmnguyenectienedatescecceccecesce",
+   "x": 76.2,
+   "y": 883.8,
+   "w": 1437.5,
+   "h": 48.8,
+   "confidence": 0.4708
+  },
+  {
+   "text": "0784947466VNM8803296M230520CCC5",
+   "x": 71.2,
+   "y": 961.2,
+   "w": 1441.2,
+   "h": 56.2,
+   "confidence": 0.4657
+  }
+ ]
+}

@@ -56,7 +56,7 @@ Căn cước 2024 mặt trước, Căn cước 2024 mặt sau}. Quy tắc nhận
 | DOC-TYPE-001 | CCCD gắn chip — Mặt trước | `cccd_chip_front` | `cccd` | **QR** (góc trên phải, nhỏ) | Title "CĂN CƯỚC CÔNG DÂN" (trước 01/07/2024); parser `cccd_qr` |
 | DOC-TYPE-002 | CMND 12 số (thẻ cứng) | `cmnd_12` | `cmnd` | — | Title "CHỨNG MINH NHÂN DÂN", số 12 chữ số (đổi tên từ `cccd_barcode_front`) |
 | DOC-TYPE-003 | CMND 9 số (giấy cũ) | `cmnd_9` | `cmnd` | — | Title "GIẤY CHỨNG MINH NHÂN DÂN", số 9 chữ số; rất cũ, còn ít người dùng |
-| DOC-TYPE-004 | Hộ chiếu Việt Nam | `passport_vn` | — | **MRZ (TD3)** | Trang nhân thân, MRZ 2 dòng; chưa làm |
+| DOC-TYPE-004 | Hộ chiếu Việt Nam | `passport_vn` | — | **MRZ (TD3)** | Trang nhân thân; 1 docType phủ CẢ 2 layout cũ (Họ và tên, số GCMND 9 số) + mới (Họ/Surname tách, số ĐDCN 12 số) |
 | DOC-TYPE-005 | GPLX PET | `gplx_pet` | — | (QR tuỳ bản) | GPLX vật liệu PET; có hạng Class |
 | DOC-TYPE-006 | Thẻ BHYT | `bhyt` | — | **QR** (mẫu mới) | Mã số 10 số; QR đọc được → dừng OCR (structuredComplete) |
 | DOC-TYPE-007 | Thẻ Đảng viên | `the_dang_vien` | — | — | Nội bộ; label-anchored |

@@ -1,0 +1,229 @@
+{
+ "image": "moi.jpg",
+ "lines": [
+  {
+   "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM - SOCIALIST REPUBLIC OF VIET NAM",
+   "x": 285.0,
+   "y": 228.8,
+   "w": 1142.5,
+   "h": 75.0,
+   "confidence": 0.8944
+  },
+  {
+   "text": "HỘ CHIẾU",
+   "x": 382.5,
+   "y": 292.5,
+   "w": 156.2,
+   "h": 38.8,
+   "confidence": 0.8979
+  },
+  {
+   "text": "Loại /Type Mã số / Code",
+   "x": 666.2,
+   "y": 297.5,
+   "w": 348.8,
+   "h": 48.8,
+   "confidence": 0.7866
+  },
+  {
+   "text": "Số hộ chiếu / Passport Noi",
+   "x": 1070.0,
+   "y": 307.5,
+   "w": 316.2,
+   "h": 46.2,
+   "confidence": 0.8632
+  },
+  {
+   "text": "PASSPORT",
+   "x": 385.0,
+   "y": 328.8,
+   "w": 150.0,
+   "h": 37.5,
+   "confidence": 0.9033
+  },
+  {
+   "text": "P",
+   "x": 726.2,
+   "y": 341.2,
+   "w": 31.2,
+   "h": 36.2,
+   "confidence": 0.7325
+  },
+  {
+   "text": "VNM",
+   "x": 882.5,
+   "y": 342.5,
+   "w": 96.2,
+   "h": 38.8,
+   "confidence": 0.9098
+  },
+  {
+   "text": "E01828939",
+   "x": 1125.0,
+   "y": 352.5,
+   "w": 178.8,
+   "h": 42.5,
+   "confidence": 0.884
+  },
+  {
+   "text": "Họ / Surname",
+   "x": 665.0,
+   "y": 380.0,
+   "w": 187.5,
+   "h": 42.5,
+   "confidence": 0.8057
+  },
+  {
+   "text": "NGUYỄN",
+   "x": 662.5,
+   "y": 417.5,
+   "w": 166.2,
+   "h": 41.2,
+   "confidence": 0.8255
+  },
+  {
+   "text": "Chữ đệm và tên / Given names",
+   "x": 665.0,
+   "y": 456.2,
+   "w": 403.8,
+   "h": 46.2,
+   "confidence": 0.8722
+  },
+  {
+   "text": "TIẾN ĐẠT",
+   "x": 665.0,
+   "y": 493.8,
+   "w": 182.5,
+   "h": 42.5,
+   "confidence": 0.8889
+  },
+  {
+   "text": "Quốc tịch / Nationality",
+   "x": 662.5,
+   "y": 537.5,
+   "w": 291.2,
+   "h": 40.0,
+   "confidence": 0.8735
+  },
+  {
+   "text": "VIỆT NAM/VIETNAMESE",
+   "x": 661.2,
+   "y": 576.2,
+   "w": 383.8,
+   "h": 45.0,
+   "confidence": 0.7255
+  },
+  {
+   "text": "Ngày sinh/Date ofbirth",
+   "x": 661.2,
+   "y": 617.5,
+   "w": 337.5,
+   "h": 40.0,
+   "confidence": 0.8401
+  },
+  {
+   "text": "Giới tính / Sex",
+   "x": 1081.2,
+   "y": 621.2,
+   "w": 192.5,
+   "h": 41.2,
+   "confidence": 0.8261
+  },
+  {
+   "text": "29/03/1988",
+   "x": 656.2,
+   "y": 657.5,
+   "w": 186.2,
+   "h": 41.2,
+   "confidence": 0.9029
+  },
+  {
+   "text": "NAM/M",
+   "x": 1085.0,
+   "y": 665.0,
+   "w": 167.5,
+   "h": 41.2,
+   "confidence": 0.898
+  },
+  {
+   "text": "Nơi sinh/ Place ofbirth",
+   "x": 655.0,
+   "y": 697.5,
+   "w": 333.8,
+   "h": 43.8,
+   "confidence": 0.8523
+  },
+  {
+   "text": "SỐ ĐDCN, CMND/ID NO",
+   "x": 1086.2,
+   "y": 703.8,
+   "w": 356.2,
+   "h": 42.5,
+   "confidence": 0.7864
+  },
+  {
+   "text": "Bắc Giang",
+   "x": 650.0,
+   "y": 732.5,
+   "w": 182.5,
+   "h": 57.5,
+   "confidence": 0.8997
+  },
+  {
+   "text": "024088010438",
+   "x": 1092.5,
+   "y": 748.8,
+   "w": 242.5,
+   "h": 40.0,
+   "confidence": 0.9065
+  },
+  {
+   "text": "Ngày cấp DDET Saue",
+   "x": 650.0,
+   "y": 781.2,
+   "w": 332.5,
+   "h": 48.8,
+   "confidence": 0.4752
+  },
+  {
+   "text": "Ngày hết hạn /Date ofexpiry",
+   "x": 1093.8,
+   "y": 788.8,
+   "w": 386.2,
+   "h": 47.5,
+   "confidence": 0.832
+  },
+  {
+   "text": "20/05/2024",
+   "x": 646.2,
+   "y": 828.8,
+   "w": 198.8,
+   "h": 48.8,
+   "confidence": 0.8984
+  },
+  {
+   "text": "20/05/2034",
+   "x": 1096.2,
+   "y": 838.8,
+   "w": 192.5,
+   "h": 42.5,
+   "confidence": 0.7706
+  },
+  {
+   "text": "pevnmnguyencetiencdatcescescesses",
+   "x": 130.0,
+   "y": 935.0,
+   "w": 1318.8,
+   "h": 61.2,
+   "confidence": 0.6342
+  },
+  {
+   "text": "0018289390vnm8803296M34054083000",
+   "x": 118.8,
+   "y": 1012.5,
+   "w": 1341.2,
+   "h": 63.8,
+   "confidence": 0.6174
+  }
+ ]
+}

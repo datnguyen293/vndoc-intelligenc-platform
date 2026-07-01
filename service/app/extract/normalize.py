@@ -60,8 +60,14 @@ def strip_dots(s: str) -> str:
     return collapse_spaces(s)
 
 
+def before_slash(s: str) -> str:
+    """Lấy phần trước '/' — nhãn/giá trị song ngữ VN/EN (vd 'VIỆT NAM/VIETNAMESE'→'VIỆT NAM')."""
+    return s.split("/")[0].strip() if "/" in s else s.strip()
+
+
 def norm_sex(s: str) -> str:
-    t = s.strip().lower()
+    # Hộ chiếu ghi 'NAM / M' (song ngữ) → lấy phần trước '/'.
+    t = before_slash(s).lower()
     if t in {"nam", "m", "male"}:
         return "Nam"
     if t in {"nữ", "nu", "f", "female"}:
@@ -121,6 +127,7 @@ NORMALIZERS = {
     "normSex": norm_sex,
     "toIsoDate": to_iso_date,
     "dictFix": dict_fix,
+    "beforeSlash": before_slash,
     "stripResidenceLabelEcho": strip_residence_label_echo,
     "dotSeparator": dot_separator,
     "stripEdgeNonDigits": strip_edge_nondigits,

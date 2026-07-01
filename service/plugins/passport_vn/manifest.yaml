@@ -33,12 +33,12 @@ extraction:
       # Nhãn GHÉP "Họ Surname" để chỉ khớp khi "Họ" đi liền "Surname" (né trùng "HỘ" của
       # tiêu đề "HỘ CHIẾU"). Chỉ hộ chiếu MỚI (tách họ/tên).
       labels: ["Họ Surname"]
-      take: right_of_label_or_below
+      take: after_colon_or_below     # bố cục nhãn-trên-giá-trị (giá trị nằm DƯỚI cùng cột)
       type: text_vi
       required: false
     - name: givenNames
       labels: ["Chữ đệm và tên", "Given names"]
-      take: right_of_label_or_below
+      take: after_colon_or_below
       type: text_vi
       required: false
     - name: fullName
@@ -51,6 +51,7 @@ extraction:
       take: right_of_label_or_below
       source: [structured, ocr]
       type: text_vi
+      normalize: [beforeSlash]       # 'VIỆT NAM/VIETNAMESE' → 'VIỆT NAM'
     - name: dateOfBirth
       labels: ["Ngày sinh", "Date of birth"]
       take: date_after_label
@@ -58,19 +59,20 @@ extraction:
       type: date
     - name: sex
       labels: ["Giới tính", "Sex"]
-      take: right_of_label_or_below
+      take: after_colon_or_below
       source: [structured, ocr]
       type: sex
     - name: placeOfBirth
       labels: ["Nơi sinh", "Place of birth"]
-      take: right_of_label_or_below
+      take: after_colon_or_below
       type: text_vi
       normalize: [dictFix]
     - name: personalIdNumber
       labels: ["Số GCMND", "ID card No", "Số ĐDCN", "Số định danh cá nhân", "ID No"]
-      take: right_of_label_or_below
+      take: after_colon_or_below
       source: [structured, ocr]
       type: code
+      normalize: [removeSpaces, digitsOnly]
       validate: { regex: '^\d{9}$|^\d{12}$' }
     - name: dateOfIssue
       labels: ["Ngày cấp", "Date of issue"]
@@ -84,7 +86,7 @@ extraction:
       checks: [warn_if_expired]
     - name: issuedBy
       labels: ["Nơi cấp", "Place of issue"]   # chỉ hộ chiếu CŨ
-      take: right_of_label_or_below
+      take: after_colon_or_below
       type: text_vi
       required: false
 

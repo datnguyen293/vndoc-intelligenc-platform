@@ -203,6 +203,22 @@ GOLDEN = {
         "placeOfBirth": "Tân Phú, Vĩnh Tường, Vĩnh Phúc",
         "dateOfIssue": "2024-08-01", "dateOfExpiry": "2039-12-30",
     },
+    "passport_vn__cu": {  # hộ chiếu CŨ ("Họ và tên" + Số GCMND 9 số). MRZ OCR hỏng → VIZ bù.
+        "_type": "passport_vn",
+        "idNumber": "B7849474", "fullName": "NGUYỄN TIẾN ĐẠT",
+        "nationality": "VIỆT NAM", "dateOfBirth": "1988-03-29", "sex": "Nam",
+        "placeOfBirth": "BẮC GIANG", "personalIdNumber": "121647952",
+        "dateOfIssue": "2013-05-13", "dateOfExpiry": "2023-05-13",
+        "issuedBy": "Cục Quản lý xuất nhập cảnh",
+    },
+    "passport_vn__moi": {  # hộ chiếu MỚI (e-passport, tách họ/tên, Số ĐDCN 12 số)
+        "_type": "passport_vn",
+        "idNumber": "E01828939", "surname": "NGUYỄN", "givenNames": "TIẾN ĐẠT",
+        "fullName": "NGUYỄN TIẾN ĐẠT", "nationality": "VIỆT NAM",
+        "dateOfBirth": "1988-03-29", "sex": "Nam", "placeOfBirth": "Bắc Giang",
+        "personalIdNumber": "024088010438",
+        "dateOfIssue": "2024-05-20", "dateOfExpiry": "2034-05-20",
+    },
 }
 
 
