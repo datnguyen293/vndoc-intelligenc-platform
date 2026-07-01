@@ -53,7 +53,9 @@ async def lifespan(app: FastAPI):
     app.state.engine = engine
     app.state.semaphore = asyncio.Semaphore(settings.max_concurrency)
     app.state.start_time = asyncio.get_event_loop().time()
-    app.state.models_warm = ocr.__class__.__name__ != "StubOcrEngine"
+    app.state.ocr_backend = getattr(ocr, "backend_name", ocr.__class__.__name__)
+    app.state.models_warm = app.state.ocr_backend != "StubOcrEngine"
+    log.info("OCR backend recognition: %s", app.state.ocr_backend)
     yield
 
 

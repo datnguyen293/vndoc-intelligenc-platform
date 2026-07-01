@@ -16,6 +16,12 @@ class OrientingOcr:
         self._base = base
         self._enabled = enabled
 
+    @property
+    def backend_name(self) -> str:
+        """Tên engine recognition thật bên trong (VietOcrEngine/RapidOcrEngine/StubOcrEngine)
+        — phơi qua /version để phát hiện khi bị lùi backend (vd VietOCR lỗi → Rapid mất dấu)."""
+        return type(self._base).__name__
+
     def recognize(self, image: Any) -> list[OcrLine]:
         lines = self._base.recognize(image)
         if not self._enabled or self._good_enough(lines):

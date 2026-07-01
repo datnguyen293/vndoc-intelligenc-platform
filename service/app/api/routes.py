@@ -54,9 +54,10 @@ async def health(request: Request) -> HealthResponse:
 @router.get("/version", response_model=VersionResponse)
 async def version(request: Request) -> VersionResponse:
     plugins = {m.doc_type: m.version for m in request.app.state.plugins.all()}
+    backend = getattr(request.app.state, "ocr_backend", "unknown")
     return VersionResponse(
         service=__version__,
-        engine={"detect": "stub", "recognize": "stub"},
+        engine={"recognize": backend, "detect": "RapidOCR-det"},
         plugins=plugins,
     )
 
