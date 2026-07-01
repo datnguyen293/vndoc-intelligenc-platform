@@ -22,7 +22,10 @@ class Settings(BaseSettings):
     # Giới hạn & hiệu năng (NFR-001, FR-019)
     max_image_bytes: int = 8 * 1024 * 1024
     max_concurrency: int = 8          # ADR-010: bounded theo số P-core
-    request_timeout_sec: float = 3.0
+    # OCR recognition CPU ~2-4s/ảnh (ảnh xoay recognize×4 tới ~5s) → timeout 3s cũ gây 429
+    # oan. Nâng 15s (đổi qua DIP_REQUEST_TIMEOUT_SEC). Model nạp 1 lần lúc startup, KHÔNG
+    # tính vào request.
+    request_timeout_sec: float = 15.0
 
     # OCR / tiền xử lý ảnh
     auto_orient: bool = True          # tự nắn hướng 0/90/180/270 (DEC-009)

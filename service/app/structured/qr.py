@@ -22,23 +22,29 @@ def decode_qr(image) -> list[str]:
     payloads = _decode_zxing(image) or _decode_opencv(image)
     if payloads:
         return payloads
-    # Fallback QR NHỎ (thẻ nhỏ trong ảnh / ảnh độ phân giải thấp): phóng to đủ pixel rồi
-    # thử lại — zxing cần đủ pixel để định vị finder pattern (vd thẻ 589px, QR ~50px chỉ
-    # giải được khi phóng ~4× lên ~2400px). Chỉ chạy khi giải ở res gốc thất bại.
+    # Fallback QR NHỎ: CHỈ áp cho ảnh ĐỘ PHÂN GIẢI THẤP (< _UPSCALE_MAX_SRC) — nơi QR nhỏ
+    # + ít pixel nên phóng to (nội suy) giúp zxing định vị finder pattern (vd thẻ 589px,
+    # QR ~50px chỉ giải được khi phóng ~4× lên ~2400px). Ảnh đã đủ lớn mà không giải được
+    # thì upscale KHÔNG thêm thông tin → BỎ QUA (tránh tốn ~vài giây cho thẻ KHÔNG có QR).
     pil = _as_pil(image)
     if pil is None:
         return []
     w, h = pil.size
     longest = max(w, h)
-    for target in (2400, 4000):
-        if longest >= target:
-            continue
+    if longest >= _UPSCALE_MAX_SRC:
+        return []
+    for target in (2400, 3600):
         scale = target / longest
         up = pil.resize((round(w * scale), round(h * scale)))
         payloads = _decode_zxing(up)
         if payloads:
             return payloads
     return []
+
+
+# Chỉ phóng to để cứu QR khi ảnh nguồn nhỏ hơn ngưỡng này (px). Ảnh lớn hơn đã ở res tối
+# đa — upscale không giúp mà tốn thời gian (nhất là thẻ KHÔNG có QR: passport/CMND...).
+_UPSCALE_MAX_SRC = 1500
 
 
 def _as_pil(image):
