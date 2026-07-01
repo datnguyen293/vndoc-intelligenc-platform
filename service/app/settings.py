@@ -1,15 +1,23 @@
 """Cấu hình service — đọc từ biến môi trường, có mặc định hợp lý (DOC-10)."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 SERVICE_ROOT = Path(__file__).resolve().parent.parent
 
+# File cấu hình: bản đóng gói (DOC-11) trỏ `VNDOC_CONFIG` tới `config\vndoc.env` cạnh thư
+# mục cài đặt (không phụ thuộc CWD); không đặt thì giữ hành vi dev cũ (`service/.env`).
+# Vẫn ưu tiên biến môi trường thật của tiến trình (pydantic-settings đọc env trước env_file).
+_CONFIG_FILE = os.environ.get("VNDOC_CONFIG", str(SERVICE_ROOT / ".env"))
+
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="DIP_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="DIP_", env_file=_CONFIG_FILE, extra="ignore"
+    )
 
     api_prefix: str = "/api/v1"
     host: str = "0.0.0.0"
@@ -51,6 +59,10 @@ class Settings(BaseSettings):
     # Bảo mật (NFR-007)
     api_key: str | None = None        # nếu đặt → bắt buộc header X-API-Key
     save_images: bool = False         # mặc định KHÔNG lưu ảnh ra đĩa
+    # Whitelist IP (CIDR, ngăn bằng dấu phẩy) được phép gọi service (DOC-11 §7, DEC-087).
+    # Bind 0.0.0.0 để thiết bị Android CÙNG LAN gọi được (không thể qua 127.0.0.1); whitelist
+    # giữ an toàn — client ngoài dải → 403. Rỗng = TẮT (cho tất cả). Đổi qua DIP_ALLOWED_IPS.
+    allowed_ips: str = "127.0.0.1/32,192.168.0.0/24"
 
 
 settings = Settings()

@@ -48,11 +48,22 @@ def test_extract_with_hint_returns_schema():
         assert "ocr_no_text" in body["warnings"]
 
 
-def test_extract_unknown_without_hint():
+def test_extract_requires_hint():
+    """docTypeHint BẮT BUỘC (DEC-047): thiếu hint → 400 (cán bộ luôn chọn loại trên app)."""
     with TestClient(app) as client:
         r = client.post(
             "/api/v1/extract",
             files={"image": ("card.jpg", _jpeg_bytes(), "image/jpeg")},
         )
-        assert r.status_code == 200
-        assert r.json()["documentType"] == "unknown"
+        assert r.status_code == 400
+        assert r.json()["detail"]["code"] == "invalid_request"
+
+
+def test_extract_rejects_invalid_hint():
+    with TestClient(app) as client:
+        r = client.post(
+            "/api/v1/extract",
+            files={"image": ("card.jpg", _jpeg_bytes(), "image/jpeg")},
+            data={"docTypeHint": "khong_ton_tai"},
+        )
+        assert r.status_code == 400

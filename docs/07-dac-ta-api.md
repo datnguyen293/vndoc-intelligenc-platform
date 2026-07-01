@@ -37,7 +37,7 @@ Header (tuỳ chọn): X-API-Key: <khóa chia sẻ cấu hình trong service>
 | Part | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
 | `image` | file (JPEG/PNG) | có | Ảnh mặt trước giấy tờ |
-| `docTypeHint` | text | không | Gợi ý **HỌ** giấy tờ: `cmnd` hoặc `cccd` (client KHÔNG cần chọn loại con — hệ thống tự detect, xem DOC-05 §2.3). Cũng chấp nhận docType cụ thể nếu biết. |
+| `docTypeHint` | text | **CÓ** (DEC-047) | Loại giấy tờ cán bộ chọn trên app: **họ thô** `cmnd`/`cccd` (hệ thống tự detect loại con — DOC-05 §2.3) **hoặc** docType cụ thể (vd `the_dang_vien`, `bhyt`, `passport_vn`). Thiếu / không hợp lệ → `400 invalid_request`. Phân loại dựa hint là chính, KHÔNG đoán mù. |
 | `returnImage` | text (`none`\|`rectified`\|`annotated`) | không | Có trả ảnh xử lý kèm không (mặc định `none`) |
 | `options` | text (JSON) | không | Cấu hình thêm (vd `{"minConfidence":0.5}`) |
 
@@ -148,3 +148,4 @@ Body lỗi:
 | DEC-041 | Một response schema cho mọi loại; field thiếu = value null |
 | DEC-042 | API stateless, 1 request = 1 ảnh = 1 mặt |
 | DEC-043 | `unknown` vẫn trả HTTP 200 với cảnh báo, không phải lỗi |
+| DEC-047 | `docTypeHint` **BẮT BUỘC** (cán bộ luôn chọn loại/họ trên app); thiếu/không hợp lệ → `400`. Phân loại dựa hint là chính, không đoán mù. |

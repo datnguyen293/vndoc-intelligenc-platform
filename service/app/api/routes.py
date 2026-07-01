@@ -15,6 +15,7 @@ from app.models.response import (
     HealthResponse,
     VersionResponse,
 )
+from app.pipeline.classifier import FAMILIES
 from app.settings import settings
 
 router = APIRouter(prefix=settings.api_prefix)
@@ -80,6 +81,23 @@ async def extract(
     _check_api_key(x_api_key)
     request_id = str(uuid.uuid4())
 
+    # docTypeHint BẮT BUỘC (DEC-047): cán bộ luôn chọn loại (hoặc họ cmnd/cccd) trên app
+    # trước khi chụp → phân loại dựa hint là chính, KHÔNG đoán mù. Hợp lệ = docType đã biết
+    # hoặc họ thô cmnd/cccd (hệ thống tự detect loại con).
+    hint = (docTypeHint or "").strip()
+    allowed = {m.doc_type for m in request.app.state.plugins.all()} | FAMILIES
+    if not hint:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "invalid_request", "message": "Thiếu docTypeHint (bắt buộc)"},
+        )
+    if hint not in allowed:
+        raise HTTPException(
+            status_code=400,
+            detail={"code": "invalid_request",
+                    "message": f"docTypeHint không hợp lệ: {hint!r}"},
+        )
+
     raw = await image.read()
     if not raw:
         raise HTTPException(status_code=400, detail={"code": "invalid_request", "message": "Thiếu ảnh"})
@@ -97,7 +115,7 @@ async def extract(
         try:
             resp: ExtractResponse = await asyncio.wait_for(
                 asyncio.to_thread(
-                    engine.run, request_id, pil, docTypeHint, {"returnImage": returnImage}
+                    engine.run, request_id, pil, hint, {"returnImage": returnImage}
                 ),
                 timeout=settings.request_timeout_sec,
             )

@@ -21,6 +21,7 @@ from app.ocr import (
 from app.pipeline import PipelineEngine
 from app.pipeline.classifier import RuleClassifier
 from app.plugins import PluginManager
+from app.security import IPWhitelistMiddleware
 from app.settings import settings
 from app.structured import RealStructuredReader
 
@@ -57,6 +58,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="DIP OCR Service", version=__version__, lifespan=lifespan)
+# Whitelist IP (DEC-087): chặn client ngoài dải cho phép (mặc định 127.0.0.1 + 192.168.0.0/24).
+app.add_middleware(IPWhitelistMiddleware, allowed_ips=settings.allowed_ips)
 app.include_router(router)
 
 
