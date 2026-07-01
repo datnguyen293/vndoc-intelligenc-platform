@@ -27,16 +27,30 @@ class RealStructuredReader:
     def __init__(self, plugins: PluginManager) -> None:
         self.plugins = plugins
 
+    @staticmethod
+    def _qr_payloads(*images: Any) -> list[str]:
+        """Giải QR trên NHIỀU ảnh (vd ảnh đã rectify + ảnh GỐC full-res) rồi gộp lại —
+        rectifier có thể crop mất vùng QR hoặc thu nhỏ thẻ; ảnh gốc là dự phòng giữ QR."""
+        out: list[str] = []
+        for img in images:
+            if img is None:
+                continue
+            for p in decode_qr(img):
+                if p not in out:
+                    out.append(p)
+        return out
+
     def identify(
-        self, image: Any, hint: str | None = None
+        self, image: Any, hint: str | None = None, image_alt: Any = None
     ) -> tuple[str, dict[str, str], list[str]] | None:
         """QR-first (ADR-006): giải mã QR TRƯỚC OCR; nếu khớp một loại có
         `structuredComplete` → (doc_type, {field: value}, [kind]) để bỏ qua OCR.
 
         Tự nhận loại từ chính QR: thử parser của từng manifest, ràng buộc bằng regex
         `idNumber` để không nhận nhầm (vd QR CCCD ≠ BHYT). Hint (nếu có) được ưu tiên.
+        `image_alt`: ảnh gốc (full-res) để giải QR dự phòng nếu bản rectify mất QR.
         """
-        payloads = decode_qr(image)
+        payloads = self._qr_payloads(image, image_alt)
         if not payloads:
             return None
 
@@ -84,17 +98,19 @@ class RealStructuredReader:
         return True
 
     def read(
-        self, image: Any, doc_type: str, lines: list[Any] | None = None
+        self, image: Any, doc_type: str, lines: list[Any] | None = None,
+        image_alt: Any = None,
     ) -> tuple[dict[str, str], list[str]]:
         manifest = self.plugins.get(doc_type)
         if manifest is None or not manifest.structured:
             return {}, []
 
         texts = [getattr(l, "text", "") for l in (lines or [])]
+        payloads = self._qr_payloads(image, image_alt)
         fields: dict[str, str] = {}
         used: list[str] = []
         for spec in manifest.structured:
-            parsed = self._read_one(image, spec, texts)
+            parsed = self._read_one(payloads, spec, texts)
             if not parsed:
                 continue
             # Lọc theo mapsTo (rỗng = nhận tất cả parser trả về); KHÔNG ghi đè trường
@@ -111,13 +127,13 @@ class RealStructuredReader:
         return fields, used
 
     def _read_one(
-        self, image: Any, spec: StructuredSpec, texts: list[str]
+        self, payloads: list[str], spec: StructuredSpec, texts: list[str]
     ) -> dict[str, str]:
         if spec.kind == "qr":
             parser = QR_PARSERS.get(spec.parser)
             if parser is None:
                 return {}
-            for payload in decode_qr(image):
+            for payload in payloads:
                 parsed = parser(payload)
                 if parsed:
                     return parsed

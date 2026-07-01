@@ -121,6 +121,15 @@ def test_old_model_qr_first(plugins, name, idnum, fullname):
     assert f["placeOfResidence"].value                    # mẫu cũ: QR [4] có địa chỉ
 
 
+def test_qr_fallback_to_original(reader):
+    # Ảnh chính (bản rectify) None/mất QR → dùng ảnh GỐC (image_alt) để giải QR.
+    img = _img("bhyt-1.jpeg")
+    ident = reader.identify(None, image_alt=img)
+    assert ident is not None
+    doc_type, fields, _used = ident
+    assert doc_type == "bhyt" and fields["idNumber"] == "HS4010120878837"
+
+
 def test_unknown_doctype_returns_empty(reader):
     assert reader.read(None, "khong_ton_tai") == ({}, [])
     assert reader.identify(None) is None

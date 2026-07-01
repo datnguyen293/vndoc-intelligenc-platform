@@ -76,7 +76,10 @@ class PipelineEngine:
         # `structuredComplete` → lấy TOÀN BỘ trường từ QR và BỎ QUA OCR (nhanh + chính
         # xác). QR hỏng/không khớp → identify=None → rơi xuống đường OCR bên dưới.
         t = time.perf_counter()
-        ident = self.structured.identify(ctx.image_rectified, hint=doc_type_hint)
+        # QR trên ảnh đã rectify + ẢNH GỐC (dự phòng): rectifier có thể crop mất/thu nhỏ QR.
+        ident = self.structured.identify(
+            ctx.image_rectified, hint=doc_type_hint, image_alt=ctx.image_original
+        )
         ctx.mark("structured", t)
         if ident is not None:
             doc_type, structured_fields, used = ident
@@ -117,7 +120,7 @@ class PipelineEngine:
         # S6 — Structured-data (ADR-006): QR (ảnh) + MRZ (dòng OCR) bù cho OCR
         t = time.perf_counter()
         ctx.structured_data, ctx.structured_used = self.structured.read(
-            ctx.image_rectified, ctx.document_type, lines
+            ctx.image_rectified, ctx.document_type, lines, image_alt=ctx.image_original
         )
         ctx.mark("structured", t)
         if not lines and not ctx.structured_data:
