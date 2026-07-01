@@ -51,12 +51,17 @@ class RealStructuredReader:
         `idNumber` để không nhận nhầm (vd QR CCCD ≠ BHYT). Hint (nếu có) được ưu tiên.
         `image_alt`: ảnh gốc (full-res) để giải QR dự phòng nếu bản rectify mất QR.
         """
-        payloads = self._qr_payloads(image, image_alt)
+        # Chỉ PHÓNG TO cứu QR ở fast-path khi HINT trỏ đúng loại CÓ QR (vd the_dang_vien,
+        # bhyt) — để đọc được QR nhỏ trong ảnh lớn RỒI BỎ QUA OCR (theo yêu cầu: QR thành
+        # công thì không OCR). Không hint / hint không QR → native-only (không upscale suy
+        # đoán, tránh tốn thời gian cho passport/CMND).
+        hinted = self.plugins.get(hint) if hint else None
+        want_upscale = bool(hinted and any(s.kind == "qr" for s in hinted.structured))
+        payloads = self._qr_payloads(image, image_alt, upscale=want_upscale)
         if not payloads:
             return None
 
         order: list[Manifest] = []
-        hinted = self.plugins.get(hint) if hint else None
         if hinted is not None:
             order.append(hinted)
         order += [m for m in self.plugins.all() if m is not hinted]

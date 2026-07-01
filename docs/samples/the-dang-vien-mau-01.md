@@ -27,6 +27,49 @@
 Lưu ý: nhãn ở thẻ này **không có dấu `:`** → dùng `take: right_of_label` /
 `take: below_label`, không phải `after_colon`.
 
+## 2b. MẪU MỚI (ngoc-hung, 2026-07-01) — cùng docType, khác template
+
+Thẻ Đảng viên có **2 mẫu** (gộp trong 1 plugin, như BHYT/hộ chiếu). Mẫu mới khác:
+
+| Điểm | Mẫu cũ (thuy-giang) | Mẫu mới (ngoc-hung) |
+|---|---|---|
+| Số thẻ | `NN.NNNNNN` | **12 chữ số** (`001088023765`) → regex nới `(\d{2}\.\d{6}\|\d{12})` |
+| Họ tên | nhãn `HỌ VÀ TÊN` | **KHÔNG nhãn** (dòng chữ hoa trên các ngày) → take `vi_name_orphan` |
+| Ngày sinh | `Sinh ngày` | `Ngày sinh` (giá trị **xuống dòng**) |
+| Vào Đảng | `Vào Đảng ngày` | `Ngày vào Đảng` |
+| Nơi cấp | `Nơi cấp thẻ` | `Nơi cấp` (xuống 2 dòng "Đảng Bộ / Công An Trung Ương") |
+| Ngày cấp | câu `Ngày..tháng..năm` | `Ngày cấp: dd-mm-yyyy` → take `date_phrase_or_issue` |
+| Quê quán / Chính thức | có | **KHÔNG có** (→ null) |
+
+## 2c. QR-first cho mẫu mới (ADR-006) — ưu tiên QR, đọc được thì DỪNG OCR
+
+Mẫu mới có **QR bề mặt ĐỦ 7 trường** (`structuredComplete: true`), **đầy đủ hơn OCR** — có
+`officialDate` và `partyOrganization` KHÔNG bị cụt. Định dạng payload (ngăn `|`):
+
+```
+[0] số thẻ 12 số   [1] họ tên (có dấu)   [2] ngày sinh ddMMyyyy   [3] ngày vào Đảng ddMMyyyy
+[4] ngày chính thức ddMMyyyy   [5] nơi cấp/đảng bộ   [6] ngày cấp ddMMyyyy
+```
+Ví dụ: `001088023765|NGUYỄN NGỌC HƯNG|13021988|14062011|14062012|Đảng Bộ Công An Trung Ương|14092025`
+
+- Parser `dang_vien_qr` **siết cấu trúc** (các trường ngày [2][3][6] phải `ddMMyyyy`) để
+  KHÔNG nhận nhầm QR CCCD ([2]=họ tên) / BHYT ([3]=giới tính) — 2 loại này cũng ngăn `|`.
+- QR **nhỏ trong ảnh lớn** (thẻ 1600px, QR ~90px): `identify()` phóng to ảnh khi
+  `hint=the_dang_vien` để đọc QR ở fast-path RỒI BỎ QUA OCR (đọc QR xong không OCR).
+- Mẫu CŨ không có QR → `dang_vien_qr` trả `{}` → rơi về OCR label-anchored (mục 2b).
+
+## 2d. Phân loại — HINT là chính, anchor là phụ
+
+- **Cơ chế chính:** client gửi `docTypeHint=the_dang_vien` → classifier **tin hint** (0.95),
+  không phụ thuộc anchor → không có va chạm. (Officer biết đây là thẻ Đảng viên.)
+- **Phòng thủ (khi KHÔNG hint):** chấm điểm anchor. Tiêu đề OCR méo `THẾ ĐẶNG VIỆN` vẫn khớp
+  `THẺ ĐẢNG VIÊN` sau `key()` (bỏ dấu). Mẫu mới ghi "Đảng **Bộ Công An** Trung Ương" trùng
+  anchor `BỘ CÔNG AN` của `cccd_2024_back` → thêm anti-anchor `excludes: [THẺ ĐẢNG VIÊN]`
+  cho `cccd_2024_back` để không nhận nhầm ở đường không-hint.
+- Hạn chế OCR-fallback đã biết: `partyOrganization` mẫu mới qua OCR bị **cụt** còn "Đằng Bộ"
+  (mất dòng 2) do `_MERGE_CAP=1` toàn cục — nhưng **đường QR-first cho org ĐẦY ĐỦ**, nên chỉ
+  ảnh hưởng khi QR hỏng. Không đổi hằng số chung (tránh hồi quy địa chỉ các loại khác).
+
 ## 3. Giá trị mẫu (ground truth)
 
 | Trường | Giá trị | Chuẩn hóa |

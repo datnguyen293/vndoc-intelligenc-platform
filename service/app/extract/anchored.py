@@ -193,6 +193,18 @@ class LabelAnchoredExtractor:
                     return ln.text, ln.confidence, [ln]
             return None
 
+        if take == "date_phrase_or_issue":
+            # Ngày cấp: mẫu cũ dạng CÂU "Ngày 07 tháng 11 năm 2024"; mẫu mới dạng nhãn
+            # "Ngày cấp: 14-09-2025". Thử câu trước (giữ hành vi cũ), rồi tới dòng có 'ngaycap'.
+            for ln in lines:
+                if id(ln) not in used and dates.find_date_phrase(ln.text):
+                    return ln.text, ln.confidence, [ln]
+            for ln in lines:
+                if (id(ln) not in used and "ngaycap" in _label_key(ln.text)
+                        and dates.find_date(ln.text)):
+                    return ln.text, ln.confidence, [ln]
+            return None
+
         if take == "vn_place_orphan":
             # Có nhãn (ảnh rõ) → lấy như right_of_label_or_below.
             found = self._find_label(lines, spec.labels, used)
@@ -214,6 +226,39 @@ class LabelAnchoredExtractor:
                 if (not dates.find_date(l.text) and not self._is_label(l, labels_all)
                         and _has_vietnamese(l.text) and len(l.text.split()) >= 2):
                     return l.text, l.confidence, [l]
+            return None
+
+        if take == "vi_name_orphan":
+            # Họ tên: mẫu CÓ nhãn ("HỌ VÀ TÊN <tên>") → lấy như right_of_label_or_below.
+            found = self._find_label(lines, spec.labels, used)
+            if found:
+                label_line, inline = found
+                if inline:
+                    return inline, label_line.confidence, [label_line]
+                right = self._right_neighbor(lines, label_line, used, prefer_vi=True)
+                if right:
+                    return right.text, right.confidence, [label_line, right]
+                belows = self._below_value(lines, label_line, used, labels_all)
+                if belows:
+                    return " ".join(b.text for b in belows), belows[0].confidence, [label_line] + belows
+                return None
+            # Mẫu MỚI: tên KHÔNG có nhãn → dòng chữ tiếng Việt ≥2 từ, NẰM TRÊN ngày đầu tiên,
+            # dưới tiêu đề, chưa dùng, không phải nhãn/tiêu đề/ngày. Lấy dòng gần ngày nhất.
+            date_ys = [l.y for l in lines if dates.find_date(l.text)]
+            if not date_ys:
+                return None
+            ymin = min(date_ys)
+            cands = [
+                l for l in sorted(lines, key=lambda l: l.y)
+                if id(l) not in used and l.y < ymin
+                and _has_vietnamese(l.text) and len(l.text.split()) >= 2
+                and not self._is_label(l, labels_all)
+                and not _label_key(l.text).endswith("dangvien")  # bỏ tiêu đề "THẺ ĐẢNG VIÊN"
+                and not dates.find_date(l.text)
+            ]
+            if cands:
+                c = cands[-1]                      # gần dòng ngày đầu nhất = dòng họ tên
+                return c.text, c.confidence, [c]
             return None
 
         found = self._find_label(lines, spec.labels, used)

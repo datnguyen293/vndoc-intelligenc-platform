@@ -11,6 +11,9 @@ family: cccd
 
 classify:
   anchors: ["Nơi cư trú", "Nơi đăng ký khai sinh", "BỘ CÔNG AN", "MINISTRY OF PUBLIC SECURITY"]
+  # Thẻ Đảng viên (mẫu mới) ghi "Đảng Bộ Công An Trung Ương" → dính anchor "BỘ CÔNG AN".
+  # Loại trừ để không nhận nhầm: CCCD mặt sau không bao giờ có "THẺ ĐẢNG VIÊN".
+  excludes: ["THẺ ĐẢNG VIÊN"]
 
 structuredData:
   - kind: qr

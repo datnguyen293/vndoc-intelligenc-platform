@@ -23,29 +23,24 @@ def decode_qr(image, upscale: bool = False) -> list[str]:
     payloads = _decode_zxing(image) or _decode_opencv(image)
     if payloads or not upscale:
         return payloads
-    # Fallback QR NHỎ (chỉ khi upscale=True, SAU khi native fail): áp cho ảnh ĐỘ PHÂN GIẢI
-    # THẤP (< _UPSCALE_MAX_SRC) — QR nhỏ + ít pixel, phóng to (nội suy) giúp zxing định vị
-    # finder pattern (vd thẻ 589px, QR ~50px chỉ giải được khi phóng ~4× lên ~2400px). Ảnh
-    # đủ lớn mà không giải được thì upscale KHÔNG thêm thông tin → bỏ qua.
+    # Fallback QR NHỎ (chỉ khi upscale=True — loại CÓ QR, SAU khi native fail): phóng to
+    # (nội suy) giúp zxing định vị finder pattern khi QR chiếm ÍT pixel. Áp cho cả:
+    #  - ảnh độ phân giải THẤP (vd thẻ BHYT 589px, QR ~50px → phóng ~4× lên ~2400px), lẫn
+    #  - ảnh LỚN nhưng QR nhỏ trong khung (vd thẻ Đảng viên 1600px, QR ~90px → phóng ≥1.5×).
+    # Chỉ chạy cho loại có QR nên không tốn thời gian cho passport/CMND (caller gate upscale).
     pil = _as_pil(image)
     if pil is None:
         return []
     w, h = pil.size
     longest = max(w, h)
-    if longest >= _UPSCALE_MAX_SRC:
-        return []
-    for target in (2400, 3600):
+    targets = [t for t in (2400, 3600, 4800) if t > longest] or [min(round(longest * 1.5), 7000)]
+    for target in targets:
         scale = target / longest
         up = pil.resize((round(w * scale), round(h * scale)))
         payloads = _decode_zxing(up)
         if payloads:
             return payloads
     return []
-
-
-# Chỉ phóng to để cứu QR khi ảnh nguồn nhỏ hơn ngưỡng này (px). Ảnh lớn hơn đã ở res tối
-# đa — upscale không giúp mà tốn thời gian (nhất là thẻ KHÔNG có QR: passport/CMND...).
-_UPSCALE_MAX_SRC = 1500
 
 
 def _as_pil(image):
@@ -211,8 +206,52 @@ def parse_cccd_qr(payload: str) -> dict[str, str]:
     return out
 
 
+def parse_dang_vien_qr(payload: str) -> dict[str, str]:
+    """Parse QR thẻ Đảng viên (mẫu MỚI) — 7 trường ngăn '|', ĐỦ dữ liệu (QR-first hoàn
+    chỉnh, hơn cả OCR: có ngày chính thức + nơi cấp KHÔNG bị cụt):
+
+      [0] số thẻ (12 số)            [1] họ tên (UTF-8 có dấu)   [2] ngày sinh ddMMyyyy
+      [3] ngày vào Đảng ddMMyyyy    [4] ngày chính thức ddMMyyyy
+      [5] nơi cấp/đảng bộ           [6] ngày cấp ddMMyyyy
+
+    Mẫu CŨ không có QR → parser này trả {} (rơi về OCR). Tên có dấu (khác MRZ).
+    """
+    if not payload:
+        return {}
+    parts = payload.split("\x00", 1)[0].split("|")
+
+    # SIẾT cấu trúc để KHÔNG nhận nhầm QR loại khác (CCCD/BHYT cũng ngăn '|'):
+    #  - ≥7 trường; [0] số thẻ 12 số hoặc NN.NNNNNN;
+    #  - [2] ngày sinh, [3] ngày vào Đảng, [6] ngày cấp đều ddMMyyyy (8 số).
+    # → QR CCCD ([2]=họ tên) và BHYT ([3]=giới tính) KHÔNG khớp → trả {} (rơi về parser đúng).
+    num = _field(parts, 0)
+    if len(parts) < 7 or not (num and re.fullmatch(r"\d{12}|\d{2}\.\d{6}", num)):
+        return {}
+    if not all(re.fullmatch(r"\d{8}", _field(parts, i) or "") for i in (2, 3, 6)):
+        return {}
+
+    out: dict[str, str] = {"cardNumber": num}
+
+    name = _field(parts, 1)
+    if name:
+        out["fullName"] = name
+
+    for field_name, idx in (("dateOfBirth", 2), ("partyJoinDate", 3),
+                            ("officialDate", 4), ("dateOfIssue", 6)):
+        v = _field(parts, idx)
+        if v and re.fullmatch(r"\d{8}", v):   # [4] ngày chính thức có thể trống (dự bị)
+            out[field_name] = _ddmmyyyy(v)
+
+    org = _field(parts, 5)
+    if org:
+        out["partyOrganization"] = org
+
+    return out
+
+
 # Registry parser QR theo tên (manifest structuredData.parser). Thêm loại = thêm 1 hàm.
 QR_PARSERS = {
     "bhyt_qr": parse_bhyt_qr,
     "cccd_qr": parse_cccd_qr,
+    "dang_vien_qr": parse_dang_vien_qr,
 }

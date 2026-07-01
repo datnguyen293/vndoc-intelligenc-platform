@@ -1,54 +1,79 @@
 # Plugin: Thẻ Đảng viên (DOC-TYPE-007)
-# Bám theo DOC-08 §DOC-TYPE-007 và samples/the-dang-vien-mau-01.md
-# Bóc tách label-anchored, không structured-data, không train (ADR-012).
+# Bám theo DOC-08 §DOC-TYPE-007 và samples/the-dang-vien-mau-01.md — không train (ADR-012).
+#
+# HAI MẪU (gộp 1 plugin):
+#   - Mẫu MỚI (ngoc-hung): CÓ QR bề mặt ĐỦ 7 trường → QR-first, đọc được thì DỪNG OCR
+#     (structuredComplete). QR còn ĐẦY ĐỦ HƠN OCR: có officialDate + partyOrganization
+#     không cụt. (QR nhỏ trong ảnh lớn → identify upscale khi hint=the_dang_vien.)
+#   - Mẫu CŨ (thuy-giang): KHÔNG có QR → parser QR trả {} → rơi về OCR label-anchored.
 docType: the_dang_vien
 displayName: "Thẻ Đảng viên"
-version: "1.0"
+version: "1.1"
 ready: true
+
+# QR mẫu mới đủ dữ liệu → đọc được là bỏ qua OCR (ADR-006, structured-data-first).
+structuredComplete: true
 
 classify:
   anchors: ["THẺ ĐẢNG VIÊN", "ĐẢNG CỘNG SẢN VIỆT NAM"]
+  signals: [has_qr]
+
+structuredData:
+  - kind: qr
+    parser: dang_vien_qr        # 7 trường '|' — CHỈ mẫu mới có QR; mẫu cũ trả {}
+    mapsTo: [cardNumber, fullName, dateOfBirth, partyJoinDate, officialDate, partyOrganization, dateOfIssue]
 
 extraction:
   strategy: label_anchored
   fields:
+    # Số thẻ: mẫu cũ 'XX.XXXXXX'; mẫu mới 12 số (QR cấp; OCR nhãn "Số" hay méo → regex bù).
     - name: cardNumber
       labels: ["Số"]
       take: right_of_label
+      source: [structured, ocr]
       type: code
       normalize: [trim, fixDigits, dotSeparator, stripEdgeNonDigits]
-      validate: { regex: '^\d{2}\.\d{6}$' }
+      validate: { regex: '^(\d{2}\.\d{6}|\d{12})$' }
+    # Họ tên: QR (mẫu mới) hoặc nhãn "HỌ VÀ TÊN" (cũ) / dòng chữ hoa không nhãn (mới).
     - name: fullName
       labels: ["Họ và tên", "Họ tên"]
-      take: right_of_label
+      take: vi_name_orphan
+      source: [structured, ocr]
       type: text_vi
       required: true
     - name: dateOfBirth
-      labels: ["Sinh ngày"]
+      labels: ["Sinh ngày", "Ngày sinh"]
       take: date_after_label
+      source: [structured, ocr]
       type: date
       required: true
+    # QR KHÔNG có quê quán → chỉ OCR (mẫu cũ mới có trường này).
     - name: placeOfOrigin
       labels: ["Quê quán"]
       take: right_of_label_or_below
       type: text_vi
       normalize: [collapseSpaces, dictFix]
     - name: partyJoinDate
-      labels: ["Vào Đảng ngày"]
+      labels: ["Vào Đảng ngày", "Ngày vào Đảng"]
       take: date_after_label
+      source: [structured, ocr]
       type: date
     - name: officialDate
       labels: ["Chính thức ngày"]
       take: date_after_label
+      source: [structured, ocr]
       type: date
     - name: partyOrganization
-      labels: ["Nơi cấp thẻ"]
+      labels: ["Nơi cấp thẻ", "Nơi cấp"]
       take: right_of_label_or_below
+      source: [structured, ocr]
       type: text_vi
       normalize: [collapseSpaces]
+    # Ngày cấp: mẫu cũ dạng câu "Ngày .. tháng .. năm .."; mẫu mới "Ngày cấp: dd-mm-yyyy".
     - name: dateOfIssue
       labels: ["Ngày"]
-      take: vn_date_phrase
+      take: date_phrase_or_issue
+      source: [structured, ocr]
       type: date
 
 confidence:

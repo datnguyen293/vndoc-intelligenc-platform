@@ -75,6 +75,23 @@ GOLDEN = {
         "partyOrganization": "Đảng bộ T.P Hồ Chí Minh",
         "dateOfIssue": "2008-11-07",
     },
+    # MẪU MỚI (ngoc-hung): số thẻ 12 chữ số, tên KHÔNG nhãn (vi_name_orphan), nhãn "Ngày sinh"
+    # /"Ngày vào Đảng"/"Ngày cấp:". placeOfOrigin & officialDate KHÔNG có trên mẫu này (=None).
+    # partyOrganization CỤT "Đằng Bộ" (mất "Công An Trung Ương" do _MERGE_CAP=1) — khoá nguyên trạng.
+    "the_dang_vien__ngoc-hung": {
+        "_type": "the_dang_vien",
+        "cardNumber": "001088023765", "fullName": "NGUYỄN NGỌC HỨNG",
+        "dateOfBirth": "1988-02-13", "partyJoinDate": "2011-06-14",
+        "partyOrganization": "Đằng Bộ", "dateOfIssue": "2025-09-14",
+        "placeOfOrigin": None, "officialDate": None,
+    },
+    "the_dang_vien__ngoc-hung-270": {  # XOAY 270° — khoá nắn hướng + trích xuất mẫu mới
+        "_type": "the_dang_vien",
+        "cardNumber": "001088023765", "fullName": "NGUYỄN NGỌC HƯNG",
+        "dateOfBirth": "1988-02-13", "partyJoinDate": "2011-06-14",
+        "partyOrganization": "Đảng Bộ", "dateOfIssue": "2025-09-14",
+        "placeOfOrigin": None, "officialDate": None,
+    },
     "gplx_pet__bang-lai-xe-1": {
         "_type": "gplx_pet",
         "idNumber": "990170000806", "fullName": None, "dateOfBirth": "1992-12-25",
