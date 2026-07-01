@@ -106,7 +106,25 @@ def _dst_quad(rng: random.Random) -> np.ndarray:
     R = cv2.getRotationMatrix2D((cx, cy), ang, 1.0)
     ones = np.ones((4, 1), np.float32)
     base = (R @ np.hstack([base, ones]).T).T.astype(np.float32)
-    return base
+    return _fit_canvas(base)
+
+
+def _fit_canvas(quad: np.ndarray, pad: int = 10) -> np.ndarray:
+    """Đảm bảo 4 góc NẰM TRONG canvas [pad, CANVAS-pad] (scale xuống + dịch vào) — nếu không
+    YOLO loại nhãn 'out of bounds' (toạ độ chuẩn hoá <0 hoặc >1)."""
+    quad = quad.astype(np.float32).copy()
+    w = quad[:, 0].max() - quad[:, 0].min()
+    h = quad[:, 1].max() - quad[:, 1].min()
+    s = min(1.0, (CANVAS - 2 * pad) / max(w, h, 1e-6))
+    c = quad.mean(axis=0)
+    quad = (quad - c) * s + c
+    xmin, xmax = quad[:, 0].min(), quad[:, 0].max()
+    ymin, ymax = quad[:, 1].min(), quad[:, 1].max()
+    dx = (pad - xmin) if xmin < pad else ((CANVAS - pad) - xmax if xmax > CANVAS - pad else 0.0)
+    dy = (pad - ymin) if ymin < pad else ((CANVAS - pad) - ymax if ymax > CANVAS - pad else 0.0)
+    quad[:, 0] += dx
+    quad[:, 1] += dy
+    return quad
 
 
 def _photometric(card: np.ndarray, rng: random.Random) -> np.ndarray:
