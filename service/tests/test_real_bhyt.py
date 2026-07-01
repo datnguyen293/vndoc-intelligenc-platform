@@ -94,6 +94,33 @@ def test_pipeline_qr_first_skips_ocr(plugins, name):
     assert f["benefitLevel"].value is None
 
 
+# Thẻ BHYT MẪU CŨ: mã số 15 ký tự (2 chữ + 13 số), vẫn QR-first.
+_OLD = [
+    ("bhyt-1.jpeg", "HS4010120878837", "Vũ Xuân Minh"),
+    ("bhyt-2.jpeg", "HC4252516019894", "Đỗ Thu Hằng"),
+    ("tran-thi-b.jpeg", "DN4797911013123", "Trần Thị Thanh Thùy"),
+]
+
+
+@pytest.mark.parametrize("name,idnum,fullname", _OLD)
+def test_old_model_qr_first(plugins, name, idnum, fullname):
+    spy = _SpyOcr()
+    engine = PipelineEngine(
+        plugins=plugins, quality=StubQualityChecker(), detector=StubDetector(),
+        rectifier=StubRectifier(), classifier=RuleClassifier(plugins),
+        structured=RealStructuredReader(plugins), ocr=spy,
+        extractor=LabelAnchoredExtractor(),
+    )
+    resp = engine.run(str(uuid.uuid4()), _img(name))
+    assert spy.called is False
+    assert resp.documentType == "bhyt"
+    assert resp.structuredDataUsed == ["qr"]
+    f = resp.fields
+    assert f["idNumber"].value == idnum and f["idNumber"].source == "structured"  # 15 ký tự
+    assert f["fullName"].value == fullname
+    assert f["placeOfResidence"].value                    # mẫu cũ: QR [4] có địa chỉ
+
+
 def test_unknown_doctype_returns_empty(reader):
     assert reader.read(None, "khong_ton_tai") == ({}, [])
     assert reader.identify(None) is None

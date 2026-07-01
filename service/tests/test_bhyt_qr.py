@@ -46,3 +46,21 @@ def test_dash_placeholders_dropped():
 def test_female_code():
     d = parse_bhyt_qr("0111077012||29/03/1988|2")
     assert d["sex"] == "Nữ"
+
+
+# QR thẻ BHYT MẪU CŨ: mã số 15 ký tự (2 chữ + 13 số); trường [4] = địa chỉ (HEX).
+QR_OLD = (
+    "HS4010120878837|56c5a9205875c3a26e204d696e68|07/09/2008|1|"
+    "5068c6b0e1bb9d6e67204e6768c4a96120c490c3b42c205175e1baad6e2043e1baa775204769e1baa5792c"
+    "205468c3a06e68207068e1bb912048c3a0204ee1bb9969|01 - 028|24/01/2019|-|24/01/2019|$"
+)
+
+
+def test_parse_old_15char_code():
+    d = parse_bhyt_qr(QR_OLD)
+    assert d["idNumber"] == "HS4010120878837"            # 2 chữ + 13 số
+    assert d["fullName"] == "Vũ Xuân Minh"
+    assert d["dateOfBirth"] == "07/09/2008"
+    assert d["sex"] == "Nam"
+    assert d["placeOfResidence"] == "Phường Nghĩa Đô, Quận Cầu Giấy, Thành phố Hà Nội"
+    assert d["objectCode"] == "01 - 028"

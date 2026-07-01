@@ -90,7 +90,8 @@ def parse_bhyt_qr(payload: str) -> dict[str, str]:
     out: dict[str, str] = {}
 
     id_number = _field(parts, 0)
-    if id_number and re.fullmatch(r"\d{10,15}", id_number):
+    # Mẫu MỚI: mã số 10 số. Mẫu CŨ: 15 ký tự (2 chữ + 13 số, vd 'HS4010120878837').
+    if id_number and re.fullmatch(r"\d{10}|[A-Z]{2}\d{13}", id_number):
         out["idNumber"] = id_number
 
     name = _field(parts, 1)
@@ -106,6 +107,11 @@ def parse_bhyt_qr(payload: str) -> dict[str, str]:
     sex = _field(parts, 3)
     if sex in {"1", "2"}:
         out["sex"] = "Nam" if sex == "1" else "Nữ"
+
+    # Mẫu CŨ: [4] = địa chỉ/nơi thường trú (HEX). Mẫu MỚI: [4]='-' (bỏ), nơi cấp ở [15].
+    res = _field(parts, 4)
+    if res and (dec := _hex_to_text(res)):
+        out["placeOfResidence"] = dec
 
     place = _field(parts, 15)
     if place:

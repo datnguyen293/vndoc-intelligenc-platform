@@ -128,6 +128,20 @@ GOLDEN = {
         "validFrom": "2023-07-01", "fiveYearContinuous": "2027-10-01",
         "dateOfIssue": "2023-07-31",
     },
+    "bhyt__manh-hung": {  # BHYT MẪU MỚI, ảnh nhỏ+nghiêng → OCR mã số hỏng (idNumber null);
+        "_type": "bhyt",  # QR quá nhỏ không giải được. Ảnh tốt thì QR cho idNumber đủ.
+        "idNumber": None,
+        "fullName": "NGUYỄN MẠNH HÙNG", "dateOfBirth": "2024-12-23", "sex": "Nam",
+        "validFrom": "2024-12-23", "fiveYearContinuous": "2029-12-23",
+        "dateOfIssue": "2025-03-28",
+    },
+    "bhyt__thuy-giang": {  # BHYT MẪU MỚI (ảnh khác cùng người), có benefitLevel
+        "_type": "bhyt",
+        "fullName": "NGUYỄN MẠNH HÙNG", "dateOfBirth": "2024-12-23", "sex": "Nam",
+        "benefitLevel": "1",
+        "validFrom": "2024-12-23", "fiveYearContinuous": "2029-12-23",
+        "dateOfIssue": "2025-03-28",
+    },
     "cmnd_12__thuy-giang": {  # cmnd_12 biến thể "CHỨNG MINH NHÂN DÂN" (cũ)
         "_type": "cmnd_12",
         "idNumber": "001192004768", "fullName": "NGUYỄN THÙY GIANG",
