@@ -17,15 +17,20 @@ log = logging.getLogger("dip.cv.corner")
 
 
 def _order_points(pts: np.ndarray) -> np.ndarray:
+    """Sắp 4 góc về [TL, TR, BR, BL] BỀN với mọi góc xoay.
+
+    Heuristic sum/diff cũ SẬP khi thẻ nghiêng ~45°: argmax(sum) và argmax(diff) trỏ cùng
+    một đỉnh → br≡bl, một góc thật bị bỏ → tứ giác suy biến → warp ra ảnh trống → OCR mất
+    chữ. Thay bằng sắp theo GÓC PHƯƠNG VỊ quanh tâm: argsort(atan2) tăng dần cho thứ tự
+    chiều kim đồng hồ trên chu vi (y hướng xuống), KHÔNG bao giờ trùng đỉnh; xoay để bắt
+    đầu ở đỉnh 'trên-trái' nhất (min x+y). Hướng cuối (0/90/180/270) do auto-orient lo.
+    """
     pts = np.asarray(pts, dtype="float32")
-    rect = np.zeros((4, 2), dtype="float32")
-    s = pts.sum(axis=1)
-    rect[0] = pts[np.argmin(s)]
-    rect[2] = pts[np.argmax(s)]
-    d = np.diff(pts, axis=1)
-    rect[1] = pts[np.argmin(d)]
-    rect[3] = pts[np.argmax(d)]
-    return rect
+    c = pts.mean(axis=0)
+    ang = np.arctan2(pts[:, 1] - c[1], pts[:, 0] - c[0])
+    pts = pts[np.argsort(ang)]
+    start = int(np.argmin(pts.sum(axis=1)))
+    return np.roll(pts, -start, axis=0).astype("float32")
 
 
 def _quad_area(pts: np.ndarray) -> float:
