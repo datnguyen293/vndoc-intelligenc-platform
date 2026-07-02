@@ -5,8 +5,11 @@ Trước khi làm: đọc **[HANDOVER.md](HANDOVER.md)** (trạng thái + việc
 `docs/README.md` (bản đồ tài liệu thiết kế DOC-00→10).
 
 ## Quy tắc bắt buộc
-- **Không train model** (ADR-012): chỉ OCR pre-trained (VietOCR/RapidOCR) + luật trong
-  plugin YAML. **Structured-data-first** (ADR-006): ưu tiên QR/MRZ, OCR bù. **CPU-only**.
+- **Không train phần LÕI** (ADR-012, sửa đổi 2026-07-02): recognition (VietOCR pre-trained)
+  + phân loại thuần luật + luật plugin YAML — KHÔNG train. **Được phép model PHỤ TRỢ** train
+  offline, nhãn tự sinh, infer ONNX/CPU, LUÔN có fallback không-model (đã có: corner-detector
+  nắn góc, orientation classifier đoán hướng). **Structured-data-first** (ADR-006): ưu tiên
+  QR/MRZ, OCR bù. **CPU-only**.
 - **Thêm loại giấy tờ = thêm 1 `service/plugins/<docType>/manifest.yaml`**, KHÔNG sửa core.
 - **Sau khi sửa shared code** (`app/extract/*`, `app/pipeline/*`, `rectifier/`): CHẠY
   `cd service && python -m pytest`. **Golden test phải còn xanh** (chống hồi quy giữa

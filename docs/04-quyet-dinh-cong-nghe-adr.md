@@ -194,6 +194,27 @@ Mỗi ADR gồm: bối cảnh, quyết định, lý do, hệ quả, phương án
   này có dữ liệu, fine-tune OCR là **tùy chọn nâng cấp**, không bắt buộc ở V1.
 - **Đã loại:** *Train CNN phân loại*, *fine-tune OCR* như điều kiện bắt buộc của V1.
 
+### Sửa đổi 2026-07-02 (Amended) — cho phép MODEL PHỤ TRỢ train offline
+
+Thực tế vận hành cho thấy ảnh chụp từ người dùng (thẻ nhỏ/nền nhiễu/xoay bất kỳ) làm khâu
+**tiền xử lý** (nắn ảnh + xác định hướng) kém, kéo tốc độ 6-10s. Vì **nhãn cho các tác vụ này
+tự sinh được** (không cần gán tay), ta **nới ADR-012** như sau:
+
+- **VẪN không-train phần lõi:** recognition (VietOCR pre-trained) và phân loại loại giấy tờ
+  ([[ADR-008]] thuần luật) — giữ nguyên, đây mới là chỗ thiếu dữ liệu.
+- **CHO PHÉP model phụ trợ nhẹ, train OFFLINE, nhãn tự sinh**, chạy **ONNX/CPU** (ADR-002),
+  làm **fallback/tăng tốc** chứ không thay lõi:
+  - **Corner-detector** (YOLOv8-pose→ONNX): 4 góc thẻ để nắn ảnh nhỏ/nghiêng; nhãn từ
+    **tổng hợp homography** + gán vài chục ảnh thật. Là fallback của rectifier classic.
+  - **Orientation classifier** (MobileNetV3-small→ONNX): đoán hướng 0/90/180/270; nhãn tự
+    sinh bằng **distillation** (OCR-search hiện có tự gán chiều upright). Là fast-path của
+    `OrientingOcr`, vẫn giữ OCR-search làm fallback.
+- **Ràng buộc kèm theo:** model phụ trợ (a) chỉ infer ONNX/CPU offline; (b) luôn có đường
+  fallback không-model để không giảm độ chính xác; (c) weights gitignored + bundle qua
+  `build.ps1`; (d) mặc định TẮT ở dev, bật qua config khi giao hàng.
+- **Bước 3 roadmap (chưa làm):** bộ đọc SỐ chuyên dụng (CCCD/CMND/quân nhân) — cũng thuộc
+  diện "model phụ trợ nhãn tự sinh" này, sẽ áp cùng ràng buộc.
+
 ---
 
 ## Bảng tổng hợp
@@ -211,4 +232,4 @@ Mỗi ADR gồm: bối cảnh, quyết định, lý do, hệ quả, phương án
 | ADR-009 | Plugin manifest YAML, nạp động | Accepted |
 | ADR-010 | Warm pool + bounded concurrency | Accepted |
 | ADR-011 | Đóng gói Windows Service | Accepted |
-| ADR-012 | Ràng buộc không-train: chỉ pre-trained + luật | Accepted |
+| ADR-012 | Không-train phần LÕI (recognition + phân loại); cho phép model PHỤ TRỢ train offline (nắn góc, đoán hướng) | Accepted (sửa đổi 2026-07-02) |
