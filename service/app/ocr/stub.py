@@ -55,5 +55,7 @@ class StubStructuredReader:
 class StubOcrEngine:
     """OCR rỗng — dùng khi chưa cài PaddleOCR. Trả [] để pipeline vẫn chạy."""
 
-    def recognize(self, image: Any, assume_upright: bool = False) -> list[OcrLine]:
+    def recognize(self, image: Any, assume_upright: bool = False, out: dict | None = None) -> list[OcrLine]:
+        if out is not None:
+            out["image"] = image
         return []

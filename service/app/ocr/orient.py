@@ -25,10 +25,17 @@ class OrientingOcr:
         — phơi qua /version để phát hiện khi bị lùi backend (vd VietOCR lỗi → Rapid mất dấu)."""
         return type(self._base).__name__
 
-    def recognize(self, image: Any, assume_upright: bool = False) -> list[OcrLine]:
+    def recognize(self, image: Any, assume_upright: bool = False, out: dict | None = None) -> list[OcrLine]:
+        # `out` (tuỳ chọn, dict rỗng do caller tạo mỗi request → an toàn đa luồng): nhận ẢNH
+        # ĐÃ CHỌN (đã xoay) mà `lines` thuộc về — để annotate box cho khớp (returnImage=annotated).
+        def done(lines: list[OcrLine], img: Any) -> list[OcrLine]:
+            if out is not None:
+                out["image"] = img
+            return lines
+
         # 1) Client khẳng định ảnh đã đúng chiều → 1 lượt, khỏi dò.
         if assume_upright:
-            return self._base.recognize(image)
+            return done(self._base.recognize(image), image)
 
         # 2) Có orientation classifier + đủ tự tin → xoay 1 lần theo dự đoán, OCR 1 lượt.
         #    Tin classifier khi kết quả trông ĐÚNG CHIỀU (đa số box NGANG) — KHÔNG dùng
@@ -42,21 +49,22 @@ class OrientingOcr:
                 img = image if angle % 360 == 0 else image.rotate(angle, expand=True)
                 lines = self._base.recognize(img)
                 if self._looks_upright(lines):
-                    return lines
+                    return done(lines, img)
 
         # 3) OCR-search (fallback / khi không có classifier): 0° rồi dò theo TRỤC + dừng sớm.
         lines = self._base.recognize(image)
         if not self._enabled or self._good_enough(lines):
-            return lines
-        best_score, best_lines = self._score(lines), lines
+            return done(lines, image)
+        best_score, best_lines, best_img = self._score(lines), lines, image
         for angle in self._angle_order(lines):
-            cand = self._base.recognize(image.rotate(angle, expand=True))  # PIL CCW, không cắt
+            rimg = image.rotate(angle, expand=True)             # PIL CCW, không cắt
+            cand = self._base.recognize(rimg)
             score = self._score(cand)
             if score > best_score:
-                best_score, best_lines = score, cand
+                best_score, best_lines, best_img = score, cand, rimg
             if self._good_enough(cand):
                 break              # chiều này đã tốt → khỏi thử nốt (ảnh upside-down không đạt)
-        return best_lines
+        return done(best_lines, best_img)
 
     @staticmethod
     def _angle_order(lines: list[OcrLine]) -> tuple[int, ...]:

@@ -19,7 +19,7 @@ from app.core.interfaces import (
     StructuredReader,
 )
 from app.extract.anchored import LabelAnchoredExtractor
-from app.models.response import ExtractResponse
+from app.models.response import ExtractResponse, ImagePayload
 from app.plugins.manager import PluginManager
 
 
@@ -99,9 +99,14 @@ class PipelineEngine:
 
         # S4 — OCR thô MỘT LẦN (dùng cho cả phân loại lẫn trích xuất) (FR-008/009)
         t = time.perf_counter()
-        lines = self.ocr.recognize(
-            ctx.image_rectified, assume_upright=bool(ctx.options.get("assumeUpright"))
-        )
+        # returnImage=annotated cần ẢNH ĐÃ XOAY (box thuộc toạ độ đó) → lấy qua sink `out`.
+        sink = {} if ctx.options.get("returnImage") == "annotated" else None
+        kw = {"assume_upright": bool(ctx.options.get("assumeUpright"))}
+        if sink is not None:
+            kw["out"] = sink
+        lines = self.ocr.recognize(ctx.image_rectified, **kw)
+        ctx.ocr_lines = lines
+        ctx.ocr_image = (sink or {}).get("image", ctx.image_rectified)
         ctx.mark("ocr", t)
 
         # S5 — Classification thuần luật từ chính text OCR (ADR-008)
@@ -152,7 +157,28 @@ class PipelineEngine:
             warnings=ctx.warnings,
             errors=ctx.errors,
             timings={k: round(v, 1) for k, v in ctx.timings.items()},
+            image=self._maybe_image(ctx),
         )
+
+    @staticmethod
+    def _maybe_image(ctx) -> ImagePayload | None:
+        """Trả ảnh xử lý kèm response nếu client yêu cầu (DOC-07):
+        - rectified: ảnh SAU nắn (đúng thứ OCR nhìn thấy).
+        - annotated: ảnh đã xoay + vẽ box OCR (soi detect/nắn). Không có OCR (QR-first) → chỉ ảnh.
+        """
+        want = (ctx.options or {}).get("returnImage", "none")
+        if want not in ("rectified", "annotated"):
+            return None
+        base = ctx.image_rectified
+        if base is None:
+            return None
+        from app.cv.annotate import draw_ocr_boxes, encode_jpeg_b64
+        if want == "annotated":
+            img = ctx.ocr_image if ctx.ocr_image is not None else base
+            if ctx.ocr_lines:
+                img = draw_ocr_boxes(img, ctx.ocr_lines)
+            return ImagePayload(base64=encode_jpeg_b64(img), kind="annotated")
+        return ImagePayload(base64=encode_jpeg_b64(base), kind="rectified")
 
     @staticmethod
     def _overall(fields, weights) -> float:

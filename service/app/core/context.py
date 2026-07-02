@@ -28,6 +28,9 @@ class ProcessingContext:
 
     # Kết quả OCR theo ROI/dòng (thô)
     ocr_results: dict[str, Any] = field(default_factory=dict)
+    # Cho returnImage: dòng OCR (box) + ảnh ĐÃ XOAY mà box thuộc về (annotate cho khớp).
+    ocr_lines: list = field(default_factory=list)
+    ocr_image: Any = None
 
     # Trường sau validate/normalize
     fields: dict[str, FieldValue] = field(default_factory=dict)
