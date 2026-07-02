@@ -32,9 +32,12 @@ extraction:
       take: date_after_label
       type: date
     - name: sex
+      # Thẻ 2024: nhãn "Giới tính / Sex" ở trên, giá trị "Nam/Nữ" nằm DƯỚI nhãn (không phải
+      # bên phải). right_of_label cũ vớ nhầm chữ "Sex" (OCR đọc lệch → "Sox"). Dùng below_label.
       labels: ["Giới tính", "Sex"]
-      take: right_of_label
+      take: below_label
       type: sex
+      deriveSexFromId: idNumber   # qualify bằng chữ số thứ 4 của số định danh (chẵn=Nam, lẻ=Nữ)
     - name: nationality
       labels: ["Quốc tịch", "Nationality"]
       take: right_of_label_or_below

@@ -18,7 +18,7 @@ class _FakeImg:
 class _AngleOcr:
     """Đọc tốt khi angle==0; ngược lại trả ít dòng, box dọc, confidence thấp."""
 
-    def recognize(self, img):
+    def recognize(self, img, assume_upright=False):
         if getattr(img, "angle", 0) % 360 == 0:
             return [OcrLine("THẺ ĐẢNG VIÊN", 0, 0, 200, 28, 0.95) for _ in range(8)]
         return [OcrLine("xx", 0, 0, 10, 50, 0.2) for _ in range(3)]
@@ -41,3 +41,28 @@ def test_orient_disabled_passthrough():
     eng = OrientingOcr(_AngleOcr(), enabled=False)
     lines = eng.recognize(_FakeImg(90))  # tắt → không xoay, trả nguyên (kém)
     assert lines[0].text == "xx"
+
+
+def test_orient_assume_upright_skips_search():
+    """assume_upright=True → KHÔNG dò dù ảnh xoay (client khẳng định đã đúng chiều)."""
+    eng = OrientingOcr(_AngleOcr())
+    lines = eng.recognize(_FakeImg(90), assume_upright=True)
+    assert lines[0].text == "xx"
+
+
+class _CountingAngleOcr(_AngleOcr):
+    def __init__(self):
+        self.calls = 0
+
+    def recognize(self, img, assume_upright=False):
+        self.calls += 1
+        return super().recognize(img)
+
+
+def test_orient_limits_passes_via_axis():
+    """Ảnh xoay: dò theo TRỤC + dừng sớm → ≤3 lượt (0° + tối đa 2), KHÔNG phải đủ 4."""
+    base = _CountingAngleOcr()
+    eng = OrientingOcr(base)
+    lines = eng.recognize(_FakeImg(90))
+    assert len(lines) == 8 and lines[0].text == "THẺ ĐẢNG VIÊN"
+    assert base.calls <= 3

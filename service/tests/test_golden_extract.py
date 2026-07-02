@@ -220,7 +220,7 @@ GOLDEN = {
     "cccd_chip_front__tien-dat": {  # đường OCR-only (golden dùng StubStructured);
         "_type": "cccd_chip_front",  # prod: QR điền idNumber/sex/dateOfIssue/oldIdNumber
         "idNumber": "024088010438", "fullName": "NGUYỄN TIẾN ĐẠT",
-        "dateOfBirth": "1988-03-29",
+        "dateOfBirth": "1988-03-29", "sex": "Nam",  # suy từ số định danh (chữ số thứ 4 = 0)
         "placeOfResidence": "Lam Cốt, Tân Yên, Bắc Giang",
         "dateOfExpiry": "2028-03-29",
     },
@@ -228,6 +228,7 @@ GOLDEN = {
         "_type": "cccd_2024_front",
         "idNumber": "026099003333", "fullName": "LƯƠNG ĐÌNH NAM",
         "dateOfBirth": "1999-12-30", "nationality": "Việt Nam",
+        "sex": "Nam",  # suy từ số định danh (chữ số thứ 4 = 0)
     },
     "cccd_2024_back__dinh-nam": {  # OCR-only; prod: QR điền idNumber/fullName/dob/sex
         "_type": "cccd_2024_back",
@@ -277,7 +278,7 @@ class _FixtureOcr:
     def __init__(self, lines):
         self._lines = lines
 
-    def recognize(self, image):
+    def recognize(self, image, assume_upright=False):
         return list(self._lines)
 
 

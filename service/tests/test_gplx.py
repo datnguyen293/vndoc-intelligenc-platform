@@ -39,7 +39,7 @@ class FixtureOcr:
     def __init__(self, lines):
         self._lines = lines
 
-    def recognize(self, image):
+    def recognize(self, image, assume_upright=False):
         return list(self._lines)
 
 

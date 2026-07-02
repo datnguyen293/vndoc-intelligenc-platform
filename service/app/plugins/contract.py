@@ -18,6 +18,9 @@ class FieldSpec:
     checks: list[str] = field(default_factory=list)
     cross_check: bool = False
     cross_check_province: bool = False
+    # Suy giới tính từ số định danh 12 số của trường được trỏ (vd "idNumber") để qualify lại
+    # kết quả OCR: đồng thuận → nâng tin cậy; OCR trống → điền; lệch → quy tắc số thắng + cảnh báo.
+    derive_sex_from: str | None = None
     multiline: bool = False
     # Ghép giá trị từ các trường khác khi bóc trực tiếp không được (vd hộ chiếu MỚI tách
     # 'Họ/Surname' + 'Chữ đệm và tên/Given names' → fullName = surname + givenNames).
@@ -37,6 +40,7 @@ class FieldSpec:
             checks=d.get("checks", []),
             cross_check=d.get("crossCheck", False),
             cross_check_province=d.get("crossCheckProvince", False),
+            derive_sex_from=d.get("deriveSexFromId"),
             multiline=d.get("multiline", False),
             compose_from=d.get("composeFrom", []),
         )

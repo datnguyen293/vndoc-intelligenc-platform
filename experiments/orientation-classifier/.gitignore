@@ -1,0 +1,10 @@
+# Dữ liệu tổng hợp + model + runs + log (nặng/nhạy cảm — KHÔNG commit)
+data/
+runs/
+*.pt
+*.onnx
+*.json
+*.jpg
+*.jpeg
+*.png
+*.log

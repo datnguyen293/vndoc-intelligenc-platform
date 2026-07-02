@@ -1,0 +1,11 @@
+# Dữ liệu tổng hợp + model + runs + ảnh thật (nặng/nhạy cảm — KHÔNG commit)
+data/
+real_data/
+real_oversampled/
+runs/
+eval_out/
+combined_data.yaml
+*.pt
+*.onnx
+*.jpg
+*.png

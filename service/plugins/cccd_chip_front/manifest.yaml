@@ -41,6 +41,7 @@ extraction:
       take: right_of_label
       source: [structured, ocr]
       type: sex
+      deriveSexFromId: idNumber   # qualify bằng chữ số thứ 4 của số định danh (chẵn=Nam, lẻ=Nữ)
     - name: nationality
       labels: ["Quốc tịch", "Nationality"]
       take: right_of_label

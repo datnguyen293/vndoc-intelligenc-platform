@@ -50,8 +50,10 @@ class StructuredReader(Protocol):
 
 
 class OcrEngine(Protocol):
-    def recognize(self, image: Any) -> list[Any]:
+    def recognize(self, image: Any, assume_upright: bool = False) -> list[Any]:
         """OCR thô → danh sách OcrLine (text + vị trí + confidence) (FR-008/009).
+
+        assume_upright=True: bỏ qua dò hướng (client khẳng định ảnh đã đúng chiều).
 
         Tách det+rec thành một bước trả 'dòng có toạ độ'; việc gán trường (label-
         anchored / roi) do FieldExtractor đảm nhiệm (DOC-06 S7→S8).

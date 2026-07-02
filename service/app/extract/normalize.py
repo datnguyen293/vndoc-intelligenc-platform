@@ -66,13 +66,35 @@ def before_slash(s: str) -> str:
 
 
 def norm_sex(s: str) -> str:
-    # Hộ chiếu ghi 'NAM / M' (song ngữ) → lấy phần trước '/'.
-    t = before_slash(s).lower()
-    if t in {"nam", "m", "male"}:
-        return "Nam"
-    if t in {"nữ", "nu", "f", "female"}:
-        return "Nữ"
-    return s.strip()
+    """Bóc giới tính Nam/Nữ khỏi giá trị — bền khi OCR gộp nhãn/nhiễu vào giá trị.
+
+    Ca thực tế: thẻ CHIP cũ in 'Giới tính' & 'Quốc tịch' CHUNG một dòng → right_of_label vớ
+    cả 'Sex Nam Quốc tịch Việt Nam'; hoặc OCR đọc lệch 'Sex'→'Sox'. Quét từng token (đã fold):
+    'Nữ' ưu tiên; 'Nam' KHÔNG tính nếu đứng NGAY SAU 'Việt' (bẫy 'Việt Nam' của quốc tịch).
+    Không thấy token hợp lệ → '' (thà TRỐNG còn hơn sai giới tính — prod còn có QR bù)."""
+    prev = ""
+    for w in re.findall(r"[0-9A-Za-zÀ-ỹ]+", s):
+        wl = clean_token(w)          # fold: Nữ→nu, Nam→nam, Việt→viet
+        if wl in {"nu", "f", "female"}:
+            return "Nữ"
+        if wl in {"nam", "m", "male"}:
+            if wl == "nam" and prev == "viet":
+                prev = wl
+                continue
+            return "Nam"
+        prev = wl
+    return ""
+
+
+def sex_from_cccd(id12: str | None) -> str | None:
+    """Suy giới tính từ SỐ ĐỊNH DANH CÁ NHÂN 12 số (áp cho CCCD/CC mới & cũ, không cho CMND 9).
+
+    Cấu trúc: 3 số đầu = mã tỉnh; **chữ số thứ 4 = mã thế kỷ + giới tính** (0/1=TK20 nam/nữ,
+    2/3=TK21, 4/5=TK22...) → CHẴN = Nam, LẺ = Nữ; 2 số kế = năm sinh; 6 số cuối = ngẫu nhiên.
+    Trả None nếu không phải đúng 12 chữ số (không suy bừa)."""
+    if id12 and re.fullmatch(r"\d{12}", id12):
+        return "Nam" if int(id12[3]) % 2 == 0 else "Nữ"
+    return None
 
 
 def to_iso_date(s: str) -> str:

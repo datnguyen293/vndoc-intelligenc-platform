@@ -99,7 +99,9 @@ class PipelineEngine:
 
         # S4 — OCR thô MỘT LẦN (dùng cho cả phân loại lẫn trích xuất) (FR-008/009)
         t = time.perf_counter()
-        lines = self.ocr.recognize(ctx.image_rectified)
+        lines = self.ocr.recognize(
+            ctx.image_rectified, assume_upright=bool(ctx.options.get("assumeUpright"))
+        )
         ctx.mark("ocr", t)
 
         # S5 — Classification thuần luật từ chính text OCR (ADR-008)
