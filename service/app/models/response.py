@@ -5,7 +5,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-Source = Literal["structured", "ocr"]
+Source = Literal["structured", "ocr", "derived"]  # derived = suy từ quy tắc (vd sex từ số định danh)
 
 
 class FieldValue(BaseModel):

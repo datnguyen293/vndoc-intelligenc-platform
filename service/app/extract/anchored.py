@@ -9,7 +9,7 @@ from __future__ import annotations
 import re
 
 from app.extract import dates
-from app.extract.normalize import apply_normalizers, norm_sex
+from app.extract.normalize import apply_normalizers, norm_sex, sex_from_cccd
 from app.extract.textutil import clean_token as _clean_token
 from app.extract.textutil import key as _label_key
 from app.extract.validate import cross_field_checks, run_checks, validate_field
@@ -135,8 +135,38 @@ class LabelAnchoredExtractor:
             )
             warnings += validate_field(value, spec) + run_checks(value, spec)
 
+        warnings += self._qualify_sex(fields, manifest)
         warnings += cross_field_checks(fields, manifest.cross_checks)
         return fields, warnings
+
+    def _qualify_sex(self, fields: dict, manifest: Manifest) -> list[str]:
+        """Qualify giới tính bằng QUY TẮC số định danh 12 số (chữ số thứ 4: chẵn=Nam, lẻ=Nữ).
+
+        Chỉ chạy khi id là ĐÚNG 12 số (không suy khi OCR id hỏng). Đồng thuận → nâng tin cậy;
+        OCR trống → điền từ quy tắc; LỆCH → quy tắc số (tất định, tin hơn OCR glyph nhỏ) thắng,
+        source='derived', giữ giá trị OCR cũ ở `raw` + cảnh báo để cán bộ soi lại.
+        """
+        warns: list[str] = []
+        for spec in manifest.fields:
+            if not spec.derive_sex_from:
+                continue
+            idfv = fields.get(spec.derive_sex_from)
+            derived = sex_from_cccd(idfv.value if idfv else None)
+            if derived is None:
+                continue
+            fv = fields.get(spec.name)
+            cur = fv.value if fv else None
+            if cur == derived:
+                if fv:
+                    fv.confidence = max(fv.confidence, 0.97)   # đồng thuận OCR + quy tắc
+            elif not cur:
+                fields[spec.name] = FieldValue(value=derived, confidence=0.9, source="derived")
+            else:
+                fields[spec.name] = FieldValue(
+                    value=derived, confidence=0.9, source="derived", raw=cur
+                )
+                warns.append(f"{spec.name}_lech_voi_so_dinh_danh")
+        return warns
 
     # --- post-process: ép kiểu + normalize (DOC-08 §2) ---
     def _post(self, text: str, spec: FieldSpec) -> str:

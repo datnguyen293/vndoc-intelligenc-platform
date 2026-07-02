@@ -36,6 +36,7 @@ extraction:
       labels: ["Giới tính"]
       take: after_colon
       type: sex
+      deriveSexFromId: idNumber   # 12 số định danh: chữ số thứ 4 chẵn=Nam, lẻ=Nữ
     - name: nationality
       labels: ["Quốc tịch"]      # biến thể CĂN CƯỚC CÔNG DÂN 12 số (mã vạch) có Quốc tịch
       take: after_colon

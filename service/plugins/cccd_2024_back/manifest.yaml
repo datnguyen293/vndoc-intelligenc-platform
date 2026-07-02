@@ -49,6 +49,7 @@ extraction:
       take: right_of_label
       source: [structured, ocr]
       type: sex
+      deriveSexFromId: idNumber   # qualify bằng chữ số thứ 4 của số định danh (chẵn=Nam, lẻ=Nữ)
     - name: placeOfResidence
       labels: ["Nơi cư trú", "Place of residence"]
       take: right_of_label_or_below
