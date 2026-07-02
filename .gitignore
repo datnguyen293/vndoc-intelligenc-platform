@@ -8,8 +8,15 @@ venv/
 .env
 
 # --- Model weights / log / OS ---
-# Anchor đúng thư mục weights ML (KHÔNG nuốt package code app/models/)
-/service/models/
+# Anchor đúng thư mục weights ML (KHÔNG nuốt package code app/models/).
+# Bỏ ignore mặc định cho THƯ MỤC (dùng /* ) rồi RE-INCLUDE các weights đã chốt version
+# (quyết định 2026-07-02: đưa model vào repo để clone/Docker khỏi copy tay). File weights
+# MỚI (chưa liệt kê) vẫn bị ignore để tránh commit nhầm.
+/service/models/*
+!/service/models/vgg_seq2seq.pth
+!/service/models/corner.onnx
+!/service/models/orientation.onnx
+!/service/models/orientation.json
 /models/
 service/logs/
 *.log

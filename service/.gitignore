@@ -5,6 +5,12 @@ venv/
 *.egg-info/
 .pytest_cache/
 .env
-/models/
+# Weights ML: ignore theo mặc định NHƯNG re-include các model đã chốt version (2026-07-02:
+# đưa vào repo để clone/Docker khỏi copy tay). Weights MỚI vẫn bị ignore, tránh commit nhầm.
+/models/*
+!/models/vgg_seq2seq.pth
+!/models/corner.onnx
+!/models/orientation.onnx
+!/models/orientation.json
 logs/
 *.log

@@ -5,8 +5,8 @@ service FastAPI y hệt, chỉ khác lớp đóng gói. **CPU-only** (ADR-002), 
 
 ## Yêu cầu
 - Docker Engine + Docker Compose plugin (`docker compose version`).
-- Weights offline có sẵn tại `service/models/` trên máy build: `vgg_seq2seq.pth`,
-  `corner.onnx`, `orientation.onnx` (đều gitignored — copy từ máy Windows/backup sang trước khi build).
+- Weights offline `service/models/` (`vgg_seq2seq.pth`, `corner.onnx`, `orientation.onnx`)
+  **đã versioned trong repo** (từ 2026-07-02) → clone về là có sẵn, KHÔNG cần copy tay.
 
 ## Build & chạy (Compose — khuyến nghị)
 ```bash
