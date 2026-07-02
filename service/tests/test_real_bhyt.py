@@ -43,7 +43,7 @@ class _SpyOcr:
     def __init__(self) -> None:
         self.called = False
 
-    def recognize(self, image):
+    def recognize(self, image, assume_upright=False):
         self.called = True
         return []
 

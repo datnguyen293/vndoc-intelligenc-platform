@@ -6,7 +6,7 @@ import io
 import uuid
 
 from fastapi import APIRouter, File, Form, Header, HTTPException, Request, UploadFile
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageOps, UnidentifiedImageError
 
 from app import __version__
 from app.models.response import (
@@ -77,6 +77,9 @@ async def extract(
     image: UploadFile = File(...),
     docTypeHint: str | None = Form(default=None),
     returnImage: str = Form(default="none"),
+    # Client (app Android) đã xoay ảnh đúng chiều (áp EXIF trước khi gửi) → bỏ dò hướng,
+    # OCR 1 lượt (nhanh ~3-4×). Chỉ đặt true khi CHẮC ảnh thẳng.
+    assumeUpright: str = Form(default="false"),
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
 ) -> ExtractResponse:
     _check_api_key(x_api_key)
@@ -105,7 +108,10 @@ async def extract(
     if len(raw) > settings.max_image_bytes:
         raise HTTPException(status_code=413, detail={"code": "image_too_large", "message": "Ảnh vượt giới hạn"})
     try:
-        pil = Image.open(io.BytesIO(raw)).convert("RGB")
+        pil = Image.open(io.BytesIO(raw))
+        # Áp orientation EXIF (ảnh điện thoại lưu cảm biến NGANG + cờ xoay) rồi mới bỏ EXIF.
+        # Không làm bước này → ảnh vào NẰM NGHIÊNG → auto-orient phải OCR 4 hướng (chậm 3-4×).
+        pil = ImageOps.exif_transpose(pil).convert("RGB")
     except UnidentifiedImageError:
         raise HTTPException(status_code=400, detail={"code": "invalid_request", "message": "Ảnh không hợp lệ"})
 
@@ -116,7 +122,9 @@ async def extract(
         try:
             resp: ExtractResponse = await asyncio.wait_for(
                 asyncio.to_thread(
-                    engine.run, request_id, pil, hint, {"returnImage": returnImage}
+                    engine.run, request_id, pil, hint,
+                    {"returnImage": returnImage,
+                     "assumeUpright": str(assumeUpright).strip().lower() in ("1", "true", "yes")}
                 ),
                 timeout=settings.request_timeout_sec,
             )
