@@ -1,0 +1,30 @@
+# Docker build context = gốc repo. Loại thứ nặng/nhạy cảm/không cần để context nhẹ + ảnh sạch.
+.git
+.gitignore
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+
+# Môi trường + artifact build (KHÔNG đưa vào ảnh Linux)
+**/.venv
+build/
+packaging/runtime/
+packaging/bin/
+packaging/installer/Output/
+packaging/installer/*.exe
+
+# Thử nghiệm train + dữ liệu (nặng)
+experiments/
+android/
+
+# NHẠY CẢM: ảnh giấy tờ thật (NFR-007) — tuyệt đối không vào ảnh Docker
+service/samples/
+service/tests/
+service/.env
+
+# Docs/log không cần khi chạy
+docs/
+*.log
+**/*.log
+
+# CHÚ Ý: KHÔNG loại service/models — cần bundle weights (vgg_seq2seq.pth, corner.onnx, orientation.onnx)

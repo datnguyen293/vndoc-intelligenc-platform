@@ -1,0 +1,25 @@
+# Deps bản Linux/Docker (CPU-only, ADR-002). KHÁC Windows: trên Linux, `torch` mặc định
+# từ PyPI là bản CUDA (nặng ~2GB) → PHẢI lấy từ CPU index của PyTorch.
+#   pip install -r requirements-linux.txt
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# VietOCR (qua dep của nó) cần pkg_resources — chỉ có ở setuptools <81 (81+ đã gỡ) →
+# thiếu thì VietOCR crash → âm thầm lùi RapidOCR (MẤT DẤU tiếng Việt).
+setuptools<81
+
+fastapi==0.138.2
+uvicorn[standard]==0.49.0
+pydantic==2.13.4
+pydantic-settings==2.14.2
+python-multipart==0.0.32
+PyYAML==6.0.3
+pillow==10.2.0
+numpy==2.2.6
+opencv-python-headless==4.13.0.92
+zxing-cpp==3.0.0
+# rapidocr-onnxruntime kéo theo onnxruntime (dùng cho detect PP + corner.onnx + orientation.onnx).
+rapidocr-onnxruntime==1.4.4
+vietocr==0.3.13
+# CPU wheels từ index ở trên (hậu tố +cpu để KHÔNG dính bản CUDA).
+torch==2.6.0+cpu
+torchvision==0.21.0+cpu

@@ -1,0 +1,31 @@
+# VNDoc OCR — Docker Compose (Linux). Chạy từ packaging/linux/:
+#   DIP_API_KEY=<key> docker compose up -d --build
+# hoặc đặt biến trong file  packaging/linux/.env  (xem .env.example).
+services:
+  vndoc-ocr:
+    build:
+      context: ../..                       # gốc repo (Dockerfile COPY service/, rectifier/, models)
+      dockerfile: packaging/linux/Dockerfile
+    image: vndoc-ocr:0.1.0
+    container_name: vndoc-ocr
+    ports:
+      - "11001:11001"
+    environment:
+      # Bảo mật — nên đặt cố định (nếu trống: entrypoint tự sinh key mỗi lần chạy).
+      DIP_API_KEY: "${DIP_API_KEY:-}"
+      # Whitelist IP (CIDR, phẩy ngăn). Trống = cho mọi IP (chỉ nên khi test). Vd: 192.168.1.0/24
+      DIP_ALLOWED_IPS: "${DIP_ALLOWED_IPS:-}"
+      # Hiệu năng (khởi điểm theo số nhân CPU host).
+      DIP_OCR_THREADS: "${DIP_OCR_THREADS:-8}"
+      DIP_MAX_CONCURRENCY: "${DIP_MAX_CONCURRENCY:-8}"
+      DIP_REQUEST_TIMEOUT_SEC: "${DIP_REQUEST_TIMEOUT_SEC:-15}"
+      # Model phụ trợ (đã bundle trong ảnh).
+      DIP_RECTIFY_CORNER_FALLBACK: "true"
+      DIP_ORIENT_CLASSIFIER: "true"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:11001/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s

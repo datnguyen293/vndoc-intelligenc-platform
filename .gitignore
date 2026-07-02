@@ -36,3 +36,6 @@ service/logs/
 *.gif
 *.bmp
 docs/logs/
+
+# Docker Compose secrets (Linux packaging)
+packaging/linux/.env

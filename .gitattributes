@@ -1,0 +1,4 @@
+# Script shell PHẢI dùng LF — CRLF làm hỏng entrypoint trong container Linux
+# ("bad interpreter" / "not found"). Ép LF bất kể cấu hình autocrlf của máy.
+*.sh text eol=lf
+entrypoint.sh text eol=lf
